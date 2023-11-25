@@ -1,20 +1,44 @@
 import { useNavigate } from "react-router-dom";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import AuthContext from "../../contexts/AuthProvider";
+import axios from "../../api/axios";
 
 import techShopLogo from "../../assets/images/logo/techShopLogo.svg";
 import Home from "../Management/Management";
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { setAuth } = useContext(AuthContext);
+  const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    if (email === "a@gmail.com" && password === "a") {
-      localStorage.setItem("accessToken", true);
-      window.location.href = "/";
-    } else {
-      alert("Wrong email or password");
+    try {
+      const response = await axios.post("/User/login", JSON.stringify({ email, password }),
+        {
+          headers: {
+            "Content-Type": "application/json",
+          }
+        })
+
+      if (response.status === 200) {
+        setAuth({ email, password });
+        localStorage.setItem("isLogin", true);
+        window.location.href = "/home";
+      }
+
+    }
+    catch (err) {
+      if (err.response.status === 404) {
+        alert("Người dùng không tồn tại");
+      }
+      else if (err.response.status === 401) {
+        alert("Sai mật khẩu");
+      }
+      else {
+        alert("Lỗi không xác định");
+      }
     }
   };
 
@@ -44,6 +68,7 @@ export default function LoginPage() {
                   name="email"
                   id="email"
                   value={email}
+                  autoComplete="off"
                   onChange={(e) => setEmail(e.target.value)}
                   className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   required=""

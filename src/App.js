@@ -13,7 +13,7 @@ import Home from "./components/Home/Home";
 import React, { useEffect } from "react";
 
 function App() {
-  const isLogin = localStorage.getItem("accessToken") ? true : false;
+  const isLogin = localStorage.getItem("isLogin") === "true" ? true : false;
   useEffect(() => {
     // if (!isLogin) {
     //   window.location.href = "/login";

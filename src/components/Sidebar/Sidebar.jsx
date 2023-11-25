@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 function Sidebar() {
   const [dateTime, setDateTime] = useState("");
   const [menu, setMenu] = useState("home");
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const normalLink = "w-full shadow-xl h-10 justify-center items-center flex rounded-md hover:bg-blue-200"
   const activeLink = "w-full shadow-xl h-10 justify-center items-center flex rounded-md hover:bg-blue-200 bg-green-300"
@@ -31,10 +31,8 @@ function Sidebar() {
       const year = date.getFullYear();
 
       setDateTime(
-        `${hour < 10 ? `0${hour}` : hour}:${
-          minute < 10 ? `0${minute}` : minute
-        }:${second < 10 ? `0${second}` : second} - ${
-          day < 10 ? `0${day}` : day
+        `${hour < 10 ? `0${hour}` : hour}:${minute < 10 ? `0${minute}` : minute
+        }:${second < 10 ? `0${second}` : second} - ${day < 10 ? `0${day}` : day
         }/${month < 10 ? `0${month}` : month}/${year}`
       );
     };
@@ -92,7 +90,7 @@ function Sidebar() {
 
       case "logout":
         setMenu("home");
-        localStorage.removeItem("accessToken");
+        localStorage.removeItem("isLogin");
         window.location.href = "/login";
         break;
 
@@ -176,7 +174,7 @@ function Sidebar() {
 
         <button
           value={"logout"}
-            onClick={(e) => handleMenuClick(e)}
+          onClick={(e) => handleMenuClick(e)}
           className="logout w-full shadow-xl h-10 justify-center items-center flex rounded-md mt-16 hover:bg-red-300"
         >
           <BiLogOutCircle className="inline-block" />
