@@ -25,3 +25,6 @@ yarn-error.log*
 .history
 .idea
 node_modules
+
+packages-lock.json
+```
