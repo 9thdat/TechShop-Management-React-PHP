@@ -14,8 +14,12 @@ import { useNavigate } from "react-router-dom";
 
 function Sidebar() {
   const [dateTime, setDateTime] = useState("");
-  const [menu, setMenu] = useState("home");
+  const [menu, setMenu] = useState(
+    localStorage.getItem("menu") ? localStorage.getItem("menu") : "home"
+  );
   const navigate = useNavigate();
+
+  const sidebarRef = useRef(null);
 
   const normalLink = "w-full shadow-xl h-10 justify-center items-center flex rounded-md hover:bg-blue-200"
   const activeLink = "w-full shadow-xl h-10 justify-center items-center flex rounded-md hover:bg-blue-200 bg-green-300"

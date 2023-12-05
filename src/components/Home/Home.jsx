@@ -1,10 +1,9 @@
 import React, { useEffect } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { FiSettings } from "react-icons/fi";
-import { TooltipComponent } from "@syncfusion/ej2-react-popups";
-import Sidebar from "../Sidebar/Sidebar";
 
 export default function Home() {
+  useEffect(() => {
+    localStorage.setItem("menu", "home");
+  }, []);
   return (
     <div className={"home grid grid-cols-4 grid-rows-6 w-full h-full py-5"}>
       <div className="pending-order col-start-1 col-end-2 row-start-1 row-end-2 flex flex-col items-center justify-center border-solid border-black border mx-8">

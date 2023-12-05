@@ -15,9 +15,7 @@ import React, { useEffect } from "react";
 function App() {
   const isLogin = localStorage.getItem("isLogin") === "true" ? true : false;
   useEffect(() => {
-    // if (!isLogin) {
-    //   window.location.href = "/login";
-    // }
+
   }, []);
   return (
     <BrowserRouter>

@@ -25,6 +25,7 @@ export default function LoginPage() {
       if (response.status === 200) {
         setAuth({ email, password });
         localStorage.setItem("isLogin", true);
+        localStorage.setItem("menu", "home");
         window.location.href = "/home";
       }
 
