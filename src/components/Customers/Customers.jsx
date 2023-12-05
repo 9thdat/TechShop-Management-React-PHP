@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from "react";
 import axios from "../../api/axios";
-import ProductDetail from "../Products/ProductDetail";
 import CustomerDetail from "./CustomerDetail";
 
 export default function Customers() {
@@ -26,10 +25,11 @@ export default function Customers() {
     }
 
     const AddCustomer = (e) => {
+        setCustomer({});
         setVisible(true);
     }
 
-    const handleEditCustomer = (e) => {
+    const handleDetailCustomer = (e) => {
         const customer = customers.find((customer) => customer.email === e.target.value);
         setCustomer(customer);
         setVisible(true);
@@ -112,7 +112,7 @@ export default function Customers() {
                                     <td className="px-6 py-2">
                                         <button className="px-2 py-1 text-white bg-green-500 rounded-md"
                                                 value={customer.email}
-                                                onClick={(e) => handleEditCustomer(e)}>Sửa
+                                                onClick={(e) => handleDetailCustomer(e)}>Chi tiết
                                         </button>
                                         <button className="px-2 py-1 ml-2 text-white bg-red-500 rounded-md"
                                                 value={customer.email}

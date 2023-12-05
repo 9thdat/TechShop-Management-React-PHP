@@ -7,6 +7,24 @@ const xa_phuong = require("../../Models/Address/xa-phuong.json");
 
 export default function CustomerDetail({visible, onClose, customerData}) {
     const [customer, setCustomer] = useState({});
+    const [provinces, setProvinces] = useState(
+        Object.values(tinh_tp).map((tinh) => ({
+            name: tinh.name,
+            code: tinh.code,
+        }))
+    );
+
+    const [districts, setDistricts] = useState(
+        Object.values(quan_huyen).map((quan) => {
+            return {name: quan.name, code: quan.code, parent_code: quan.parent_code};
+        })
+    );
+    const [wards, setWards] = useState(
+        Object.values(xa_phuong).map((xa) => {
+            return {name: xa.name, code: xa.code, parent_code: xa.parent_code};
+        }
+        ));
+
 
     const [selectedAddress, setSelectedAddress] = useState({
         street: "",
@@ -22,33 +40,39 @@ export default function CustomerDetail({visible, onClose, customerData}) {
     }, [customerData]);
 
     const handleOnChange = (e) => {
-        if (e.target.id === "city") {
-            // Update selected city and reset district and ward
-            setSelectedAddress((prevAddress) => ({
-                ...prevAddress,
-                city: e.target.value,
-                cityCode: e.target.key,
-                district: "",
-                districtCode: "",
-                ward: "",
-            }));
-        } else if (e.target.id === "district") {
-            // Update selected district and reset ward
-            setSelectedAddress((prevAddress) => ({
-                ...prevAddress,
-                district: e.target.value,
-                districtCode: e.target.key,
-                ward: "",
-            }));
-        } else {
-            // Update other fields
-            setCustomer((prevCustomer) => ({
-                ...prevCustomer,
-                [e.target.id]: e.target.value,
-            }));
+        const {id, value} = e.target;
+        if (id === "city") {
+            setSelectedAddress({
+                ...selectedAddress,
+                city: value,
+                cityCode: provinces.find((tinh) => tinh.name === value).code,
+            });
+            setDistricts(
+                Object.values(quan_huyen).filter(
+                    (quan) => selectedAddress.cityCode === quan.parent_code
+                )
+            );
         }
-        console.log(selectedAddress);
+        if (id === "district") {
+            setSelectedAddress({
+                ...selectedAddress,
+                district: value,
+                districtCode: districts.find((quan) => quan.name === value).code,
+            });
+            setWards(
+                Object.values(xa_phuong).filter(
+                    (xa) => selectedAddress.districtCode === xa.parent_code
+                )
+            );
+        }
+        else{
+            setSelectedAddress({
+                ...selectedAddress,
+                [id]: value,
+            });
+        }
     };
+
 
 
     if (!visible) return null;
@@ -130,7 +154,7 @@ export default function CustomerDetail({visible, onClose, customerData}) {
 
                                 <input type="text"
                                        className="form-control border border-black rounded-md"
-                                       id="address"
+                                       id="street"
                                        onChange={(e) => handleOnChange(e)}
                                        value={selectedAddress.street}
                                 />
@@ -138,16 +162,12 @@ export default function CustomerDetail({visible, onClose, customerData}) {
                                 <select name={"city"}
                                         id={"city"}
                                         onChange={(e) => handleOnChange(e)}
-                                        value={selectedAddress.city}
-                                        key={selectedAddress.cityCode}
-                                >
-                                    {tinh_tp &&
-                                        Object.values(tinh_tp).map((tinh) => (
-                                            <option key={tinh.code} value={tinh.name}>
-                                                {tinh.name}
-                                            </option>
-                                        ))
-                                    }
+                                        >
+                                    {provinces.map((tinh) => (
+                                        <option key={tinh.code} value={tinh.name}>
+                                            {tinh.name}
+                                        </option>
+                                    ))}
                                 </select>
 
                                 <select
@@ -155,16 +175,14 @@ export default function CustomerDetail({visible, onClose, customerData}) {
                                     id={"district"}
                                     onChange={(e) => handleOnChange(e)}
                                     value={selectedAddress.district}
-                                    key={selectedAddress.districtCode}
+                                    code={selectedAddress.districtCode}
                                 >
-                                    {quan_huyen &&
-                                        Object.values(quan_huyen)
-                                            .filter((quan) => selectedAddress.cityCode === quan.parent_code)
-                                            .map((quan) => (
-                                                <option key={quan.code} value={quan.name}>
-                                                    {quan.name}
-                                                </option>
-                                            ))}
+                                    {districts &&
+                                        districts.map((quan) => (
+                                            <option key={quan.code} value={quan.name}>
+                                                {quan.name}
+                                            </option>
+                                        ))}
                                 </select>
 
                                 <select
@@ -173,14 +191,12 @@ export default function CustomerDetail({visible, onClose, customerData}) {
                                     onChange={(e) => handleOnChange(e)}
                                     value={selectedAddress.ward}
                                 >
-                                    {xa_phuong &&
-                                        Object.values(xa_phuong)
-                                            .filter((xa) => selectedAddress.districtCode === xa.parent_code)
-                                            .map((xa) => (
-                                                <option key={xa.code} value={xa.name}>
-                                                    {xa.name}
-                                                </option>
-                                            ))}
+                                    {wards &&
+                                        wards.map((xa) => (
+                                            <option key={xa.code} value={xa.name}>
+                                                {xa.name}
+                                            </option>
+                                        ))}
                                 </select>
 
                             </div>
