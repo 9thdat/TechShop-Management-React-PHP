@@ -22,6 +22,7 @@ export default function ProductDetail({action, visible, onClose, product}) {
 
     useEffect(() => {
         setProductData(product);
+        console.log(product);
 
         if (actionType === "edit") {
             fetchProductQuantity();

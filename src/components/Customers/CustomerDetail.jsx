@@ -1,12 +1,13 @@
 import React, {useState, useEffect, useMemo} from "react";
 import axios from "../../api/axios";
+import defaultAvatar from "../../assets/images/defaultAvatar/defaultAvatar.jpeg"
 
 const tinh_tp = require("../../Models/Address/tinh-tp.json");
 const quan_huyen = require("../../Models/Address/quan-huyen.json");
 const xa_phuong = require("../../Models/Address/xa-phuong.json");
 
 export default function CustomerDetail({visible, onClose, customerData, action}) {
-    const [customer, setCustomer] = useState();
+    const [customer, setCustomer] = useState(customerData);
 
     const [cities, setCities] = useState();
     const [districts, setDistricts] = useState();
@@ -14,14 +15,14 @@ export default function CustomerDetail({visible, onClose, customerData, action})
 
     const cityList = Object.keys(tinh_tp).map((tinh) => { // List of provinces
         return {
-            name: tinh_tp[tinh].name,
+            name: tinh_tp[tinh].name_with_type,
             code: tinh_tp[tinh].code
         };
     });
 
     const districtList = Object.keys(quan_huyen).map((quan) => {
         return {
-            name: quan_huyen[quan].name,
+            name: quan_huyen[quan].name_with_type,
             code: quan_huyen[quan].code,
             parent_code: quan_huyen[quan].parent_code
         };
@@ -29,7 +30,7 @@ export default function CustomerDetail({visible, onClose, customerData, action})
 
     const wardList = Object.keys(xa_phuong).map((xa) => {
             return {
-                name: xa_phuong[xa].name,
+                name: xa_phuong[xa].name_with_type,
                 code: xa_phuong[xa].code,
                 parent_code: xa_phuong[xa].parent_code
             };
@@ -46,8 +47,9 @@ export default function CustomerDetail({visible, onClose, customerData, action})
     });
 
     useEffect(() => { // Set customer data
-        setCustomer(customerData);
-        console.log(customer);
+        setCustomer({
+            ...customerData,
+        });
     }, [customerData]);
 
     useEffect(() => { // Set citys
@@ -61,6 +63,17 @@ export default function CustomerDetail({visible, onClose, customerData, action})
     useEffect(() => {
         setWards(wardList.filter((xa) => xa.parent_code === selectedAddress.districtCode));
     }, [selectedAddress.districtCode, selectedAddress.cityCode]);
+
+    useEffect(() => {
+        setSelectedAddress({
+            street: "",
+            city: cityList[0].name,
+            cityCode: cityList[0].code,
+            district: districtList[0].name,
+            districtCode: districtList[0].code,
+            ward: wardList[0].name,
+        });
+    }, [visible]);
 
     const handleOnChange = (e) => {
         const {id, value} = e.target;
@@ -79,14 +92,14 @@ export default function CustomerDetail({visible, onClose, customerData, action})
             });
         } else if (id === "image") {
             const reader = new FileReader();
-
-            reader.onload = (e) => {
-                setCustomer({
-                    ...customer,
-                    image: e.target.result
-                });
-            };
-
+            reader.onload = () => {
+                if (reader.readyState === 2) {
+                    setCustomer({
+                        ...customer,
+                        image: reader.result,
+                    });
+                }
+            }
             reader.readAsDataURL(e.target.files[0]);
         } else {
             setSelectedAddress(
@@ -95,15 +108,51 @@ export default function CustomerDetail({visible, onClose, customerData, action})
                     [id]: value,
                 }
             )
-            setCustomer({
-                ...customer,
-                [id]: value,
-            });
         }
-        console.log(id);
-        console.log(value);
+
+        setCustomer({
+            ...customer,
+            [id]: value,
+        });
     };
 
+    const handleAddCustomer = async (e) => {
+        e.preventDefault();
+        console.log(customer)
+
+        // Validate
+        if (!customer.name || !customer.password || !customer.phone || !customer.address || !customer.email) {
+            alert("Vui lòng nhập đầy đủ thông tin!");
+        }
+        else{
+            // Convert data to form data
+            const formData = new FormData();
+            formData.append("email", customer.email || "");
+            formData.append("name", customer.name);
+            formData.append("password", customer.password);
+            formData.append("phone", customer.phone);
+            formData.append("gender", customer.gender);
+            formData.append("birthday", customer.birthday || "");
+            formData.append("address", customer.address);
+            formData.append("city", selectedAddress.city);
+            formData.append("district", selectedAddress.district);
+            formData.append("ward", selectedAddress.ward);
+            formData.append("status", customer.status);
+            formData.append("image", customer.image || "");
+            try {
+                const res = await axios.post("/Customer", formData);
+                if (res.status === 200) {
+                    alert("Thêm khách hàng thành công!");
+                    onClose();
+                }
+                else if (res.status === 409){
+                    alert("Email đã tồn tại!");
+                }
+            } catch (error) {
+                console.log("Failed to add customer: ", error.message);
+            }
+        }
+    }
 
     if (!visible) return null;
 
@@ -118,7 +167,7 @@ export default function CustomerDetail({visible, onClose, customerData, action})
                     <table className="col-span-3 form overflow-auto w-full">
                         <tbody>
                         <tr>
-                            <td colSpan={2}>
+                            <td>
                                 <div className="form-group flex justify-between mb-4">
                                     <label className="" htmlFor="id">
                                         Email
@@ -144,6 +193,23 @@ export default function CustomerDetail({visible, onClose, customerData, action})
                                         id="name"
                                         onChange={(e) => handleOnChange(e)}
                                         value={customer.name}
+                                        required={true}
+                                        disabled={action === "detail"}
+                                    />
+                                </div>
+                            </td>
+                            <td>
+                                <div className="form-group flex justify-between mb-4 ">
+                                    <label className="" htmlFor="password">
+                                        Mật khẩu
+                                    </label>
+                                    <input
+                                        type="password"
+                                        className="form-control border border-black rounded-md mx-2"
+                                        id="password"
+                                        onChange={(e) => handleOnChange(e)}
+                                        value={customer.password}
+                                        required={true}
                                         disabled={action === "detail"}
                                     />
                                 </div>
@@ -162,6 +228,7 @@ export default function CustomerDetail({visible, onClose, customerData, action})
                                         id="phone"
                                         onChange={(e) => handleOnChange(e)}
                                         value={customer.phone}
+                                        required={true}
                                         disabled={action === "detail"}
                                     />
                                 </div>
@@ -208,9 +275,10 @@ export default function CustomerDetail({visible, onClose, customerData, action})
                                     <input
                                         type="text"
                                         className="form-control border border-black rounded-md w-4/5 mx-2"
-                                        id="street"
+                                        id="address"
                                         onChange={(e) => handleOnChange(e)}
                                         value={customer.address}
+                                        required={true}
                                         disabled={action === "detail"}
                                     />
                                 </div>
@@ -301,7 +369,6 @@ export default function CustomerDetail({visible, onClose, customerData, action})
                                         id={"ward"}
                                         className="form-control border border-black rounded-md mx-2"
                                         onChange={(e) => handleOnChange(e)}
-                                        value={selectedAddress.ward}
                                         disabled={action === "detail"}
                                     >
                                         {
@@ -330,10 +397,16 @@ export default function CustomerDetail({visible, onClose, customerData, action})
                             </td>
                             <td>
                                 <img
-                                    className={"w-32 h-32"}
-                                    src={`data:image/jpeg;base64, ${customer.image}`}
-                                    alt={customer.name}
+                                    src={
+                                        action === "detail" ?
+                                            customer.image ? `data:image/jpeg;base64, ${customer.image}` : defaultAvatar
+                                            :
+                                            customer.image ? customer.image : defaultAvatar
+                                }
+                                    alt="avatar"
+                                    className="w-24 h-24 rounded-full mx-auto"
                                 />
+
 
                             </td>
                             <td>
@@ -350,6 +423,18 @@ export default function CustomerDetail({visible, onClose, customerData, action})
                                 }
                             </td>
                         </tr>
+                        {
+                            action === "add" ? (
+                                <tr>
+                                    <td>
+                                        <button
+                                            className="px-2 py-1 ml-2 text-white bg-blue-500 rounded-md"
+                                            onClick={(e) => handleAddCustomer(e)}>Lưu
+                                        </button>
+                                    </td>
+                                </tr>
+                            ) : ("")
+                        }
                         </tbody>
                     </table>
                 </div>
