@@ -6,7 +6,7 @@ const tinh_tp = require("../../Models/Address/tinh-tp.json");
 const quan_huyen = require("../../Models/Address/quan-huyen.json");
 const xa_phuong = require("../../Models/Address/xa-phuong.json");
 
-export default function CustomerDetail({visible, onClose, customerData, action}) {
+export default function CustomerDetail({visible, onClose, customerData, action, addCustomer}) {
     const [customer, setCustomer] = useState(customerData);
 
     const [cities, setCities] = useState();
@@ -150,24 +150,14 @@ export default function CustomerDetail({visible, onClose, customerData, action})
     const handleAddCustomer = async (e) => {
         e.preventDefault();
 
-        if (customer.image != "") {
+        if (customer.image !== "") {
             customer.image = customer.image.split(',')[1];
         } else {
             customer.image = "";
         }
         customer.address = selectedAddress.street;
 
-        try {
-            console.log(customer);
-            const res = await axios.post("/Customer", customer);
-
-            if (res.status === 201) {
-                alert("Thêm khách hàng thành công!");
-                onClose("add");
-            }
-        } catch (error) {
-            console.log("Thêm khách hàng thất bại: ", error.message);
-        }
+        addCustomer(customer);
     }
 
     if (!visible) return null;

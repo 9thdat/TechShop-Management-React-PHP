@@ -1,5 +1,8 @@
-import React, { useEffect } from "react";
+import React, {useEffect} from "react";
 
 export default function Statistics() {
-  return <div className={"orders"}>Hello</div>;
+    useEffect(() => {
+        localStorage.setItem("menu", "statistics");
+    }, []);
+    return <div className={"orders"}>Hello</div>;
 }

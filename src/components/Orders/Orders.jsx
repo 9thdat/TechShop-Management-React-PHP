@@ -1,5 +1,9 @@
-import React, { useEffect } from "react";
+import React, {useEffect} from "react";
 
 export default function Orders() {
-  return <div className={"orders"}>Orders</div>;
+    useEffect(() => {
+        localStorage.setItem("menu", "orders");
+    }, []);
+
+    return <div className={"orders"}>Orders</div>;
 }

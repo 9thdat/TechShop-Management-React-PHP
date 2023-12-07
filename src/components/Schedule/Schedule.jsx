@@ -1,5 +1,8 @@
-import React, { useEffect } from "react";
+import React, {useEffect} from "react";
 
 export default function Schedule() {
-  return <div className={"orders"}>Hello</div>;
+    useEffect(() => {
+        localStorage.setItem("menu", "schedule");
+    }, []);
+    return <div className={"orders"}>Hello</div>;
 }
