@@ -13,6 +13,7 @@ export default function CustomerDetail({visible, onClose, customerData, action})
     const [districts, setDistricts] = useState();
     const [wards, setWards] = useState();
 
+
     const cityList = Object.keys(tinh_tp).map((tinh) => { // List of provinces
         return {
             name: tinh_tp[tinh].name_with_type,
@@ -47,9 +48,27 @@ export default function CustomerDetail({visible, onClose, customerData, action})
     });
 
     useEffect(() => { // Set customer data
-        setCustomer({
-            ...customerData,
-        });
+        if (action === "add") {
+            setCustomer({
+                email: "",
+                name: "",
+                password: "",
+                phone: "",
+                image: "",
+                birthday: new Date().toISOString().split('T')[0],
+                gender: "Nam",
+                status: "active",
+                city: "Tỉnh Lào Cai",
+                district: "Thành phố Lào Cai",
+                ward: "Xã Mường Pồn",
+            });
+            setSelectedAddress({
+                ...selectedAddress,
+                street: customer.address,
+            });
+        } else {
+            setCustomer(customerData);
+        }
     }, [customerData]);
 
     useEffect(() => { // Set citys
@@ -90,6 +109,13 @@ export default function CustomerDetail({visible, onClose, customerData, action})
                 ...selectedAddress,
                 districtCode: districtList.find((quan) => quan.name === value).code,
             });
+        } else if (id === "ward" || id === "street") {
+            setSelectedAddress(
+                {
+                    ...selectedAddress,
+                    [id]: value,
+                }
+            );
         } else if (id === "image") {
             const reader = new FileReader();
             reader.onload = () => {
@@ -102,55 +128,45 @@ export default function CustomerDetail({visible, onClose, customerData, action})
             }
             reader.readAsDataURL(e.target.files[0]);
         } else {
-            setSelectedAddress(
-                {
-                    ...selectedAddress,
-                    [id]: value,
-                }
-            )
+            setCustomer({
+                ...customer,
+                [id]: value,
+            });
+        }
+    };
+
+    const handleValidEmail = async (e) => {
+        try {
+            const res = await axios.get(`/Customer/${e.target.value}`);
+
+            if (res.status === 200) {
+                alert("Email đã tồn tại!");
+            }
+        } catch (e) {
         }
 
-        setCustomer({
-            ...customer,
-            [id]: value,
-        });
-    };
+    }
 
     const handleAddCustomer = async (e) => {
         e.preventDefault();
-        console.log(customer)
 
-        // Validate
-        if (!customer.name || !customer.password || !customer.phone || !customer.address || !customer.email) {
-            alert("Vui lòng nhập đầy đủ thông tin!");
+        if (customer.image != "") {
+            customer.image = customer.image.split(',')[1];
+        } else {
+            customer.image = "";
         }
-        else{
-            // Convert data to form data
-            const formData = new FormData();
-            formData.append("email", customer.email || "");
-            formData.append("name", customer.name);
-            formData.append("password", customer.password);
-            formData.append("phone", customer.phone);
-            formData.append("gender", customer.gender);
-            formData.append("birthday", customer.birthday || "");
-            formData.append("address", customer.address);
-            formData.append("city", selectedAddress.city);
-            formData.append("district", selectedAddress.district);
-            formData.append("ward", selectedAddress.ward);
-            formData.append("status", customer.status);
-            formData.append("image", customer.image || "");
-            try {
-                const res = await axios.post("/Customer", formData);
-                if (res.status === 200) {
-                    alert("Thêm khách hàng thành công!");
-                    onClose();
-                }
-                else if (res.status === 409){
-                    alert("Email đã tồn tại!");
-                }
-            } catch (error) {
-                console.log("Failed to add customer: ", error.message);
+        customer.address = selectedAddress.street;
+
+        try {
+            console.log(customer);
+            const res = await axios.post("/Customer", customer);
+
+            if (res.status === 201) {
+                alert("Thêm khách hàng thành công!");
+                onClose("add");
             }
+        } catch (error) {
+            console.log("Thêm khách hàng thất bại: ", error.message);
         }
     }
 
@@ -170,13 +186,14 @@ export default function CustomerDetail({visible, onClose, customerData, action})
                             <td>
                                 <div className="form-group flex justify-between mb-4">
                                     <label className="" htmlFor="id">
-                                        Email
+                                        Email(*)
                                     </label>
                                     <input
                                         type="text"
                                         className="form-control border border-black rounded-md w-4/5 mx-2"
                                         id="email"
                                         onChange={(e) => handleOnChange(e)}
+                                        onBlur={(e) => handleValidEmail(e)}
                                         value={customer.email}
                                         disabled={action === "detail"}
                                     />
@@ -185,7 +202,7 @@ export default function CustomerDetail({visible, onClose, customerData, action})
                             <td>
                                 <div className="form-group flex justify-between mb-4 ">
                                     <label className="" htmlFor="name">
-                                        Tên
+                                        Tên(*)
                                     </label>
                                     <input
                                         type="text"
@@ -201,7 +218,7 @@ export default function CustomerDetail({visible, onClose, customerData, action})
                             <td>
                                 <div className="form-group flex justify-between mb-4 ">
                                     <label className="" htmlFor="password">
-                                        Mật khẩu
+                                        Mật khẩu(*)
                                     </label>
                                     <input
                                         type="password"
@@ -220,7 +237,7 @@ export default function CustomerDetail({visible, onClose, customerData, action})
                             <td>
                                 <div className="form-group flex justify-between mb-4 ">
                                     <label className="" htmlFor="phone">
-                                        Số điện thoại
+                                        Số điện thoại(*)
                                     </label>
                                     <input
                                         type="text"
@@ -236,7 +253,7 @@ export default function CustomerDetail({visible, onClose, customerData, action})
                             <td>
                                 <div className="form-group flex justify-between mb-4 ">
                                     <label className="" htmlFor="gender">
-                                        Giới tính
+                                        Giới tính(*)
                                     </label>
                                     <select
                                         name={"gender"}
@@ -270,14 +287,16 @@ export default function CustomerDetail({visible, onClose, customerData, action})
                             <td colSpan="2">
                                 <div className="form-group flex justify-between mb-4">
                                     <label className="" htmlFor="street">
-                                        Địa chỉ
+                                        Địa chỉ(*)
                                     </label>
                                     <input
                                         type="text"
                                         className="form-control border border-black rounded-md w-4/5 mx-2"
-                                        id="address"
+                                        id="street"
                                         onChange={(e) => handleOnChange(e)}
-                                        value={customer.address}
+                                        value={
+                                            (action === "add") ? (selectedAddress.street) : (customer.address)
+                                        }
                                         required={true}
                                         disabled={action === "detail"}
                                     />
@@ -286,7 +305,7 @@ export default function CustomerDetail({visible, onClose, customerData, action})
                             <td>
                                 <div className="form-group flex justify-between mb-4 ">
                                     <label className="" htmlFor="address">
-                                        Tình trạng
+                                        Tình trạng(*)
                                     </label>
                                     <select
                                         name={"status"}
@@ -304,8 +323,8 @@ export default function CustomerDetail({visible, onClose, customerData, action})
                         <tr>
                             <td>
                                 <div className="form-group flex justify-between mb-4 ">
-                                    <label className="" htmlFor="address">
-                                        Tỉnh/Thành phố
+                                    <label className="" htmlFor="city">
+                                        Tỉnh/Thành phố(*)
                                     </label>
                                     <select
                                         name={"city"}
@@ -331,8 +350,8 @@ export default function CustomerDetail({visible, onClose, customerData, action})
                             <td>
                                 <div className="form-group flex justify-between mb-4 ">
 
-                                    <label className="m" htmlFor="address">
-                                        Quận/Huyện
+                                    <label className="m" htmlFor={"district"}>
+                                        Quận/Huyện(*)
                                     </label>
                                     <select
                                         name={"district"}
@@ -361,8 +380,8 @@ export default function CustomerDetail({visible, onClose, customerData, action})
                             </td>
                             <td>
                                 <div className="form-group flex justify-between mb-4 ">
-                                    <label className="" htmlFor="address">
-                                        Xã/Phường
+                                    <label className="" htmlFor="ward">
+                                        Xã/Phường(*)
                                     </label>
                                     <select
                                         name={"ward"}
@@ -402,7 +421,7 @@ export default function CustomerDetail({visible, onClose, customerData, action})
                                             customer.image ? `data:image/jpeg;base64, ${customer.image}` : defaultAvatar
                                             :
                                             customer.image ? customer.image : defaultAvatar
-                                }
+                                    }
                                     alt="avatar"
                                     className="w-24 h-24 rounded-full mx-auto"
                                 />

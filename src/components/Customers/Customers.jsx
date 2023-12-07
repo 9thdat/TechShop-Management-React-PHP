@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import axios from "../../api/axios";
 import CustomerDetail from "./CustomerDetail";
 import CustomerStatus from "./CustomerStatus";
@@ -9,6 +9,11 @@ export default function Customers() {
     const [visibleCustomerDetail, setVisibleCustomerDetail] = useState(false); // Visible of CustomerDetail
     const [visibleCustomerStatus, setVisibleCustomerStatus] = useState(false); // Visible of CustomerStatus
     const [action, setAction] = useState(""); // Action of CustomerDetail
+    const search = useRef({
+        searchValue: "",
+        sortValue: "name",
+        statusValue: "all"
+    });
 
     useEffect(() => {
         localStorage.setItem("menu", "customers");
@@ -44,8 +49,11 @@ export default function Customers() {
         setVisibleCustomerDetail(true);
     }
 
-    const handleCloseCustomerDetail = () => {
+    const handleCloseCustomerDetail = (a) => {
         setVisibleCustomerDetail(false);
+        if (a === "add") {
+            fetchCustomers();
+        }
     }
 
     const handleChangeStatusCustomer = (e) => {
@@ -58,21 +66,76 @@ export default function Customers() {
         setVisibleCustomerStatus(false);
     }
 
+    const handleOnSearch = (e) => {
+        const {id, value} = e.target;
+
+        if (id === "search") {
+            const searchValue = search.current.searchValue;
+            const sortValue = search.current.sortValue;
+            const statusValue = search.current.statusValue;
+
+            const searchResult = customers.filter((customer) => {
+                    if (statusValue === "all") {
+                        return customer[sortValue].toLowerCase().includes(searchValue.toLowerCase());
+                    } else {
+                        return customer[sortValue].toLowerCase().includes(searchValue.toLowerCase()) && customer.status === statusValue;
+                    }
+                }
+            );
+            console.log(searchResult);
+            setCustomers(searchResult);
+
+        } else {
+            search.current = {
+                ...search.current,
+                [id]: value
+            };
+        }
+    }
+
     return (
         <div className="relative h-[90vh] overflow-scroll shadow-md sm:rounded-lg">
             <div className=" top-0 right-0 sticky h-[10vh] p-4 backdrop-blur-sm">
-                <button className="px-2 py-1 text-white bg-green-500 rounded-md"
-                        onClick={handleAddCustomer}>Thêm khách hàng
+                <button
+                    className="px-2 py-1 text-white bg-green-500 rounded-md"
+                    onClick={handleAddCustomer}>Thêm khách hàng
                 </button>
 
                 <input
                     type="text"
-                    className="px-2 py-1 ml-2 rounded-md border border-black w-[calc(100vw-32rem)]"
+                    id="searchValue"
+                    className="px-2 py-1 ml-2 rounded-md border border-black w-[60%]"
                     placeholder="Tìm kiếm khách hàng"
+                    value={search.searchValue}
+                    onChange={(e) => handleOnSearch(e)}
                 />
-                <button className="px-2 py-1 ml-2 text-white bg-blue-500 rounded-md">Tìm kiếm</button>
+                <select
+                    className="px-2 py-1 ml-2 rounded-md border border-black w-[10%]"
+                    id="sortValue"
+                    onChange={(e) => handleOnSearch(e)}
+                >
+                    <option value="name">Tên</option>
+                    <option value="email">Email</option>
+                    <option value="phone">Số điện thoại</option>
+                </select>
+                <select
+                    className="px-2 py-1 ml-2 rounded-md border border-black w-[12%]"
+                    id="statusValue"
+                    onChange={(e) => handleOnSearch(e)}
+                >
+                    <option value="all">Tất cả</option>
+                    <option value="active">Đang hoạt động</option>
+                    <option value="inactive">Ngừng hoạt động</option>
+                </select>
+                <button
+                    className="px-2 py-1 ml-2 text-white bg-blue-500 rounded-md"
+                    id={"search"}
+                    onClick={(e) => handleOnSearch(e)}
+                >
+                    Tìm kiếm
+                </button>
             </div>
-            <div className="overflow-x-scroll overflow-y-scroll">
+            <div className="overflow-x-scroll overflow-y-scroll h-[78vh]">
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500">
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                     <tr>
@@ -122,7 +185,8 @@ export default function Customers() {
                                     <th scope="row" className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap">
                                         {customer.birthday}
                                     </th>
-                                    <th scope="row" className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap">
+                                    <th scope="row"
+                                        className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap">
                                         {customer.address + ', ' + customer.ward + ', ' + customer.district + ', ' + customer.city}
                                     </th>
                                     <th scope="row" className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap">

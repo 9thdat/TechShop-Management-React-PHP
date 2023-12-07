@@ -89,8 +89,9 @@ export default function Products() {
 
     const AddProduct = (e) => {
         setActionType("add");
+        const id = products[products.length - 1].id + 1;
         const product = {
-            id: "",
+            id: id,
             name: "",
             price: "",
             image: "",
