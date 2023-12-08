@@ -47,7 +47,6 @@ export default function Customers() {
             return response.data;
         } catch (error) {
             console.log("Failed to fetch customer list: ", error.message);
-            throw error;  // Re-throw the error to be caught by the calling code
         }
     }
 

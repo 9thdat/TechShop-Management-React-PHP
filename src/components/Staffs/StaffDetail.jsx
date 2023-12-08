@@ -6,13 +6,12 @@ const tinh_tp = require("../../Models/Address/tinh-tp.json");
 const quan_huyen = require("../../Models/Address/quan-huyen.json");
 const xa_phuong = require("../../Models/Address/xa-phuong.json");
 
-export default function CustomerDetail({visible, onClose, customerData, action, addCustomer}) {
-    const [customer, setCustomer] = useState(customerData);
+export default function StaffDetail({visible, onClose, staffData, action, addStaff}) {
+    const [staff, setStaff] = useState(staffData);
 
     const [cities, setCities] = useState();
     const [districts, setDistricts] = useState();
     const [wards, setWards] = useState();
-
 
     const cityList = Object.keys(tinh_tp).map((tinh) => { // List of provinces
         return {
@@ -47,51 +46,115 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
         ward: wardList[0].name,
     });
 
-    useEffect(() => { // Set customer data
+    useEffect(() => { // Set staff data
         if (action === "add") {
-            setCustomer({
+            setStaff({
                 email: "",
                 name: "",
                 password: "",
                 phone: "",
-                image: "",
-                birthday: new Date().toISOString().split('T')[0],
                 gender: "Nam",
-                status: "active",
-                city: "Tỉnh Lào Cai",
-                district: "Thành phố Lào Cai",
+                birthday: new Date().toISOString().split('T')[0],
                 ward: "Xã Mường Pồn",
+                district: "Thành phố Lào Cai",
+                city: "Tỉnh Lào Cai",
+                image: "",
+                role: "staff",
+                status: "active",
             });
             setSelectedAddress({
                 ...selectedAddress,
-                street: customer.address,
+                street: staff.address,
             });
         } else {
-            setCustomer(customerData);
-        }
-    }, [customerData]);
+            setStaff(staffData);
 
-    useEffect(() => { // Set citys
-        setCities(cityList);
+        }
+    }, [staffData]);
+
+    useEffect(() => {
+        // Kiểm tra xem cityList có phần tử nào có name giống với staff.city hay không
+        const index = cityList.findIndex(city => city.name === staff.city);
+        console.log(selectedAddress);
+
+        // Nếu tìm thấy phần tử, đưa nó lên đầu danh sách
+        if (index !== -1) {
+            const updatedCityList = [
+                cityList[index], // Phần tử tìm thấy (staff.city) lên đầu danh sách
+                ...cityList.slice(0, index), // Phần tử trước index
+                ...cityList.slice(index + 1) // Phần tử sau index
+            ];
+            setCities(updatedCityList);
+        } else {
+            setCities(cityList);
+        }
+
+        return () => {
+            setCities([]);
+        }
     }, []);
 
     useEffect(() => {
         setDistricts(districtList.filter((quan) => quan.parent_code === selectedAddress.cityCode));
+
+        // Kiểm tra xem districtList có phần tử nào có name giống với staff.district hay không
+        const index = districtList.findIndex(district => district.name === staff.district);
+
+        // Nếu tìm thấy phần tử, đưa nó lên đầu danh sách
+        if (index !== -1) {
+            const updatedDistrictList = [
+                districtList[index], // Phần tử tìm thấy (staff.district) lên đầu danh sách
+                ...districtList.slice(0, index), // Phần tử trước index
+                ...districtList.slice(index + 1) // Phần tử sau index
+            ];
+            setDistricts(updatedDistrictList);
+        } else {
+            setDistricts(districtList);
+        }
+
+        return () => {
+            setDistricts([]);
+        }
     }, [selectedAddress.cityCode]);
 
     useEffect(() => {
         setWards(wardList.filter((xa) => xa.parent_code === selectedAddress.districtCode));
+
+        // Kiểm tra xem wardList có phần tử nào có name giống với staff.ward hay không
+        const index = wardList.findIndex(ward => ward.name === staff.ward);
+
+        // Nếu tìm thấy phần tử, đưa nó lên đầu danh sách
+        if (index !== -1) {
+            const updatedWardList = [
+                wardList[index], // Phần tử tìm thấy (staff.ward) lên đầu danh sách
+                ...wardList.slice(0, index), // Phần tử trước index
+                ...wardList.slice(index + 1) // Phần tử sau index
+            ];
+            setWards(updatedWardList);
+        } else {
+            setWards(wardList);
+        }
+
+        return () => {
+            setWards([]);
+        }
     }, [selectedAddress.districtCode, selectedAddress.cityCode]);
 
     useEffect(() => {
-        setSelectedAddress({
-            street: "",
-            city: cityList[0].name,
-            cityCode: cityList[0].code,
-            district: districtList[0].name,
-            districtCode: districtList[0].code,
-            ward: wardList[0].name,
-        });
+        if (action === "add") {
+            setSelectedAddress({
+                street: "",
+                city: cityList[0].name,
+                cityCode: cityList[0].code,
+                district: districtList[0].name,
+                districtCode: districtList[0].code,
+                ward: wardList[0].name,
+            });
+        }
+
+        return () => {
+            setSelectedAddress({});
+        }
     }, [visible]);
 
     const handleOnChange = (e) => {
@@ -120,16 +183,16 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
             const reader = new FileReader();
             reader.onload = () => {
                 if (reader.readyState === 2) {
-                    setCustomer({
-                        ...customer,
+                    setStaff({
+                        ...staff,
                         image: reader.result,
                     });
                 }
             }
             reader.readAsDataURL(e.target.files[0]);
         } else {
-            setCustomer({
-                ...customer,
+            setStaff({
+                ...staff,
                 [id]: value,
             });
         }
@@ -137,9 +200,9 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
 
     const handleValidEmail = async (e) => {
         try {
-            const res = await axios.get(`/Customer/${e.target.value}`);
+            const res = await axios.get(`Staffs/Valid/email=${e.target.value}`);
 
-            if (res.status === 200) {
+            if (res.status === 409) {
                 alert("Email đã tồn tại!");
             }
         } catch (e) {
@@ -147,26 +210,14 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
         }
     }
 
-    const handleAddCustomer = async (e) => {
-        e.preventDefault();
-
-        if (customer.image !== "") {
-            customer.image = customer.image.split(',')[1];
-        } else {
-            customer.image = "";
-        }
-        customer.address = selectedAddress.street;
-
-        addCustomer(customer);
-    }
-
     if (!visible) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm text-xl">
+        <div
+            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm text-xl">
             <div className="bg-white p-4 rounded ">
                 <div className="title flex justify-between px-1 mb-5">
-                    <div className="text-3xl">Thông tin khách hàng</div>
+                    <div className="text-3xl">Thông tin nhân viên</div>
                     <button onClick={onClose}>X</button>
                 </div>
                 <div className="content">
@@ -184,8 +235,7 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
                                         id="email"
                                         onChange={(e) => handleOnChange(e)}
                                         onBlur={(e) => handleValidEmail(e)}
-                                        value={customer.email}
-                                        disabled={action === "detail"}
+                                        value={staff.email}
                                     />
                                 </div>
                             </td>
@@ -199,9 +249,8 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
                                         className="form-control border border-black rounded-md mx-2"
                                         id="name"
                                         onChange={(e) => handleOnChange(e)}
-                                        value={customer.name}
+                                        value={staff.name}
                                         required={true}
-                                        disabled={action === "detail"}
                                     />
                                 </div>
                             </td>
@@ -215,9 +264,8 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
                                         className="form-control border border-black rounded-md mx-2"
                                         id="password"
                                         onChange={(e) => handleOnChange(e)}
-                                        value={customer.password}
+                                        value={staff.password}
                                         required={true}
-                                        disabled={action === "detail"}
                                     />
                                 </div>
                             </td>
@@ -234,9 +282,8 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
                                         className="form-control border border-black rounded-md mx-2"
                                         id="phone"
                                         onChange={(e) => handleOnChange(e)}
-                                        value={customer.phone}
+                                        value={staff.phone}
                                         required={true}
-                                        disabled={action === "detail"}
                                     />
                                 </div>
                             </td>
@@ -251,7 +298,6 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
                                         className="form-control border border-black rounded-md mx-2"
                                         onChange={(e) => handleOnChange(e)}
                                         disabled={action === "detail"}
-                                        value={customer.gender}
                                     >
                                         <option value={"Nam"}>Nam</option>
                                         <option value={"Nữ"}>Nữ</option>
@@ -268,8 +314,7 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
                                         className="form-control border border-black rounded-md mx-2"
                                         id="birthday"
                                         onChange={(e) => handleOnChange(e)}
-                                        value={customer.birthday}
-                                        disabled={action === "detail"}
+                                        value={staff.birthday}
                                     />
                                 </div>
                             </td>
@@ -285,11 +330,8 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
                                         className="form-control border border-black rounded-md w-4/5 mx-2"
                                         id="street"
                                         onChange={(e) => handleOnChange(e)}
-                                        value={
-                                            (action === "add") ? (selectedAddress.street) : (customer.address)
-                                        }
+                                        value={(action === "detail") ? staff.address : selectedAddress.street}
                                         required={true}
-                                        disabled={action === "detail"}
                                     />
                                 </div>
                             </td>
@@ -303,8 +345,7 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
                                         id={"status"}
                                         className="form-control border border-black rounded-md mx-2"
                                         onChange={(e) => handleOnChange(e)}
-                                        disabled={action === "detail"}
-                                        value={customer.status}
+                                        value={staff.status}
                                     >
                                         <option value={"active"}>Hoạt động</option>
                                         <option value={"inactive"}>Không hoạt động</option>
@@ -323,25 +364,19 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
                                         id={"city"}
                                         className="form-control border border-black rounded-md mx-2"
                                         onChange={(e) => handleOnChange(e)}
-                                        disabled={action === "detail"}
                                     >
-                                        {(action === "add") ? (
+                                        {
                                             cities.map((tinh) => (
-                                                <option key={tinh.code} value={tinh.name}>
+                                                <option value={tinh.name}>
                                                     {tinh.name}
                                                 </option>
                                             ))
-                                        ) : (
-                                            <option value={customer.city}>
-                                                {customer.city}
-                                            </option>
-                                        )}
+                                        }
                                     </select>
                                 </div>
                             </td>
                             <td>
                                 <div className="form-group flex justify-between mb-4 ">
-
                                     <label className="m" htmlFor={"district"}>
                                         Quận/Huyện(*)
                                     </label>
@@ -350,21 +385,13 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
                                         id={"district"}
                                         className="form-control border border-black rounded-md mx-2"
                                         onChange={(e) => handleOnChange(e)}
-                                        disabled={action === "detail"}
                                     >
                                         {
-                                            (action === "add") ? (
-                                                districts &&
-                                                districts.map((quan) => (
-                                                    <option key={quan.code} value={quan.name}>
-                                                        {quan.name}
-                                                    </option>
-                                                ))
-                                            ) : (
-                                                <option value={customer.district}>
-                                                    {customer.district}
+                                            districts.map((quan) => (
+                                                <option key={quan.code} value={quan.name}>
+                                                    {quan.name}
                                                 </option>
-                                            )
+                                            ))
                                         }
                                     </select>
 
@@ -380,21 +407,13 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
                                         id={"ward"}
                                         className="form-control border border-black rounded-md mx-2"
                                         onChange={(e) => handleOnChange(e)}
-                                        disabled={action === "detail"}
                                     >
                                         {
-                                            (action === "add") ? (
-                                                wards &&
-                                                wards.map((xa) => (
-                                                    <option key={xa.code} value={xa.name}>
-                                                        {xa.name}
-                                                    </option>
-                                                ))
-                                            ) : (
-                                                <option value={customer.ward}>
-                                                    {customer.ward}
+                                            wards.map((xa) => (
+                                                <option key={xa.code} value={xa.name}>
+                                                    {xa.name}
                                                 </option>
-                                            )
+                                            ))
                                         }
                                     </select>
                                 </div>
@@ -410,9 +429,9 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
                                 <img
                                     src={
                                         action === "detail" ?
-                                            customer.image ? `data:image/jpeg;base64, ${customer.image}` : defaultAvatar
+                                            staff.image ? `data:image/jpeg;base64, ${staff.image}` : defaultAvatar
                                             :
-                                            customer.image ? customer.image : defaultAvatar
+                                            staff.image ? staff.image : defaultAvatar
                                     }
                                     alt="avatar"
                                     className="w-24 h-24 rounded-full mx-auto"
@@ -422,12 +441,12 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
                             </td>
                             <td>
                                 {
-                                    action === "add" ? (
+                                    action === "detail" ? (
                                             <input
                                                 type="file"
                                                 className="form-control border border-black rounded-md mx-2"
                                                 id="image"
-                                                onChange={(e) => handleOnChange(e)}
+                                                // onChange={(e) => handleOnChange(e)}
                                             />
                                         )
                                         : ("")
@@ -435,12 +454,16 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
                             </td>
                         </tr>
                         {
-                            action === "add" ? (
+                            action === "detail" ? (
                                 <tr>
                                     <td>
                                         <button
                                             className="px-2 py-1 ml-2 text-white bg-blue-500 rounded-md"
-                                            onClick={(e) => handleAddCustomer(e)}>Lưu
+                                            onClick={() => {
+                                                console.log(staff)
+                                            }}
+                                        >
+                                            Lưu
                                         </button>
                                     </td>
                                 </tr>
