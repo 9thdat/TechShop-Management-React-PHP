@@ -1,12 +1,13 @@
-import React, {useState, useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import axios from "../../api/axios";
 import defaultAvatar from "../../assets/images/defaultAvatar/defaultAvatar.jpeg"
+import StaffPassword from "./StaffPassword";
 
 const tinh_tp = require("../../Models/Address/tinh-tp.json");
 const quan_huyen = require("../../Models/Address/quan-huyen.json");
 const xa_phuong = require("../../Models/Address/xa-phuong.json");
 
-export default function StaffDetail({visible, onClose, staffData, action, addStaff}) {
+export default function StaffDetail({visible, onClose, staffData, action, handleAddStaff, handleEditStaff}) {
     const [staff, setStaff] = useState(staffData);
 
     const [cities, setCities] = useState(tinh_tp);
@@ -14,6 +15,7 @@ export default function StaffDetail({visible, onClose, staffData, action, addSta
     const [wards, setWards] = useState(xa_phuong);
 
     const [isValidEmail, setIsValidEmail] = useState(true);
+    const [visibleStaffPassword, setVisibleStaffPassword] = useState(false);
 
     useEffect(() => { // Set staff data
         if (action === "add") {
@@ -41,7 +43,7 @@ export default function StaffDetail({visible, onClose, staffData, action, addSta
             setStaff((prevStaff) => {
                 const newCity = cities.find((tinh) => tinh.name === staffData.city);
                 const newDistrict = districts.find((quan) => quan.parent_code === newCity?.code);
-                const newStaff = {
+                return {
                     ...prevStaff,
                     email: staffData.email,
                     name: staffData.name,
@@ -59,7 +61,6 @@ export default function StaffDetail({visible, onClose, staffData, action, addSta
                     cityCode: newCity?.code,
                     districtCode: newDistrict?.code,
                 };
-                return newStaff;
             });
         }
     }, [staffData, action]);
@@ -92,7 +93,7 @@ export default function StaffDetail({visible, onClose, staffData, action, addSta
                 if (reader.readyState === 2) {
                     setStaff((prevStaff) => ({
                         ...prevStaff,
-                        image: reader.result,
+                        image: reader.result.split(",")[1],
                     }));
                 }
             };
@@ -115,16 +116,42 @@ export default function StaffDetail({visible, onClose, staffData, action, addSta
         }
     }
 
-    const handleAddStaff = (e) => {
+    const handleOnSave = (e) => {
         e.preventDefault();
 
-        if (staff.image !== "") {
-            staff.image = staff.image.split(",")[1];
-        } else {
-            staff.image = "";
+        if (action === "add") {
+            handleAddStaff(staff);
+        } else if (action === "detail") {
+            handleEditStaff(staff);
         }
+    }
 
-        addStaff(staff);
+    const handleOnOpenStaffPassword = () => {
+        setVisibleStaffPassword(true);
+    }
+
+    const handleCloseStaffPassword = () => {
+        setVisibleStaffPassword(false);
+    }
+
+    const handleChangePassword = async (newPassword) => {
+        try {
+            const response = await axios.put(`User/ChangePassword/${staff.email}`, newPassword);
+            if (response.status === 204) {
+                alert("Đổi mật khẩu thành công");
+                setVisibleStaffPassword(false);
+            }
+        } catch (e) {
+            alert("Đổi mật khẩu thất bại");
+        }
+    }
+
+    const handleOnDeletePicture = (e) => {
+        e.preventDefault();
+        setStaff((prevStaff) => ({
+            ...prevStaff,
+            image: "",
+        }));
     }
 
     if (!visible) return null;
@@ -169,7 +196,6 @@ export default function StaffDetail({visible, onClose, staffData, action, addSta
                                         id="name"
                                         onChange={(e) => handleOnChange(e)}
                                         value={staff.name}
-                                        required={true}
                                     />
                                 </div>
                             </td>
@@ -184,7 +210,6 @@ export default function StaffDetail({visible, onClose, staffData, action, addSta
                                         id="password"
                                         onChange={(e) => handleOnChange(e)}
                                         value={staff.password}
-                                        required={true}
                                         disabled={action === "detail"}
                                     />
                                 </div>
@@ -203,7 +228,6 @@ export default function StaffDetail({visible, onClose, staffData, action, addSta
                                         id="phone"
                                         onChange={(e) => handleOnChange(e)}
                                         value={staff.phone}
-                                        required={true}
                                     />
                                 </div>
                             </td>
@@ -251,7 +275,6 @@ export default function StaffDetail({visible, onClose, staffData, action, addSta
                                         id="address"
                                         onChange={(e) => handleOnChange(e)}
                                         value={staff.address}
-                                        required={true}
                                     />
                                 </div>
                             </td>
@@ -378,12 +401,7 @@ export default function StaffDetail({visible, onClose, staffData, action, addSta
                             </td>
                             <td>
                                 <img
-                                    src={
-                                        action === "detail" ?
-                                            staff.image ? `data:image/jpeg;base64, ${staff.image}` : defaultAvatar
-                                            :
-                                            staff.image ? staff.image : defaultAvatar
-                                    }
+                                    src={staff.image ? `data:image/jpeg;base64, ${staff.image}` : defaultAvatar}
                                     alt="avatar"
                                     className="w-24 h-24 rounded-full mx-auto"
                                 />
@@ -398,13 +416,14 @@ export default function StaffDetail({visible, onClose, staffData, action, addSta
                                     />
                                 }
                             </td>
+
                         </tr>
                         <tr className={""}>
                             <td>
                                 {action === "detail" ? (
                                     <button
-                                        className="px-2 py-1 ml-2 text-white bg-red-500 rounded-md"
-                                        onClick={(e) => addStaff(e)}
+                                        className="px-2 py-1 ml-2 text-white bg-green-400 rounded-md"
+                                        onClick={handleOnOpenStaffPassword}
                                     >
                                         Đổi mật khẩu
                                     </button>
@@ -412,8 +431,16 @@ export default function StaffDetail({visible, onClose, staffData, action, addSta
                             </td>
                             <td className={"items-center flex flex-col"}>
                                 <button
+                                    className="px-2 py-1 ml-2 text-white bg-red-400 rounded-md"
+                                    onClick={(e) => handleOnDeletePicture(e)}
+                                >
+                                    Xoá ảnh
+                                </button>
+                            </td>
+                            <td className={""}>
+                                <button
                                     className="px-2 py-1 ml-2 text-white bg-blue-500 rounded-md"
-                                    onClick={(staff) => handleAddStaff(staff)}
+                                    onClick={(e) => handleOnSave(e)}
                                 >
                                     Lưu
                                 </button>
@@ -423,6 +450,9 @@ export default function StaffDetail({visible, onClose, staffData, action, addSta
                     </table>
                 </div>
             </div>
+            <StaffPassword visible={visibleStaffPassword} onClose={handleCloseStaffPassword}
+                           staffEmail={staff.email}
+                           handleChangePassword={handleChangePassword}/>
         </div>
     );
 }

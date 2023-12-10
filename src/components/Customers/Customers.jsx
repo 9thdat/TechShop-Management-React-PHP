@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef, useTransition} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import axios from "../../api/axios";
 import CustomerDetail from "./CustomerDetail";
 import CustomerStatus from "./CustomerStatus";
@@ -9,7 +9,6 @@ export default function Customers() {
     const [visibleCustomerDetail, setVisibleCustomerDetail] = useState(false); // Visible of CustomerDetail
     const [visibleCustomerStatus, setVisibleCustomerStatus] = useState(false); // Visible of CustomerStatus
     const [action, setAction] = useState(""); // Action of CustomerDetail
-    const [isPending, startTransition] = useTransition();
     const [originCustomers, setOriginCustomers] = useState([]); // List of customers before search
 
     const search = useRef({
