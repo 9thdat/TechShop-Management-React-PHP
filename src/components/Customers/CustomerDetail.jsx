@@ -340,7 +340,7 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
                                 </div>
                             </td>
                             <td>
-                                <div className="form-group flex justify-between mb-4 ">
+                                <div className="form-group flex justify-between mb-4 ">v
 
                                     <label className="m" htmlFor={"district"}>
                                         Quận/Huyện(*)

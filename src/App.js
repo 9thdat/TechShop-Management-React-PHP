@@ -15,7 +15,6 @@ import Discounts from "./components/Discounts/Discounts";
 
 function App() {
     const isLogin = localStorage.getItem("isLogin") === "true" ? true : false;
-    localStorage.setItem("menu", "home");
     useEffect(() => {
 
     }, []);

@@ -34,6 +34,7 @@ export default function Staffs() {
 
     const handleCloseStaffDetail = () => {
         setVisibleStaffDetail(false);
+        setStaff({});
     }
 
     const handleOpenAddCustomer = () => {
@@ -41,17 +42,28 @@ export default function Staffs() {
         setVisibleStaffDetail(true);
     }
 
-
-    const handleAddStaff = (staff) => {
-
+    const handleAddStaff = async (staff) => {
+        try {
+            const response = await axios.post("/User/Staffs", staff);
+            if (response.status === 201) {
+                alert("Thêm nhân viên thành công");
+                setVisibleStaffDetail(false);
+                setStaff({});
+                fetchStaffs().then((staffs) => {
+                    setStaffs(staffs);
+                });
+            }
+        } catch (e) {
+            console.log(e);
+            alert("Thêm nhân viên thất bại");
+        }
     }
 
-    const handleOpenEditCustomer = (staff) => {
-        setStaff(staff);
+    const handleOpenEditCustomer = (staffData) => {
+        setStaff(staffData);
         setAction("detail");
         setVisibleStaffDetail(true);
     }
-
 
     return (
         <div className="relative h-[90vh] overflow-scroll shadow-md sm:rounded-lg">
@@ -187,8 +199,8 @@ export default function Staffs() {
                 </table>
             </div>
 
-            <StaffDetail visible={visibleStaffDetail} onClose={handleCloseStaffDetail}
-                         staffData={staff} action={action} addStaff={handleAddStaff}/>
+            <StaffDetail visible={visibleStaffDetail} onClose={handleCloseStaffDetail} staffData={staff} action={action}
+                         addStaff={handleAddStaff}/>
         </div>
     );
 
