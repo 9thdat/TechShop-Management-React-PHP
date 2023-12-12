@@ -16,7 +16,7 @@ export default function LoginPage() {
         e.preventDefault();
 
         try {
-            const response = await axios.post("/User/login", JSON.stringify({email, password}),
+            const response = await axios.post("/User/Login", JSON.stringify({email, password}),
                 {
                     headers: {
                         "Content-Type": "application/json",
@@ -25,7 +25,9 @@ export default function LoginPage() {
 
             if (response.status === 200) {
                 setAuth({email, password});
-                localStorage.setItem("isLogin", true);
+                const token = response.data;
+                axios.defaults.headers.common["Authorization"] = "Bearer " + token;
+                localStorage.setItem("token", token);
                 localStorage.setItem("menu", "home");
                 localStorage.setItem("userEmail", email);
                 window.location.href = "/home";

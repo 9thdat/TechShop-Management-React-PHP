@@ -127,7 +127,6 @@ export default function ProductDetail({action, visible, onClose, product}) {
             quantity: 0
         }
         setProductQuantity([newProductQuantity]);
-        console.log(productQuantity);
         setProductQuantityVisible(true);
     }
 
