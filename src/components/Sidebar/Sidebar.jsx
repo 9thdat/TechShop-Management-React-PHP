@@ -21,8 +21,10 @@ function Sidebar() {
 
     const sidebarRef = useRef(null);
 
-    const normalLink = "w-full shadow-xl h-10 justify-center items-center flex rounded-md hover:bg-blue-200"
-    const activeLink = "w-full shadow-xl h-10 justify-center items-center flex rounded-md hover:bg-blue-200 bg-green-300"
+    const buttonClass = "w-full shadow-xl h-10 justify-center items-center flex rounded-md hover:bg-blue-200";
+
+    const normalLink = `${buttonClass} mb-2`;
+    const activeLink = `${buttonClass} mb-2 bg-green-300`;
 
     useEffect(() => {
         const updateDateTime = () => {
