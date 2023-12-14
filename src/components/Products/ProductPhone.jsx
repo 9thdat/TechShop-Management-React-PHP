@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import axios from "../../api/axios";
 
-export default function ProductPhone({ visible, onClose, data }) {
+export default function ProductPhone({visible, onClose, data, action}) {
     const [originalProductPhoneData, setOriginalProductPhoneData] = useState({});
     const [productPhoneData, setProductPhoneData] = useState({});
 
@@ -11,10 +11,10 @@ export default function ProductPhone({ visible, onClose, data }) {
     }, [data]);
 
     const handleOnChange = (e, index) => {
-        const { id, value } = e.target;
+        const {id, value} = e.target;
         setOriginalProductPhoneData((prevData) =>
             prevData.map((item, i) =>
-                i === index ? { ...item, [id]: value } : item
+                i === index ? {...item, [id]: value} : item
             )
         );
     };
@@ -32,7 +32,11 @@ export default function ProductPhone({ visible, onClose, data }) {
             <div className="bg-white p-4 rounded ">
                 <div className="title flex justify-between px-1">
                     <div className="text-3xl">Thông số điện thoại</div>
-                    <button onClick={() => { onClose(); setProductPhoneData(originalProductPhoneData); }}>X</button>
+                    <button onClick={() => {
+                        onClose();
+                        setProductPhoneData(originalProductPhoneData);
+                    }}>X
+                    </button>
                 </div>
 
                 <div className="content">
@@ -47,7 +51,7 @@ export default function ProductPhone({ visible, onClose, data }) {
                                                id="id"
                                                onChange={(e) => handleOnChange(e)}
                                                disabled
-                                               value={productPhoneData.id} />
+                                               value={productPhoneData.id}/>
                                     </div>
 
                                     <div className="form-group flex justify-between mb-4 ">
@@ -56,7 +60,7 @@ export default function ProductPhone({ visible, onClose, data }) {
                                                className="form-control border border-black rounded-md"
                                                id="name"
                                                onChange={(e) => handleOnChange(e)}
-                                               value={productPhoneData.productId} />
+                                               value={productPhoneData.productId}/>
                                     </div>
 
                                     <div className="form-group flex justify-between mb-4 ">
@@ -65,7 +69,7 @@ export default function ProductPhone({ visible, onClose, data }) {
                                                className="form-control border border-black rounded-md"
                                                id="name"
                                                onChange={(e) => handleOnChange(e)}
-                                               value={productPhoneData.screen} />
+                                               value={productPhoneData.screen}/>
                                     </div>
 
                                     <div className="form-group flex justify-between mb-4 ">
@@ -74,7 +78,7 @@ export default function ProductPhone({ visible, onClose, data }) {
                                                className="form-control border border-black rounded-md"
                                                id="name"
                                                onChange={(e) => handleOnChange(e)}
-                                               value={productPhoneData.operatingSystem} />
+                                               value={productPhoneData.operatingSystem}/>
                                     </div>
                                 </form>
                             </td>

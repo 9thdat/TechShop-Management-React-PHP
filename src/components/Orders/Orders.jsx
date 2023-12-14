@@ -28,10 +28,15 @@ export default function Orders() {
         });
     }, []);
 
+    useEffect(() => {
+        setOriginalOrders(orders);
+        console.log(orders);
+    }, [orders]);
+
+
     const fetchOrders = async () => {
         try {
             const res = await axios.get("/Order");
-            setOriginalOrders(res.data);
             return res.data;
         } catch (err) {
             console.log(err);
@@ -69,8 +74,9 @@ export default function Orders() {
         setOrder({});
     }
 
-    const handleOpenOrderDetail = () => {
-        setAction("add");
+    const handleOpenOrderDetail = (orderData) => {
+        setOrder(orderData);
+        setAction("edit");
         setVisibleOrderDetail(true);
     }
 
@@ -79,17 +85,17 @@ export default function Orders() {
         setVisibleOrderDetail(true);
     }
 
-    const handleOpenEditOrder = (orderData) => {
+    const handleOpenEditOrder = () => {
         setAction("edit");
-        setOrder(orderData);
         setVisibleOrderDetail(true);
     }
 
     const handleAddOrder = async (orderData) => {
-
+        alert(orderData);
     }
 
     const handleEditOrder = async (orderData) => {
+        alert(orderData);
     }
 
     return (
@@ -194,7 +200,7 @@ export default function Orders() {
                                         scope="row"
                                         className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap"
                                     >
-                                        {order.address}
+                                        {order.address + ', ' + order.ward + ', ' + order.district + ', ' + order.city}
                                     </td>
                                     <td
                                         scope="row"

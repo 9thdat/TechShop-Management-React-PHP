@@ -5,9 +5,10 @@ import ConfirmDelete from "./ConfirmDelete";
 
 export default function Products() {
     const [products, setProducts] = useState([]); // List of products
-    const [visible, setVisible] = useState(false); // Visible of ProductDetail
-    const [visibleDelete, setVisibleDelete] = useState(false); // Visible of ConfirmDelete
     const [product, setProduct] = useState({}); // Data of product
+
+    const [visibleProductDetail, setVisibleProductDetail] = useState(false); // Visible of ProductDetail
+    const [visibleDelete, setVisibleDelete] = useState(false); // Visible of ConfirmDelete
 
     const [actionType, setActionType] = useState(""); // Action type of ProductDetail
 
@@ -49,7 +50,7 @@ export default function Products() {
         setProduct(product);
 
         // Set visible to ProductDetail
-        setVisible(true);
+        setVisibleProductDetail(true);
     };
 
     const DeleteProduct = (e) => {
@@ -84,9 +85,9 @@ export default function Products() {
 
     // Product Detail
     const handleOnCloseProductDetail = () => {
-        setVisible(false);
+        setVisibleProductDetail(false);
     }
-
+    
     const AddProduct = (e) => {
         setActionType("add");
         const id = products[products.length - 1].id + 1;
@@ -103,7 +104,7 @@ export default function Products() {
             color: "",
         };
         setProduct(product);
-        setVisible(true);
+        setVisibleProductDetail(true);
     }
 
     return (
@@ -201,7 +202,7 @@ export default function Products() {
                 </table>
             </div>
 
-            <ProductDetail action={actionType} visible={visible} onClose={handleOnCloseProductDetail}
+            <ProductDetail action={actionType} visible={visibleProductDetail} onClose={handleOnCloseProductDetail}
                            product={product}/>
 
             <ConfirmDelete visible={visibleDelete} onDelete={handleOnDelete} onAbortDelete={handleOnAbortDelete}/>

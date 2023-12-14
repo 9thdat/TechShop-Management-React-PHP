@@ -145,6 +145,7 @@ export default function ProductDetail({action, visible, onClose, product}) {
     }
 
     const onOpenEditPhone = () => {
+        setActionType("edit");
         setProductPhoneVisible(true);
     }
 
@@ -353,6 +354,9 @@ export default function ProductDetail({action, visible, onClose, product}) {
             {/*<ProductPhone visible={productPhoneVisible} data={productPhone} onClose={onClosePhone}/>*/}
             {/*<ProductQuantity visible={productQuantityVisible} data={productQuantity} onClose={onCloseQuantity} action={actionOnProductParameter}/>*/}
             {/*<productCable/>*/}
+            <ProductPhone visible={productPhoneVisible} onClose={onOpenEditPhone} data={productData}
+                          action={actionType}/>
+
         </div>
     )
 }
