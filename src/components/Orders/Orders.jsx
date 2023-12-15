@@ -30,7 +30,6 @@ export default function Orders() {
 
     useEffect(() => {
         setOriginalOrders(orders);
-        console.log(orders);
     }, [orders]);
 
 
@@ -91,7 +90,18 @@ export default function Orders() {
     }
 
     const handleAddOrder = async (orderData) => {
-        alert(orderData);
+        try {
+            const res = await axios.post("/Order", orderData);
+            if (res.status === 200) {
+                alert("Thêm đơn hàng thành công");
+                setVisibleOrderDetail(false);
+                setOrder({});
+                setOrders([...orders, res.data]);
+            }
+        } catch (e) {
+            console.log(e);
+            alert("Thêm đơn hàng thất bại");
+        }
     }
 
     const handleEditOrder = async (orderData) => {
@@ -103,7 +113,7 @@ export default function Orders() {
             <div className="top-0 right-0 sticky h-[10vh] p-4 backdrop-blur-sm">
                 <button
                     className="px-2 py-1 text-white bg-green-500 rounded-md"
-                    // onClick={handleOpenAddCustomer}
+                    onClick={handleOpenAddOrder}
                 >
                     Thêm
                 </button>

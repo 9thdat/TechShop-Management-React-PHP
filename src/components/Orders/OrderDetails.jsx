@@ -13,8 +13,15 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
 
     useEffect(() => {
         if (action === "add") {
+            getLastId().then((res) => {
+                    setOrder((prevOrder) => ({
+                        ...prevOrder,
+                        id: res,
+                    }));
+                }
+            );
+
             setOrder({
-                id: "",
                 customerEmail: "",
                 name: "",
                 address: "",
@@ -23,25 +30,282 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                 shippingFee: "",
                 totalPrice: "",
                 note: "",
-                orderDate: "",
+                orderDate: new Date().toISOString().split('T')[0],
                 cancelDate: "",
                 completeDate: "",
-                deleveryType: "",
+                deliveryType: "",
                 paymentType: "",
-                status: "",
+                status: "Processing",
+                city: "Tỉnh Lào Cai",
+                district: "Thành phố Lào Cai",
+                ward: "Xã Mường Pồn",
+                cityCode: "10",
+                districtCode: "080",
             });
         } else {
-            setOrder(orderData);
+            setOrder((prevOrder) => {
+                const newCity = cities.find((tinh) => tinh.name === orderData.city);
+                const newDistrict = districts.find((quan) => quan.parent_code === newCity?.code);
+                return {
+                    ...prevOrder,
+                    id: orderData.id,
+                    customerEmail: orderData.customerEmail,
+                    name: orderData.name,
+                    address: orderData.address,
+                    phone: orderData.phone,
+                    discountId: orderData.discountId,
+                    shippingFee: orderData.shippingFee,
+                    totalPrice: orderData.totalPrice,
+                    note: orderData.note,
+                    orderDate: orderData.orderDate ? orderData.orderDate.split('T')[0] : "",
+                    cancelDate: orderData.cancelDate ? orderData.cancelDate.split('T')[0] : "",
+                    completeDate: orderData.completeDate ? orderData.completeDate.split('T')[0] : "",
+                    deliveryType: orderData.completeDate ? orderData.completeDate.split('T')[0] : "",
+                    paymentType: orderData.paymentType,
+                    status: orderData.status,
+                    city: orderData.city,
+                    district: orderData.district,
+                    ward: orderData.ward,
+                    cityCode: newCity?.code,
+                    districtCode: newDistrict?.code,
+                };
+            });
         }
-    }, [orderData]);
+    }, [orderData, action]);
 
     useEffect(() => {
         console.log(order);
     }, [order]);
 
+    const getLastId = async () => {
+        try {
+            const response = await axios.get("/Order/GetLastId");
+            return response.data;
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    useEffect(() => {
+        fetchShippingFee();
+    }, [order.ward, order.city, order.district, order.deliveryType]);
+
+    const fetchShippingFee = async () => {
+        console.log("fetchShippingFee");
+        try {
+            const city = order.city;
+            const district = order.district;
+            const ward = order.ward;
+            const type = order.deliveryType;
+
+            const provinceId = await getProvinceID(city);
+            const districtId = await getDistrictID(provinceId, district);
+            const wardId = await getWardId(districtId, ward);
+            const shippingFee = await calculateFee(districtId, wardId, type);
+
+            console.log("provinceId: ", provinceId);
+            console.log("districtId: ", districtId);
+            console.log("wardId: ", wardId);
+            console.log("shippingFee: ", shippingFee);
+
+            setOrder((prevOrder) => ({
+                ...prevOrder,
+                shippingFee: shippingFee,
+            }));
+        } catch (error) {
+            console.error('Error:', error.message);
+        }
+    }
+
+    const getProvinceID = async (cityName) => {
+        try {
+            const urlProvince = 'https://online-gateway.ghn.vn/shiip/public-api/master-data/province';
+            const response = await fetch(urlProvince, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Token': '0a8e7e91-8da4-11ee-a59f-a260851ba65c',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Không thể nhận dữ liệu từ API');
+            }
+
+            const responseData = await response.json();
+            const data = responseData.data;
+            let provinceId = -1;
+
+            data.forEach((dataItem) => {
+                if (dataItem.NameExtension.includes(cityName)) {
+                    provinceId = dataItem.ProvinceID;
+                }
+            });
+
+            return provinceId;
+        } catch (error) {
+            console.error('Error:', error.message);
+            return -1;
+        }
+    };
+
+    const getDistrictID = async (provinceId, districtName) => {
+        try {
+            const urlDistrict = 'https://online-gateway.ghn.vn/shiip/public-api/master-data/district';
+            const jsonData = JSON.stringify({province_id: provinceId});
+
+            const response = await fetch(urlDistrict, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Token': '0a8e7e91-8da4-11ee-a59f-a260851ba65c',
+                },
+                body: jsonData,
+            });
+
+            if (!response.ok) {
+                throw new Error('Không thể nhận dữ liệu từ API');
+            }
+
+            const responseData = await response.json();
+            const data = responseData.data;
+            let districtId = -1;
+
+            data.forEach((dataItem) => {
+                const lowercaseData = dataItem.NameExtension.map((name) => name.toLowerCase());
+                const lowercaseSearchTerm = districtName.toLowerCase();
+
+                if (lowercaseData.includes(lowercaseSearchTerm)) {
+                    districtId = dataItem.DistrictID;
+                }
+            });
+
+            return districtId;
+        } catch (error) {
+            console.error('Error:', error.message);
+            return -1;
+        }
+    };
+
+    const getWardId = async (districtId, wardName) => {
+        try {
+            const urlWard = 'https://online-gateway.ghn.vn/shiip/public-api/master-data/ward';
+            const jsonData = JSON.stringify({district_id: districtId});
+
+            const response = await fetch(urlWard, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Token': '0a8e7e91-8da4-11ee-a59f-a260851ba65c',
+                },
+                body: jsonData,
+            });
+
+            if (!response.ok) {
+                throw new Error('Không thể nhận dữ liệu từ API');
+            }
+
+            const responseData = await response.json();
+            const data = responseData.data;
+
+            console.log("data: ", data);
+
+            let wardCode = -1;
+            data.forEach((dataItem) => {
+                const lowercaseData = dataItem.WardName.toLowerCase();
+                const lowercaseSearchTerm = wardName.toLowerCase();
+
+                if (lowercaseData.includes(lowercaseSearchTerm)) {
+                    wardCode = dataItem.WardCode;
+                }
+            });
+
+            return wardCode;
+        } catch (error) {
+            console.error('Error:', error.message);
+            return -1;
+        }
+    };
+
+    const calculateFee = async (toDistrictId, toWardCode, type) => {
+        try {
+            const fromDistrictId = 3695;
+            const fromWardCode = '90737';
+
+            let serviceId = 53320;
+            if (type === "Standard") {
+                serviceId = 53319;
+            }
+
+            const urlFee = 'https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee';
+            const jsonData = JSON.stringify({
+                from_district_id: fromDistrictId,
+                from_ward_code: fromWardCode,
+                service_id: 53320,
+                service_type_id: null,
+                to_district_id: toDistrictId,
+                to_ward_code: toWardCode,
+                height: null,
+                length: null,
+                weight: 10000,
+                width: null,
+                insurance_value: 300000,
+                cod_failed_amount: 20000,
+                coupon: null,
+            });
+
+            const response = await fetch(urlFee, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Token': '0a8e7e91-8da4-11ee-a59f-a260851ba65c',
+                },
+                body: jsonData,
+            });
+
+            if (!response.ok) {
+                throw new Error('Không thể nhận dữ liệu từ API');
+            }
+
+            const responseData = await response.json();
+            const totalFee = responseData.data?.total || -1;
+
+            return totalFee;
+        } catch (error) {
+            console.error('Error:', error.message);
+            return -1;
+        }
+    };
+
     const handleOnChange = (e) => {
         const {id, value} = e.target;
-        setOrder({...order, [id]: value});
+
+        if (id === "city") {
+            const newCity = cities.find((tinh) => tinh.name === value);
+            const newDistrict = districts.find((quan) => quan.parent_code === newCity?.code);
+
+            setOrder((prevOrder) => ({
+                ...prevOrder,
+                city: value,
+                cityCode: newCity?.code,
+                districtCode: newDistrict?.code,
+            }));
+        } else if (id === "district") {
+            const newDistrict = districts.find((quan) => quan.name === value);
+
+            setOrder((prevOrder) => ({
+                ...prevOrder,
+                district: value,
+                districtCode: newDistrict?.code,
+            }));
+        } else {
+            setOrder((prevOrder) => ({
+                ...prevOrder,
+                [id]: value,
+            }));
+        }
+
+
     }
 
     const handleOnSaveOrder = () => {
@@ -49,6 +313,24 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
             handleAddOrder(order);
         } else {
             handleEditOrder(order);
+        }
+    }
+
+    const handleSearchCustomer = async (e) => {
+        try {
+            const response = await axios.get(`/Customer/${order.customerEmail}`);
+            const customer = response.data;
+            setOrder((prevOrder) => ({
+                ...prevOrder,
+                name: customer.name,
+                address: customer.address,
+                phone: customer.phone,
+                city: customer.city,
+                district: customer.district,
+                ward: customer.ward,
+            }));
+        } catch (e) {
+            console.log(e);
         }
     }
 
@@ -75,7 +357,6 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         className={`form-control border border-black rounded-md w-4/5 mx-2`}
                                         id="id"
                                         onChange={(e) => handleOnChange(e)}
-                                        // onBlur={(e) => handleValidEmail(e)}
                                         value={order.id}
                                         disabled={true}
                                     />
@@ -91,9 +372,8 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         className={`form-control border border-black rounded-md w-3/5 mx-2`}
                                         id="customerEmail"
                                         onChange={(e) => handleOnChange(e)}
-                                        // onBlur={(e) => handleValidEmail(e)}
+                                        onBlur={(e) => handleSearchCustomer(e)}
                                         value={order.customerEmail}
-                                        // disabled={action === "detail"}
                                     />
                                 </div>
                             </td>
@@ -162,7 +442,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         name={"city"}
                                         id={"city"}
                                         className="form-control border border-black rounded-md mx-2"
-                                        // onChange={(e) => handleOnChange(e)}
+                                        onChange={(e) => handleOnChange(e)}
                                         defaultValue={"orderCity"}
                                     >
                                         <option
@@ -192,7 +472,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         name={"district"}
                                         id={"district"}
                                         className="form-control border border-black rounded-md mx-2"
-                                        // onChange={(e) => handleOnChange(e)}
+                                        onChange={(e) => handleOnChange(e)}
                                         defaultValue={"orderDistrict"}
                                     >
                                         {(orderData.city === order.city) &&
@@ -225,7 +505,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         name={"ward"}
                                         id={"ward"}
                                         className="form-control border border-black rounded-md mx-2"
-                                        // onChange={(e) => handleOnChange(e)}
+                                        onChange={(e) => handleOnChange(e)}
                                         defaultValue={"orderWard"}
                                     >
                                         {(orderData.district === order.district && orderData.city === order.city) &&
@@ -256,7 +536,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         Ngày đặt hàng(*)
                                     </label>
                                     <input
-                                        type="text"
+                                        type="date"
                                         className="form-control border border-black rounded-md mx-2"
                                         id="orderDate"
                                         onChange={(e) => handleOnChange(e)}
@@ -275,6 +555,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         id="shippingFee"
                                         onChange={(e) => handleOnChange(e)}
                                         value={order.shippingFee}
+                                        disabled={true}
                                     />
                                 </div>
                             </td>
@@ -303,15 +584,9 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         name={"paymentType"}
                                         id={"paymentType"}
                                         className="form-control border border-black rounded-md mx-2"
-                                        // onChange={(e) => handleOnChange(e)}
-                                        defaultValue={"orderPaymentType"}
+                                        onChange={(e) => handleOnChange(e)}
+                                        value={order.paymentType}
                                     >
-                                        <option
-                                            id={"orderPaymentType"}
-                                            value={order.paymentType}
-                                        >
-                                            {order.paymentType}
-                                        </option>
                                         <option value={"Credit Card"}>Credit Card</option>
                                         <option value={"PayPal"}>PayPal</option>
                                         <option value={"Cash"}>Cash</option>
@@ -327,17 +602,11 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         name={"deleveryType"}
                                         id={"deleveryType"}
                                         className="form-control border border-black rounded-md mx-2"
-                                        // onChange={(e) => handleOnChange(e)}
-                                        defaultValue={"orderDeleveryType"}
+                                        onChange={(e) => handleOnChange(e)}
+                                        value={order.deliveryType}
                                     >
-                                        <option
-                                            id={"orderDeleveryType"}
-                                            value={order.deleveryType}
-                                        >
-                                            {order.deleveryType}
-                                        </option>
-                                        <option value={"Standard"}>Standard</option>
-                                        <option value={"Express"}>Express</option>
+                                        <option value={"Standard"}>Tiêu chuẩn</option>
+                                        <option value={"Express"}>Nhanh</option>
                                     </select>
                                 </div>
                             </td>
@@ -350,15 +619,9 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         name={"status"}
                                         id={"status"}
                                         className="form-control border border-black rounded-md mx-2"
-                                        // onChange={(e) => handleOnChange(e)}
-                                        defaultValue={"orderStatus"}
+                                        onChange={(e) => handleOnChange(e)}
+                                        value={order.status}
                                     >
-                                        <option
-                                            id={"orderStatus"}
-                                            value={order.status}
-                                        >
-                                            {order.status}
-                                        </option>
                                         <option value={"Processing"}>Đang xử lý</option>
                                         <option value={"Delivering"}>Đang giao</option>
                                         <option value={"Done"}>Đã giao</option>

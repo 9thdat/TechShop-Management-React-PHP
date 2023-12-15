@@ -27,7 +27,7 @@ export default function LoginPage() {
                 setAuth({email, password});
                 const token = response.data;
                 axios.defaults.headers.common["Authorization"] = "Bearer " + token;
-                localStorage.setItem("token", token);
+                sessionStorage.setItem("token", token);
                 localStorage.setItem("menu", "home");
                 localStorage.setItem("userEmail", email);
                 window.location.href = "/home";
