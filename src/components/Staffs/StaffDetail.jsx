@@ -30,7 +30,7 @@ export default function StaffDetail({visible, onClose, staffData, action, handle
                 status: "active",
                 city: "Tỉnh Lào Cai",
                 district: "Thành phố Lào Cai",
-                ward: "Xã Mường Pồn",
+                ward: "Phường Duyên Hải",
                 address: "",
                 role: "staff",
                 cityCode: "10",
@@ -72,39 +72,33 @@ export default function StaffDetail({visible, onClose, staffData, action, handle
         if (id === "city") {
             const newCity = cities.find((tinh) => tinh.name === value);
             const newDistrict = districts.find((quan) => quan.parent_code === newCity?.code);
+            const newWard = wards.find((xa) => xa.parent_code === newDistrict?.code);
 
             setStaff((prevStaff) => ({
                 ...prevStaff,
                 city: value,
                 cityCode: newCity?.code,
                 districtCode: newDistrict?.code,
+                district: newDistrict?.name,
+                ward: newWard?.name,
             }));
         } else if (id === "district") {
             const newDistrict = districts.find((quan) => quan.name === value);
+            const newWard = wards.find((xa) => xa.parent_code === newDistrict?.code);
 
             setStaff((prevStaff) => ({
                 ...prevStaff,
                 district: value,
                 districtCode: newDistrict?.code,
+                ward: newWard?.name,
             }));
-        } else if (id === "image") {
-            const reader = new FileReader();
-            reader.onload = () => {
-                if (reader.readyState === 2) {
-                    setStaff((prevStaff) => ({
-                        ...prevStaff,
-                        image: reader.result.split(",")[1],
-                    }));
-                }
-            };
-            reader.readAsDataURL(e.target.files[0]);
         } else {
             setStaff((prevStaff) => ({
                 ...prevStaff,
                 [id]: value,
             }));
         }
-    };
+    }
 
     const handleValidEmail = async (e) => {
         try {

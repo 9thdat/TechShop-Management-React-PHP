@@ -3,9 +3,11 @@ import axios from "../../api/axios";
 import tinh_tp from "../../Models/Address/tinh-tp.json";
 import quan_huyen from "../../Models/Address/quan-huyen.json";
 import xa_phuong from "../../Models/Address/xa-phuong.json";
+import OrderProductDetail from "./OrderProductDetail";
 
 export default function OrderDetails({visible, orderData, handleAddOrder, handleEditOrder, onClose, action}) {
     const [order, setOrder] = useState(orderData);
+    const [visibleOrderProductDetail, setVisibleOrderProductDetail] = useState(false);
 
     const [cities, setCities] = useState(tinh_tp);
     const [districts, setDistricts] = useState(quan_huyen);
@@ -38,7 +40,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                 status: "Processing",
                 city: "Tỉnh Lào Cai",
                 district: "Thành phố Lào Cai",
-                ward: "Xã Mường Pồn",
+                ward: "Phường Duyên Hải",
                 cityCode: "10",
                 districtCode: "080",
             });
@@ -91,7 +93,6 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
     }, [order.ward, order.city, order.district, order.deliveryType]);
 
     const fetchShippingFee = async () => {
-        console.log("fetchShippingFee");
         try {
             const city = order.city;
             const district = order.district;
@@ -102,11 +103,6 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
             const districtId = await getDistrictID(provinceId, district);
             const wardId = await getWardId(districtId, ward);
             const shippingFee = await calculateFee(districtId, wardId, type);
-
-            console.log("provinceId: ", provinceId);
-            console.log("districtId: ", districtId);
-            console.log("wardId: ", wardId);
-            console.log("shippingFee: ", shippingFee);
 
             setOrder((prevOrder) => ({
                 ...prevOrder,
@@ -229,29 +225,32 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
 
     const calculateFee = async (toDistrictId, toWardCode, type) => {
         try {
-            const fromDistrictId = 3695;
-            const fromWardCode = '90737';
-
-            let serviceId = 53320;
+            let serviceId = 2;
             if (type === "Standard") {
-                serviceId = 53319;
+                serviceId = 5;
             }
 
             const urlFee = 'https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee';
             const jsonData = JSON.stringify({
-                from_district_id: fromDistrictId,
-                from_ward_code: fromWardCode,
-                service_id: 53320,
-                service_type_id: null,
-                to_district_id: toDistrictId,
-                to_ward_code: toWardCode,
-                height: null,
-                length: null,
-                weight: 10000,
-                width: null,
-                insurance_value: 300000,
-                cod_failed_amount: 20000,
-                coupon: null,
+                "service_type_id": serviceId,
+                "from_district_id": 3695,
+                "from_ward_code": "90737",
+                "to_district_id": toDistrictId,
+                "to_ward_code": toWardCode,
+                "height": 20,
+                "length": 30,
+                "weight": 3000,
+                "width": 40,
+                "insurance_value": 0,
+                "coupon": null,
+                "items": [
+                    {
+                        "height": 20,
+                        "length": 30,
+                        "weight": 3000,
+                        "width": 40
+                    }
+                ]
             });
 
             const response = await fetch(urlFee, {
@@ -283,20 +282,25 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
         if (id === "city") {
             const newCity = cities.find((tinh) => tinh.name === value);
             const newDistrict = districts.find((quan) => quan.parent_code === newCity?.code);
+            const newWard = wards.find((xa) => xa.parent_code === newDistrict?.code);
 
             setOrder((prevOrder) => ({
                 ...prevOrder,
                 city: value,
                 cityCode: newCity?.code,
                 districtCode: newDistrict?.code,
+                district: newDistrict?.name,
+                ward: newWard?.name,
             }));
         } else if (id === "district") {
             const newDistrict = districts.find((quan) => quan.name === value);
+            const newWard = wards.find((xa) => xa.parent_code === newDistrict?.code);
 
             setOrder((prevOrder) => ({
                 ...prevOrder,
                 district: value,
                 districtCode: newDistrict?.code,
+                ward: newWard?.name,
             }));
         } else {
             setOrder((prevOrder) => ({
@@ -304,8 +308,6 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                 [id]: value,
             }));
         }
-
-
     }
 
     const handleOnSaveOrder = () => {
@@ -317,6 +319,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
     }
 
     const handleSearchCustomer = async (e) => {
+        if (order.customerEmail === "") return;
         try {
             const response = await axios.get(`/Customer/${order.customerEmail}`);
             const customer = response.data;
@@ -333,6 +336,15 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
             console.log(e);
         }
     }
+
+    const handleAddProduct = () => {
+        setVisibleOrderProductDetail(true);
+    }
+
+    const handleCloseOrderProductDetail = () => {
+        setVisibleOrderProductDetail(false);
+    }
+
 
     if (!visible) return null;
     return (
@@ -647,7 +659,17 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                             </td>
                         </tr>
                         <tr>
-                            <td colSpan={"3"}>
+                            <td>
+                                <div className="form-group flex justify-between mb-4 ">
+                                    <button
+                                        className="px-2 py-1 ml-2 text-white bg-green-400 rounded-md"
+                                        onClick={handleAddProduct}
+                                    >
+                                        Thêm sản phẩm
+                                    </button>
+                                </div>
+                            </td>
+                            <td>
                                 <button className="px-2 py-1 ml-2 text-white bg-blue-500 rounded-md"
                                         onClick={handleOnSaveOrder}
                                 >
@@ -659,6 +681,8 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                     </table>
                 </div>
             </div>
+            <OrderProductDetail visible={visibleOrderProductDetail} onClose={handleCloseOrderProductDetail} data={order}
+                                action={action}/>
         </div>
     );
 }
