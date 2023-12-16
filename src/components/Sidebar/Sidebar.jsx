@@ -96,7 +96,7 @@ function Sidebar() {
 
             case "logout":
                 setMenu("home");
-                localStorage.removeItem("token");
+                sessionStorage.removeItem("token");
                 window.location.href = "/login";
                 break;
 

@@ -7,7 +7,7 @@ export default function Orders() {
     const [orders, setOrders] = useState([]);
     const [order, setOrder] = useState({});
 
-    const [action, setAction] = useState("");
+    const [action, setAction] = useState(""); // add or edit
     const [visibleOrderDetail, setVisibleOrderDetail] = useState(false);
 
     const [originalOrders, setOriginalOrders] = useState([]);
@@ -244,9 +244,12 @@ export default function Orders() {
                 </table>
             </div>
 
-            <OrderDetails visible={visibleOrderDetail} onClose={handleCloseOrderDetail} orderData={order}
-                          action={action}
-                          handleAddOrder={handleAddOrder} handleEditOrder={handleEditOrder}/>
+            {
+                visibleOrderDetail &&
+                <OrderDetails visible={visibleOrderDetail} onClose={handleCloseOrderDetail} orderData={order}
+                              action={action}
+                              handleAddOrder={handleAddOrder} handleEditOrder={handleEditOrder}/>
+            }
         </div>
     );
 }

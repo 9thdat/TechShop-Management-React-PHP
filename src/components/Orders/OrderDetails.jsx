@@ -6,7 +6,11 @@ import xa_phuong from "../../Models/Address/xa-phuong.json";
 import OrderProductDetail from "./OrderProductDetail";
 
 export default function OrderDetails({visible, orderData, handleAddOrder, handleEditOrder, onClose, action}) {
-    const [order, setOrder] = useState(orderData);
+    const [order, setOrder] = useState({
+        ...orderData,
+        id: "",
+        customerEmail: "",
+    });
     const [visibleOrderProductDetail, setVisibleOrderProductDetail] = useState(false);
 
     const [cities, setCities] = useState(tinh_tp);
@@ -74,10 +78,6 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
             });
         }
     }, [orderData, action]);
-
-    useEffect(() => {
-        console.log(order);
-    }, [order]);
 
     const getLastId = async () => {
         try {
@@ -203,8 +203,6 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
 
             const responseData = await response.json();
             const data = responseData.data;
-
-            console.log("data: ", data);
 
             let wardCode = -1;
             data.forEach((dataItem) => {
@@ -337,14 +335,13 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
         }
     }
 
-    const handleAddProduct = () => {
+    const handleOpenDetailProducts = () => {
         setVisibleOrderProductDetail(true);
     }
 
     const handleCloseOrderProductDetail = () => {
         setVisibleOrderProductDetail(false);
     }
-
 
     if (!visible) return null;
     return (
@@ -663,9 +660,9 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                 <div className="form-group flex justify-between mb-4 ">
                                     <button
                                         className="px-2 py-1 ml-2 text-white bg-green-400 rounded-md"
-                                        onClick={handleAddProduct}
+                                        onClick={handleOpenDetailProducts}
                                     >
-                                        Thêm sản phẩm
+                                        Chi tiết sản phẩm
                                     </button>
                                 </div>
                             </td>
@@ -681,8 +678,13 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                     </table>
                 </div>
             </div>
-            <OrderProductDetail visible={visibleOrderProductDetail} onClose={handleCloseOrderProductDetail} data={order}
-                                action={action}/>
+
+            {
+                visibleOrderProductDetail &&
+                <OrderProductDetail visible={visibleOrderProductDetail} onClose={handleCloseOrderProductDetail}
+                                    data={order}
+                                    action={action}/>
+            }
         </div>
     );
 }
