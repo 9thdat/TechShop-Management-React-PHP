@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 import axios from "../../api/axios";
 
-export default function OrderProductDetail({visible, onClose, data, action, onSave}) {
+export default function OrderProductDetail({visible, onClose, order, action, onSave, orderDetail}) {
     const [orderProducts, setOrderProducts] = useState([]);
     const [orderProduct, setOrderProduct] = useState({
         productId: "",
@@ -56,7 +56,6 @@ export default function OrderProductDetail({visible, onClose, data, action, onSa
             fetchData();
         } else if (id === "quantity") {
             const totalPrice = Number(orderProduct.price) * value;
-            console.log(totalPrice);
             setOrderProduct((prevData) => ({
                 ...prevData,
                 [id]: value,
@@ -105,31 +104,35 @@ export default function OrderProductDetail({visible, onClose, data, action, onSa
 
     useEffect(() => {
         let isMounted = true;
-
-        const fetchData = async () => {
-            if (action === "edit") {
-                try {
-                    const orderProductsData = await fetchOrderDetail();
-                    if (isComponentMounted()) {
-                        setOrderProducts(orderProductsData);
-                        setOrderProductsLength(orderProductsData.length);
-                    }
-                } catch (err) {
-                    console.error(err);
-                }
-            }
-        };
-
-        fetchData();
-
+        //
+        // const fetchData = async () => {
+        //     if (action === "edit") {
+        //         try {
+        //             const orderProductsData = await fetchOrderDetail();
+        //             if (isComponentMounted()) {
+        //                 setOrderProducts(orderProductsData);
+        //                 setOrderProductsLength(orderProductsData.length);
+        //             }
+        //         } catch (err) {
+        //             console.error(err);
+        //         }
+        //     }
+        // };
+        //
+        // fetchData();
+        //
+        if (isComponentMounted()) {
+            setOrderProducts(orderDetail);
+            setOrderProductsLength(orderDetail.length);
+        }
         return () => {
             isMounted = false;
         };
-    }, [action]);
+    }, [orderDetail]);
 
     const fetchOrderDetail = async () => {
         try {
-            const response = await axios.get(`/OrderDetail/OrderId=${data.id}`);
+            const response = await axios.get(`/OrderDetail/OrderId=${order.id}`);
             return response.data;
         } catch (err) {
             console.error(err);
@@ -253,81 +256,10 @@ export default function OrderProductDetail({visible, onClose, data, action, onSa
     const handleOnSave = () => {
         onSave(orderProducts);
         onClose();
-        // if (orderProducts.length === 0) {
-        //     alert("Vui lòng thêm sản phẩm vào đơn hàng");
-        //     return;
-        // }
-        //
-        // try {
-        //     if (action === "add") {
-        //         // Add new order details
-        //         for (const product of orderProducts) {
-        //             const response = await axios.post("/OrderDetail", JSON.stringify({
-        //                 id: product.id || 0, // Assuming you have an "id" property in your product object
-        //                 orderId: data.id,
-        //                 productId: product.productId,
-        //                 color: product.color,
-        //                 quantity: product.quantity,
-        //                 price: product.price,
-        //                 totalPrice: product.totalPrice,
-        //             }), {
-        //                 headers: {
-        //                     "Content-Type": "application/json",
-        //                 },
-        //             });
-        //
-        //             if (response.status !== 201) {
-        //                 console.error("Failed to add product:", product);
-        //                 return;
-        //             }
-        //         }
-        //
-        //         alert("Thêm sản phẩm thành công");
-        //         onClose();
-        //     } else {
-        //         let failedUpdateProduct = [];
-        //         // Update existing order details
-        //         for (const order of orderProducts) {
-        //             const response = await axios.put(`/OrderDetail/${order.id}`, JSON.stringify({
-        //                 id: order.id,
-        //                 orderId: data.id,
-        //                 productId: order.productId,
-        //                 color: order.color,
-        //                 quantity: order.quantity,
-        //                 price: order.price,
-        //                 totalPrice: order.totalPrice,
-        //             }), {
-        //                 headers: {
-        //                     "Content-Type": "application/json",
-        //                 },
-        //             });
-        //
-        //             if (response.status !== 200) {
-        //                 failedUpdateProduct = [...failedUpdateProduct, order.id];
-        //             }
-        //         }
-        //
-        //         if (failedUpdateProduct.length === 0) {
-        //             alert("Cập nhật sản phẩm thành công");
-        //         } else {
-        //             alert("Các sản phẩm sau không được cập nhật thành công: " + failedUpdateProduct.join(", "));
-        //         }
-        //         onClose();
-        //     }
-        //     const updatedOrderProductsData = await fetchOrderDetail();
-        //
-        //     if (isComponentMounted()) {
-        //         setOrderProducts(updatedOrderProductsData);
-        //         setOrderProductsLength(updatedOrderProductsData.length);
-        //     }
-        // } catch (err) {
-        //     console.error(err);
-        // }
     };
 
 
     const isComponentMounted = () => {
-        // This function checks whether the component is mounted
         return Boolean(document.getElementById("root"));
     };
 

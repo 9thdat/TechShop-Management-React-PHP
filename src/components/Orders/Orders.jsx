@@ -108,9 +108,8 @@ export default function Orders() {
 
     const handleEditOrder = async (orderData, orderProducts) => {
         try {
-            const res = await axios.put("/Order", orderData);
+            const res = await axios.put(`/Order/${orderData.id}`, orderData);
             if (res.status === 200) {
-                alert("Sửa đơn hàng thành công");
                 setVisibleOrderDetail(false);
                 setOrder({});
                 const newOrders = orders.map((order) => {

@@ -32,12 +32,14 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
     });
     const [visibleOrderProductDetail, setVisibleOrderProductDetail] = useState(false);
     const [orderProducts, setOrderProducts] = useState([]);
+    const [orderDetail, setOrderDetail] = useState({});
+    const [orderProductChanged, setOrderProductChanged] = useState(false);
 
     const [cities, setCities] = useState(tinh_tp);
     const [districts, setDistricts] = useState(quan_huyen);
     const [wards, setWards] = useState(xa_phuong);
 
-    useEffect(() => {
+    useEffect(async () => {
         if (action === "add") {
             getLastId().then((res) => {
                     setOrder((prevOrder) => ({
@@ -47,7 +49,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                 }
             );
         } else {
-            console.log(orderData);
+            const DiscountCode = await fetchDiscountId(orderData.discountId);
             setOrder((prevOrder) => {
                 const newCity = cities.find((tinh) => tinh.name === orderData.city);
                 const newDistrict = districts.find((quan) => quan.parent_code === newCity?.code);
@@ -58,6 +60,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                     name: orderData.name,
                     address: orderData.address,
                     phone: orderData.phone,
+                    discountCode: DiscountCode?.code || "",
                     discountId: orderData.discountId,
                     shippingFee: orderData.shippingFee,
                     totalPrice: orderData.totalPrice,
@@ -65,7 +68,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                     orderDate: orderData.orderDate ? orderData.orderDate.split('T')[0] : "",
                     cancelDate: orderData.cancelDate ? orderData.cancelDate.split('T')[0] : "",
                     completeDate: orderData.completeDate ? orderData.completeDate.split('T')[0] : "",
-                    deliveryType: orderData.completeDate ? orderData.completeDate.split('T')[0] : "",
+                    deliveryType: orderData.deliveryType,
                     paymentType: orderData.paymentType,
                     status: orderData.status,
                     city: orderData.city,
@@ -222,9 +225,9 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
 
     const calculateFee = async (toDistrictId, toWardCode, type) => {
         try {
-            let serviceId = 2;
+            let serviceId = 5;
             if (type === "Standard") {
-                serviceId = 5;
+                serviceId = 2;
             }
 
             const urlFee = 'https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee';
@@ -273,7 +276,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
         }
     };
 
-    const handleOnChange = (e) => {
+    const handleOnChange = async (e) => {
         const {id, value} = e.target;
 
         if (id === "city") {
@@ -347,9 +350,27 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
         }
     }
 
-    const handleOpenDetailProducts = () => {
+    const handleOpenDetailProducts = async () => {
+        if (orderProductChanged == false) {
+            await fetchOrderDetail().then((res) => {
+                setOrderDetail(res);
+            });
+        } else {
+            setOrderDetail(orderProducts);
+        }
+
         setVisibleOrderProductDetail(true);
     }
+
+    const fetchOrderDetail = async () => {
+        try {
+            const response = await axios.get(`/OrderDetail/OrderId=${order.id}`);
+            return response.data;
+        } catch (err) {
+            console.error(err);
+            return [];
+        }
+    };
 
     const handleCloseOrderProductDetail = () => {
         setVisibleOrderProductDetail(false);
@@ -357,15 +378,52 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
 
     const handleOnSaveOrderProducts = (orderProductsData) => {
         setOrderProducts(orderProductsData);
-        const totalPrice = orderProducts.reduce((total, orderProduct) => {
+        const totalPrice = orderProductsData.reduce((total, orderProduct) => {
             return total + orderProduct.price * orderProduct.quantity;
         }, 0);
+        console.log(totalPrice);
         setOrder((prevOrder) => ({
             ...prevOrder,
             totalPrice: totalPrice,
         }));
+        setOrderProductChanged(true);
+    }
 
-        console.log(orderProductsData);
+    useEffect(() => {
+        console.log(order);
+    }, [order]);
+
+    const handleDiscount = async (e) => {
+        const discountCode = await fetchDiscountId(e.target.value);
+        setOrder((prevOrder) => ({
+            ...prevOrder,
+            discountId: discountCode.id,
+        }));
+        const discountValue = discountCode.value;
+        const discountType = discountCode.type;
+
+        if (discountType === "percent") {
+            const newTotalPrice = order.totalPrice * discountValue;
+            setOrder((prevOrder) => ({
+                ...prevOrder,
+                totalPrice: newTotalPrice,
+            }));
+        } else if (discountType === "fixed") {
+            const newTotalPrice = order.totalPrice - discountValue;
+            setOrder((prevOrder) => ({
+                ...prevOrder,
+                totalPrice: newTotalPrice,
+            }));
+        }
+    }
+
+    const fetchDiscountId = async (discountCode) => {
+        try {
+            const response = await axios.get(`/Discount/Code=${discountCode}`);
+            return response.data;
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     if (!visible) return null;
@@ -575,15 +633,16 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                             </td>
                             <td>
                                 <div className="form-group flex justify-between mb-4 ">
-                                    <label className="" htmlFor="discountId">
+                                    <label className="" htmlFor="discountCode">
                                         Mã giảm giá
                                     </label>
                                     <input
                                         type="text"
                                         className="form-control border border-black rounded-md mx-2"
-                                        id="discountId"
+                                        id="discountCode"
                                         onChange={(e) => handleOnChange(e)}
-                                        value={order.discountId}
+                                        onBlur={(e) => handleDiscount(e)}
+                                        value={order.discountCode}
                                     />
                                 </div>
                             </td>
@@ -687,7 +746,8 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
             {
                 visibleOrderProductDetail &&
                 <OrderProductDetail visible={visibleOrderProductDetail} onClose={handleCloseOrderProductDetail}
-                                    data={order} action={action} onSave={handleOnSaveOrderProducts}/>
+                                    order={order} action={action} onSave={handleOnSaveOrderProducts}
+                                    orderDetail={orderDetail}/>
             }
         </div>
     );
