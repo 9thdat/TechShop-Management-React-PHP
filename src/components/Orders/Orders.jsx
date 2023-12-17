@@ -89,23 +89,70 @@ export default function Orders() {
         setVisibleOrderDetail(true);
     }
 
-    const handleAddOrder = async (orderData) => {
-        try {
-            const res = await axios.post("/Order", orderData);
-            if (res.status === 200) {
-                alert("Thêm đơn hàng thành công");
-                setVisibleOrderDetail(false);
-                setOrder({});
-                setOrders([...orders, res.data]);
-            }
-        } catch (e) {
-            console.log(e);
-            alert("Thêm đơn hàng thất bại");
-        }
+    const handleAddOrder = async (orderData, orderProducts) => {
+        // try {
+        //     const res = await axios.post("/Order", orderData);
+        //     if (res.status === 200) {
+        //         alert("Thêm đơn hàng thành công");
+        //         setVisibleOrderDetail(false);
+        //         setOrder({});
+        //         setOrders([...orders, res.data]);
+        //     }
+        // } catch (e) {
+        //     console.log(e);
+        //     alert("Thêm đơn hàng thất bại");
+        // }
+        console.log(orderData);
+        console.log(orderProducts);
     }
 
-    const handleEditOrder = async (orderData) => {
-        alert(orderData);
+    const handleEditOrder = async (orderData, orderProducts) => {
+        try {
+            const res = await axios.put("/Order", orderData);
+            if (res.status === 200) {
+                alert("Sửa đơn hàng thành công");
+                setVisibleOrderDetail(false);
+                setOrder({});
+                const newOrders = orders.map((order) => {
+                    if (order.id === orderData.id) {
+                        return orderData;
+                    }
+                    return order;
+                });
+                setOrders(newOrders);
+            }
+
+            let failedUpdateProduct = [];
+            // Update existing order details
+            for (const order of orderProducts) {
+                const response = await axios.put(`/OrderDetail/${order.id}`, JSON.stringify({
+                    id: order.id,
+                    orderId: order.orderId,
+                    productId: order.productId,
+                    color: order.color,
+                    quantity: order.quantity,
+                    price: order.price,
+                }), {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+
+                if (response.status !== 200) {
+                    failedUpdateProduct.push(order);
+                }
+            }
+
+            if (failedUpdateProduct.length === 0) {
+                alert("Cập nhật sản phẩm thành công");
+            } else {
+                alert("Các sản phẩm sau không được cập nhật thành công: " + failedUpdateProduct.join(", "));
+            }
+            setVisibleOrderDetail(false);
+        } catch (e) {
+            console.log(e);
+            alert("Sửa đơn hàng thất bại");
+        }
     }
 
     return (

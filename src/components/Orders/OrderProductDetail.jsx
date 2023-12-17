@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 import axios from "../../api/axios";
 
-export default function OrderProductDetail({visible, onClose, data, action}) {
+export default function OrderProductDetail({visible, onClose, data, action, onSave}) {
     const [orderProducts, setOrderProducts] = useState([]);
     const [orderProduct, setOrderProduct] = useState({
         productId: "",
@@ -15,13 +15,59 @@ export default function OrderProductDetail({visible, onClose, data, action}) {
     const [productQuantity, setProductQuantity] = useState([]);
     const [totalProductQuantity, setTotalProductQuantity] = useState(0);
 
-    const handleOnChange = (e) => {
+    const handleOnChange = async (e) => {
         const {id, value} = e.target;
 
-        setOrderProduct((prevData) => ({
-            ...prevData,
-            [id]: value,
-        }));
+        if (id === "productId" && value !== "") {
+            setOrderProduct(
+                (prevData) => ({
+                    ...prevData,
+                    [id]: value,
+                })
+            )
+            const fetchData = async () => {
+                try {
+                    const productData = await fetchProduct();
+                    if (isComponentMounted()) {
+                        setProductQuantity(productData);
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+            };
+            await fetchData();
+
+        } else if (id === "color") {
+            setOrderProduct(
+                (prevData) => ({
+                    ...prevData,
+                    [id]: value,
+                    price: productQuantity.find(product => product.color === value).price
+                })
+            )
+            const fetchData = async () => {
+                try {
+                    const totalProductQuantity = await fetchTotalProductQuantity(orderProduct.productId, value);
+                    setTotalProductQuantity(totalProductQuantity);
+                } catch (err) {
+                    console.error(err);
+                }
+            };
+            fetchData();
+        } else if (id === "quantity") {
+            const totalPrice = Number(orderProduct.price) * value;
+            console.log(totalPrice);
+            setOrderProduct((prevData) => ({
+                ...prevData,
+                [id]: value,
+                totalPrice: totalPrice,
+            }));
+        } else {
+            setOrderProduct((prevData) => ({
+                ...prevData,
+                [id]: value,
+            }));
+        }
 
         setOrderProducts((prevOrderProducts) => {
             const indexToUpdate = currentOrderProduct - 1;
@@ -39,32 +85,6 @@ export default function OrderProductDetail({visible, onClose, data, action}) {
             }
             return prevOrderProducts;
         });
-
-        if (id === "productId" && value !== "") {
-            const fetchData = async () => {
-                try {
-                    const productData = await fetchProduct();
-                    if (isComponentMounted()) {
-                        setProductQuantity(productData);
-                    }
-                } catch (err) {
-                    console.error(err);
-                }
-            };
-
-            fetchData();
-        } else if (id === "color") {
-            const fetchData = async () => {
-                try {
-                    const totalProductQuantity = await fetchTotalProductQuantity(orderProduct.productId, value);
-                    setTotalProductQuantity(totalProductQuantity);
-                } catch (err) {
-                    console.error(err);
-                }
-            };
-
-            fetchData();
-        }
     };
 
     useEffect(() => {
@@ -217,80 +237,92 @@ export default function OrderProductDetail({visible, onClose, data, action}) {
 
     const handleOnAddOrderProduct = () => {
         setOrderProductsLength((prevState) => prevState + 1);
-        setCurrentOrderProduct(orderProductsLength + 1);
+        setOrderProducts((prevState) => [
+            ...prevState,
+            {
+                id: 0,
+                productId: "",
+                color: "",
+                quantity: "",
+                price: "",
+                totalPrice: "",
+            },
+        ]);
     };
 
-    const handleOnSave = async () => {
-        if (orderProducts.length === 0) {
-            alert("Vui lòng thêm sản phẩm vào đơn hàng");
-            return;
-        }
-
-        try {
-            if (action === "add") {
-                // Add new order details
-                for (const product of orderProducts) {
-                    const response = await axios.post("/OrderDetail", JSON.stringify({
-                        id: product.id || 0, // Assuming you have an "id" property in your product object
-                        orderId: data.id,
-                        productId: product.productId,
-                        color: product.color,
-                        quantity: product.quantity,
-                        price: product.price,
-                        totalPrice: product.totalPrice,
-                    }), {
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                    });
-
-                    if (response.status !== 201) {
-                        console.error("Failed to add product:", product);
-                        return;
-                    }
-                }
-
-                alert("Thêm sản phẩm thành công");
-                onClose();
-            } else {
-                let failedUpdateProduct = [];
-                // Update existing order details
-                for (const order of orderProducts) {
-                    const response = await axios.put(`/OrderDetail/${order.id}`, JSON.stringify({
-                        id: order.id,
-                        orderId: data.id,
-                        productId: order.productId,
-                        color: order.color,
-                        quantity: order.quantity,
-                        price: order.price,
-                        totalPrice: order.totalPrice,
-                    }), {
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                    });
-
-                    if (response.status !== 200) {
-                        failedUpdateProduct = [...failedUpdateProduct, order.id];
-                    }
-                }
-
-                if (failedUpdateProduct.length === 0) {
-                    alert("Cập nhật sản phẩm thành công");
-                } else {
-                    alert("Các sản phẩm sau không được cập nhật thành công: " + failedUpdateProduct.join(", "));
-                }
-                onClose();
-            }
-            const updatedOrderProductsData = await fetchOrderDetail();
-
-            if (isComponentMounted()) {
-                setOrderProducts(updatedOrderProductsData);
-                setOrderProductsLength(updatedOrderProductsData.length);
-            }
-        } catch (err) {
-            console.error(err);
-        }
+    const handleOnSave = () => {
+        onSave(orderProducts);
+        onClose();
+        // if (orderProducts.length === 0) {
+        //     alert("Vui lòng thêm sản phẩm vào đơn hàng");
+        //     return;
+        // }
+        //
+        // try {
+        //     if (action === "add") {
+        //         // Add new order details
+        //         for (const product of orderProducts) {
+        //             const response = await axios.post("/OrderDetail", JSON.stringify({
+        //                 id: product.id || 0, // Assuming you have an "id" property in your product object
+        //                 orderId: data.id,
+        //                 productId: product.productId,
+        //                 color: product.color,
+        //                 quantity: product.quantity,
+        //                 price: product.price,
+        //                 totalPrice: product.totalPrice,
+        //             }), {
+        //                 headers: {
+        //                     "Content-Type": "application/json",
+        //                 },
+        //             });
+        //
+        //             if (response.status !== 201) {
+        //                 console.error("Failed to add product:", product);
+        //                 return;
+        //             }
+        //         }
+        //
+        //         alert("Thêm sản phẩm thành công");
+        //         onClose();
+        //     } else {
+        //         let failedUpdateProduct = [];
+        //         // Update existing order details
+        //         for (const order of orderProducts) {
+        //             const response = await axios.put(`/OrderDetail/${order.id}`, JSON.stringify({
+        //                 id: order.id,
+        //                 orderId: data.id,
+        //                 productId: order.productId,
+        //                 color: order.color,
+        //                 quantity: order.quantity,
+        //                 price: order.price,
+        //                 totalPrice: order.totalPrice,
+        //             }), {
+        //                 headers: {
+        //                     "Content-Type": "application/json",
+        //                 },
+        //             });
+        //
+        //             if (response.status !== 200) {
+        //                 failedUpdateProduct = [...failedUpdateProduct, order.id];
+        //             }
+        //         }
+        //
+        //         if (failedUpdateProduct.length === 0) {
+        //             alert("Cập nhật sản phẩm thành công");
+        //         } else {
+        //             alert("Các sản phẩm sau không được cập nhật thành công: " + failedUpdateProduct.join(", "));
+        //         }
+        //         onClose();
+        //     }
+        //     const updatedOrderProductsData = await fetchOrderDetail();
+        //
+        //     if (isComponentMounted()) {
+        //         setOrderProducts(updatedOrderProductsData);
+        //         setOrderProductsLength(updatedOrderProductsData.length);
+        //     }
+        // } catch (err) {
+        //     console.error(err);
+        // }
     };
 
 
@@ -408,6 +440,7 @@ export default function OrderProductDetail({visible, onClose, data, action}) {
                                         value={orderProduct.color}
                                         disabled={currentOrderProduct === ""}
                                     >
+                                        <option value={""}></option>
                                         {
                                             productQuantity &&
                                             productQuantity.map((product, index) => (

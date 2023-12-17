@@ -6,12 +6,32 @@ import xa_phuong from "../../Models/Address/xa-phuong.json";
 import OrderProductDetail from "./OrderProductDetail";
 
 export default function OrderDetails({visible, orderData, handleAddOrder, handleEditOrder, onClose, action}) {
-    const [order, setOrder] = useState({
-        ...orderData,
-        id: "",
-        customerEmail: "",
+    const [order, setOrder] = useState(() => {
+        return {
+            id: "",
+            customerEmail: "",
+            name: "",
+            address: "",
+            phone: "",
+            discountId: "",
+            shippingFee: "",
+            totalPrice: "",
+            note: "",
+            orderDate: new Date().toISOString().split('T')[0],
+            cancelDate: "",
+            completeDate: "",
+            deliveryType: "Standard",
+            paymentType: "Credit Card",
+            status: "Processing",
+            city: "Thành phố Hồ Chí Minh",
+            district: "Quận 1",
+            ward: "Phường Tân Định",
+            cityCode: 79,
+            districtCode: 760,
+        }
     });
     const [visibleOrderProductDetail, setVisibleOrderProductDetail] = useState(false);
+    const [orderProducts, setOrderProducts] = useState([]);
 
     const [cities, setCities] = useState(tinh_tp);
     const [districts, setDistricts] = useState(quan_huyen);
@@ -26,29 +46,8 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                     }));
                 }
             );
-
-            setOrder({
-                customerEmail: "",
-                name: "",
-                address: "",
-                phone: "",
-                discountId: "",
-                shippingFee: "",
-                totalPrice: "",
-                note: "",
-                orderDate: new Date().toISOString().split('T')[0],
-                cancelDate: "",
-                completeDate: "",
-                deliveryType: "",
-                paymentType: "",
-                status: "Processing",
-                city: "Tỉnh Lào Cai",
-                district: "Thành phố Lào Cai",
-                ward: "Phường Duyên Hải",
-                cityCode: "10",
-                districtCode: "080",
-            });
         } else {
+            console.log(orderData);
             setOrder((prevOrder) => {
                 const newCity = cities.find((tinh) => tinh.name === orderData.city);
                 const newDistrict = districts.find((quan) => quan.parent_code === newCity?.code);
@@ -310,26 +309,39 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
 
     const handleOnSaveOrder = () => {
         if (action === "add") {
-            handleAddOrder(order);
+            handleAddOrder(order, orderProducts);
         } else {
-            handleEditOrder(order);
+            handleEditOrder(order, orderProducts);
         }
     }
 
     const handleSearchCustomer = async (e) => {
         if (order.customerEmail === "") return;
         try {
-            const response = await axios.get(`/Customer/${order.customerEmail}`);
-            const customer = response.data;
+            const response = await fetchCustomerData(order.customerEmail);
+            const newCity = cities.find((tinh) => tinh.name === response.city);
+            const newDistrict = districts.find((quan) => quan.parent_code === newCity?.code);
+            const newWard = wards.find((xa) => xa.parent_code === newDistrict?.code);
             setOrder((prevOrder) => ({
                 ...prevOrder,
-                name: customer.name,
-                address: customer.address,
-                phone: customer.phone,
-                city: customer.city,
-                district: customer.district,
-                ward: customer.ward,
+                name: response.name,
+                address: response.address,
+                phone: response.phone,
+                city: response.city,
+                district: response.district,
+                ward: response.ward,
+                cityCode: newCity?.code,
+                districtCode: newDistrict?.code,
             }));
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    const fetchCustomerData = async (email) => {
+        try {
+            const response = await axios.get(`/Customer/${email}`);
+            return response.data;
         } catch (e) {
             console.log(e);
         }
@@ -341,6 +353,19 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
 
     const handleCloseOrderProductDetail = () => {
         setVisibleOrderProductDetail(false);
+    }
+
+    const handleOnSaveOrderProducts = (orderProductsData) => {
+        setOrderProducts(orderProductsData);
+        const totalPrice = orderProducts.reduce((total, orderProduct) => {
+            return total + orderProduct.price * orderProduct.quantity;
+        }, 0);
+        setOrder((prevOrder) => ({
+            ...prevOrder,
+            totalPrice: totalPrice,
+        }));
+
+        console.log(orderProductsData);
     }
 
     if (!visible) return null;
@@ -438,6 +463,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                     id="totalPrice"
                                     onChange={(e) => handleOnChange(e)}
                                     value={order.totalPrice}
+                                    disabled={true}
                                 />
                             </td>
                         </tr>
@@ -452,14 +478,8 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         id={"city"}
                                         className="form-control border border-black rounded-md mx-2"
                                         onChange={(e) => handleOnChange(e)}
-                                        defaultValue={"orderCity"}
+                                        value={order.city}
                                     >
-                                        <option
-                                            id={"orderCity"}
-                                            value={order.city}
-                                        >
-                                            {order.city}
-                                        </option>
                                         {
                                             cities.map((tinh) => (
                                                 <option value={tinh.name}
@@ -482,16 +502,8 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         id={"district"}
                                         className="form-control border border-black rounded-md mx-2"
                                         onChange={(e) => handleOnChange(e)}
-                                        defaultValue={"orderDistrict"}
+                                        value={order.district}
                                     >
-                                        {(orderData.city === order.city) &&
-                                            <option
-                                                id={"orderDistrict"}
-                                                value={order.district}
-                                            >
-                                                {order.district}
-                                            </option>
-                                        }
                                         {
                                             districts.map((quan) => (quan.parent_code === order.cityCode) && (
                                                 <option key={quan.code}
@@ -515,15 +527,8 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         id={"ward"}
                                         className="form-control border border-black rounded-md mx-2"
                                         onChange={(e) => handleOnChange(e)}
-                                        defaultValue={"orderWard"}
+                                        value={order.ward}
                                     >
-                                        {(orderData.district === order.district && orderData.city === order.city) &&
-                                            <option
-                                                id={"orderWard"}
-                                                value={order.ward}
-                                            >
-                                                {order.ward}
-                                            </option>}
                                         {
                                             wards.map((ward) => (
                                                 (ward.parent_code === order.districtCode) &&
@@ -608,8 +613,8 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         Hình thức giao hàng(*)
                                     </label>
                                     <select
-                                        name={"deleveryType"}
-                                        id={"deleveryType"}
+                                        name={"deliveryType"}
+                                        id={"deliveryType"}
                                         className="form-control border border-black rounded-md mx-2"
                                         onChange={(e) => handleOnChange(e)}
                                         value={order.deliveryType}
@@ -682,8 +687,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
             {
                 visibleOrderProductDetail &&
                 <OrderProductDetail visible={visibleOrderProductDetail} onClose={handleCloseOrderProductDetail}
-                                    data={order}
-                                    action={action}/>
+                                    data={order} action={action} onSave={handleOnSaveOrderProducts}/>
             }
         </div>
     );
