@@ -12,7 +12,7 @@ export default function Orders() {
 
     const [originalOrders, setOriginalOrders] = useState([]);
 
-    const [search, setSearch] = useState({
+    const search = useRef({
         searchValue: "",
         sortValue: "name",
         statusValue: "all",
@@ -25,12 +25,9 @@ export default function Orders() {
     useEffect(() => {
         fetchOrders().then((res) => {
             setOrders(res);
+            setOriginalOrders(res);
         });
     }, []);
-
-    useEffect(() => {
-        setOriginalOrders(orders);
-    }, [orders]);
 
 
     const fetchOrders = async () => {
@@ -163,19 +160,18 @@ export default function Orders() {
                 >
                     Thêm
                 </button>
-
                 <input
                     type="text"
                     id="searchValue"
                     className="px-2 py-1 ml-2 rounded-md border border-black w-[60%]"
                     placeholder="Tìm kiếm đơn hàng"
-                    // value={search.searchValue}
-                    // onChange={(e) => handleOnChangeSearchType(e)}
+                    value={search.searchValue}
+                    onChange={(e) => handleOnChangeSearchType(e)}
                 />
                 <select
                     className="px-2 py-1 ml-2 rounded-md border border-black w-[10%]"
                     id="sortValue"
-                    // onChange={(e) => handleOnChangeSearchType(e)}
+                    onChange={(e) => handleOnChangeSearchType(e)}
                 >
                     <option value="name">Tên</option>
                     <option value="email">Email</option>
@@ -184,15 +180,17 @@ export default function Orders() {
                 <select
                     className="px-2 py-1 ml-2 rounded-md border border-black w-[12%]"
                     id="statusValue"
-                    // onChange={(e) => handleOnChangeSearchType(e)}
+                    onChange={(e) => handleOnChangeSearchType(e)}
                 >
                     <option value="all">Tất cả</option>
-                    <option value="active">Đang hoạt động</option>
-                    <option value="inactive">Ngừng hoạt động</option>
+                    <option value="Processing">Đang xử lý</option>
+                    <option value="Delivering">Đang giao hàng</option>
+                    <option value="Done">Hoàn thành</option>
+                    <option value="Cancelled">Đã hủy</option>
                 </select>
 
                 <button className={"px-2 py-1 ml-2 text-white bg-blue-500 rounded-md"}
-                    // onClick={handleOnSearch}
+                        onClick={handleOnSearch}
                 >
                     Tìm kiếm
                 </button>
@@ -203,6 +201,9 @@ export default function Orders() {
                     <tr>
                         <th scope="col" className="text-center py-3">
                             ID
+                        </th>
+                        <th scope="col" className="text-center">
+                            Tên khách hàng
                         </th>
                         <th scope="col" className="text-center">
                             Email khách hàng
@@ -227,7 +228,7 @@ export default function Orders() {
                         </th>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody className={"text-xs"}>
                     {
                         orders.map((order) => (
                                 <tr
@@ -239,6 +240,12 @@ export default function Orders() {
                                         className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap"
                                     >
                                         {order.id}
+                                    </td>
+                                    <td
+                                        scope="row"
+                                        className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap"
+                                    >
+                                        {order.name}
                                     </td>
                                     <td
                                         scope="row"

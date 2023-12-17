@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useCallback} from "react";
 import axios from "../../api/axios";
 import tinh_tp from "../../Models/Address/tinh-tp.json";
 import quan_huyen from "../../Models/Address/quan-huyen.json";
@@ -39,45 +39,57 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
     const [districts, setDistricts] = useState(quan_huyen);
     const [wards, setWards] = useState(xa_phuong);
 
-    useEffect(async () => {
+    useEffect(() => {
         if (action === "add") {
-            getLastId().then((res) => {
-                    setOrder((prevOrder) => ({
-                        ...prevOrder,
-                        id: res,
-                    }));
-                }
-            );
+            const getLastOrderId = async () => {
+                await getLastId().then((res) => {
+                        setOrder((prevOrder) => ({
+                            ...prevOrder,
+                            id: res,
+                        }));
+                    }
+                );
+            }
+
+            getLastOrderId();
         } else {
-            const DiscountCode = await fetchDiscountId(orderData.discountId);
-            setOrder((prevOrder) => {
-                const newCity = cities.find((tinh) => tinh.name === orderData.city);
-                const newDistrict = districts.find((quan) => quan.parent_code === newCity?.code);
-                return {
-                    ...prevOrder,
-                    id: orderData.id,
-                    customerEmail: orderData.customerEmail,
-                    name: orderData.name,
-                    address: orderData.address,
-                    phone: orderData.phone,
-                    discountCode: DiscountCode?.code || "",
-                    discountId: orderData.discountId,
-                    shippingFee: orderData.shippingFee,
-                    totalPrice: orderData.totalPrice,
-                    note: orderData.note,
-                    orderDate: orderData.orderDate ? orderData.orderDate.split('T')[0] : "",
-                    cancelDate: orderData.cancelDate ? orderData.cancelDate.split('T')[0] : "",
-                    completeDate: orderData.completeDate ? orderData.completeDate.split('T')[0] : "",
-                    deliveryType: orderData.deliveryType,
-                    paymentType: orderData.paymentType,
-                    status: orderData.status,
-                    city: orderData.city,
-                    district: orderData.district,
-                    ward: orderData.ward,
-                    cityCode: newCity?.code,
-                    districtCode: newDistrict?.code,
-                };
-            });
+            const getDiscountCode = async () => {
+                const DiscountCode = await fetchDiscountId(orderData.discountId);
+                setOrder((prevOrder) => {
+                    const newCity = cities.find((tinh) => tinh.name === orderData.city);
+                    const newDistrict = districts.find((quan) => quan.parent_code === newCity?.code);
+                    return {
+                        ...prevOrder,
+                        id: orderData.id,
+                        customerEmail: orderData.customerEmail,
+                        name: orderData.name,
+                        address: orderData.address,
+                        phone: orderData.phone,
+                        discountCode: DiscountCode?.code || "",
+                        discountId: orderData.discountId,
+                        shippingFee: orderData.shippingFee,
+                        totalPrice: orderData.totalPrice,
+                        note: orderData.note,
+                        orderDate: orderData.orderDate ? orderData.orderDate.split('T')[0] : "",
+                        cancelDate: orderData.cancelDate ? orderData.cancelDate.split('T')[0] : "",
+                        completeDate: orderData.completeDate ? orderData.completeDate.split('T')[0] : "",
+                        deliveryType: orderData.deliveryType,
+                        paymentType: orderData.paymentType,
+                        status: orderData.status,
+                        city: orderData.city,
+                        district: orderData.district,
+                        ward: orderData.ward,
+                        cityCode: newCity?.code,
+                        districtCode: newDistrict?.code,
+                    };
+                });
+            }
+
+            getDiscountCode();
+        }
+
+        return () => {
+            console.log("setOrder");
         }
     }, [orderData, action]);
 
@@ -92,6 +104,10 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
 
     useEffect(() => {
         fetchShippingFee();
+
+        return () => {
+            console.log("fetchShippingFee");
+        }
     }, [order.ward, order.city, order.district, order.deliveryType]);
 
     const fetchShippingFee = async () => {
@@ -276,70 +292,73 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
         }
     };
 
-    const handleOnChange = async (e) => {
-        const {id, value} = e.target;
+    const handleOnChange = useCallback(async (e) => {
+            const {id, value} = e.target;
 
-        if (id === "city") {
-            const newCity = cities.find((tinh) => tinh.name === value);
-            const newDistrict = districts.find((quan) => quan.parent_code === newCity?.code);
-            const newWard = wards.find((xa) => xa.parent_code === newDistrict?.code);
+            if (id === "city") {
+                const newCity = cities.find((tinh) => tinh.name === value);
+                const newDistrict = districts.find((quan) => quan.parent_code === newCity?.code);
+                const newWard = wards.find((xa) => xa.parent_code === newDistrict?.code);
 
-            setOrder((prevOrder) => ({
-                ...prevOrder,
-                city: value,
-                cityCode: newCity?.code,
-                districtCode: newDistrict?.code,
-                district: newDistrict?.name,
-                ward: newWard?.name,
-            }));
-        } else if (id === "district") {
-            const newDistrict = districts.find((quan) => quan.name === value);
-            const newWard = wards.find((xa) => xa.parent_code === newDistrict?.code);
+                setOrder((prevOrder) => ({
+                    ...prevOrder,
+                    city: value,
+                    cityCode: newCity?.code,
+                    districtCode: newDistrict?.code,
+                    district: newDistrict?.name,
+                    ward: newWard?.name,
+                }));
+            } else if (id === "district") {
+                const newDistrict = districts.find((quan) => quan.name === value);
+                const newWard = wards.find((xa) => xa.parent_code === newDistrict?.code);
 
-            setOrder((prevOrder) => ({
-                ...prevOrder,
-                district: value,
-                districtCode: newDistrict?.code,
-                ward: newWard?.name,
-            }));
-        } else {
-            setOrder((prevOrder) => ({
-                ...prevOrder,
-                [id]: value,
-            }));
+                setOrder((prevOrder) => ({
+                    ...prevOrder,
+                    district: value,
+                    districtCode: newDistrict?.code,
+                    ward: newWard?.name,
+                }));
+            } else {
+                setOrder((prevOrder) => ({
+                    ...prevOrder,
+                    [id]: value,
+                }));
+            }
         }
-    }
+    )
 
-    const handleOnSaveOrder = () => {
-        if (action === "add") {
-            handleAddOrder(order, orderProducts);
-        } else {
-            handleEditOrder(order, orderProducts);
+    const handleOnSaveOrder = useCallback(() => {
+            if (action === "add") {
+                handleAddOrder(order, orderProducts);
+            } else {
+                handleEditOrder(order, orderProducts);
+            }
         }
-    }
+    )
 
-    const handleSearchCustomer = async (e) => {
-        if (order.customerEmail === "") return;
-        try {
-            const response = await fetchCustomerData(order.customerEmail);
-            const newCity = cities.find((tinh) => tinh.name === response.city);
-            const newDistrict = districts.find((quan) => quan.parent_code === newCity?.code);
-            const newWard = wards.find((xa) => xa.parent_code === newDistrict?.code);
-            setOrder((prevOrder) => ({
-                ...prevOrder,
-                name: response.name,
-                address: response.address,
-                phone: response.phone,
-                city: response.city,
-                district: response.district,
-                ward: response.ward,
-                cityCode: newCity?.code,
-                districtCode: newDistrict?.code,
-            }));
-        } catch (e) {
-            console.log(e);
+    const handleSearchCustomer = useCallback(async (e) => {
+            if (order.customerEmail === "") return;
+            try {
+                const response = await fetchCustomerData(order.customerEmail);
+                const newCity = cities.find((tinh) => tinh.name === response.city);
+                const newDistrict = districts.find((quan) => quan.parent_code === newCity?.code);
+                const newWard = wards.find((xa) => xa.parent_code === newDistrict?.code);
+                setOrder((prevOrder) => ({
+                    ...prevOrder,
+                    name: response.name,
+                    address: response.address,
+                    phone: response.phone,
+                    city: response.city,
+                    district: response.district,
+                    ward: response.ward,
+                    cityCode: newCity?.code,
+                    districtCode: newDistrict?.code,
+                }));
+            } catch (e) {
+                console.log(e);
+            }
         }
-    }
+    )
 
     const fetchCustomerData = async (email) => {
         try {
@@ -381,17 +400,12 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
         const totalPrice = orderProductsData.reduce((total, orderProduct) => {
             return total + orderProduct.price * orderProduct.quantity;
         }, 0);
-        console.log(totalPrice);
         setOrder((prevOrder) => ({
             ...prevOrder,
             totalPrice: totalPrice,
         }));
         setOrderProductChanged(true);
     }
-
-    useEffect(() => {
-        console.log(order);
-    }, [order]);
 
     const handleDiscount = async (e) => {
         const discountCode = await fetchDiscountId(e.target.value);
@@ -466,6 +480,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         onChange={(e) => handleOnChange(e)}
                                         onBlur={(e) => handleSearchCustomer(e)}
                                         value={order.customerEmail}
+                                        disabled={!(order.status === "Processing")}
                                     />
                                 </div>
                             </td>
@@ -480,6 +495,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         id="phone"
                                         onChange={(e) => handleOnChange(e)}
                                         value={order.name}
+                                        disabled={!(order.status === "Processing")}
                                     />
                                 </div>
                             </td>
@@ -496,6 +512,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         id="address"
                                         onChange={(e) => handleOnChange(e)}
                                         value={order.address}
+                                        disabled={!(order.status === "Processing")}
                                     />
                                 </div>
                             </td>
@@ -509,6 +526,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                     id="phone"
                                     onChange={(e) => handleOnChange(e)}
                                     value={order.phone}
+                                    disabled={!(order.status === "Processing")}
                                 />
                             </td>
                             <td>
@@ -537,6 +555,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         className="form-control border border-black rounded-md mx-2"
                                         onChange={(e) => handleOnChange(e)}
                                         value={order.city}
+                                        disabled={!(order.status === "Processing")}
                                     >
                                         {
                                             cities.map((tinh) => (
@@ -561,6 +580,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         className="form-control border border-black rounded-md mx-2"
                                         onChange={(e) => handleOnChange(e)}
                                         value={order.district}
+                                        disabled={!(order.status === "Processing")}
                                     >
                                         {
                                             districts.map((quan) => (quan.parent_code === order.cityCode) && (
@@ -586,6 +606,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         className="form-control border border-black rounded-md mx-2"
                                         onChange={(e) => handleOnChange(e)}
                                         value={order.ward}
+                                        disabled={!(order.status === "Processing")}
                                     >
                                         {
                                             wards.map((ward) => (
@@ -613,6 +634,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         id="orderDate"
                                         onChange={(e) => handleOnChange(e)}
                                         value={order.orderDate}
+                                        disabled={!(order.status === "Processing")}
                                     />
                                 </div>
                             </td>
@@ -643,6 +665,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         onChange={(e) => handleOnChange(e)}
                                         onBlur={(e) => handleDiscount(e)}
                                         value={order.discountCode}
+                                        disabled={!(order.status === "Processing")}
                                     />
                                 </div>
                             </td>
@@ -659,6 +682,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         className="form-control border border-black rounded-md mx-2"
                                         onChange={(e) => handleOnChange(e)}
                                         value={order.paymentType}
+                                        disabled={!(order.status === "Processing")}
                                     >
                                         <option value={"Credit Card"}>Credit Card</option>
                                         <option value={"PayPal"}>PayPal</option>
@@ -677,6 +701,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         className="form-control border border-black rounded-md mx-2"
                                         onChange={(e) => handleOnChange(e)}
                                         value={order.deliveryType}
+                                        disabled={!(order.status === "Processing")}
                                     >
                                         <option value={"Standard"}>Tiêu chuẩn</option>
                                         <option value={"Express"}>Nhanh</option>
@@ -694,6 +719,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         className="form-control border border-black rounded-md mx-2"
                                         onChange={(e) => handleOnChange(e)}
                                         value={order.status}
+                                        disabled={(order.status === "Done")}
                                     >
                                         <option value={"Processing"}>Đang xử lý</option>
                                         <option value={"Delivering"}>Đang giao</option>
@@ -710,11 +736,11 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         Ghi chú
                                     </label>
                                     <textarea
-                                        type="text"
                                         className="form-control border border-black rounded-md mx-2"
                                         id="note"
                                         onChange={(e) => handleOnChange(e)}
                                         value={order.note}
+                                        disabled={!(order.status === "Processing")}
                                     />
                                 </div>
                             </td>
