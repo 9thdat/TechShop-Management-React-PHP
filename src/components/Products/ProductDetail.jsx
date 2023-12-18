@@ -18,17 +18,33 @@ export default function ProductDetail({action, visible, onClose, product}) {
 
     const [productQuantityVisible, setProductQuantityVisible] = useState(false); // Visible of ProductQuantity
     const [productPhoneVisible, setProductPhoneVisible] = useState(false); // Visible of ProductPhone
-    const [actionOnProductParameter, setActionOnProductParameter] = useState(false); // Action of ProductParameter
+
+    const [actionOnProductParameter, setActionOnProductParameter] = useState(""); // Action of ProductParameter
 
     useEffect(() => {
         setProductData(product);
+        console.log(product);
 
         if (actionType === "edit") {
-            fetchProductQuantity();
-            fetchProductBackupCharger();
-            fetchProductAdapter();
-            fetchProductPhone();
-            fetchProductCable();
+            const fetchProductInfo = async () => {
+                await fetchProductQuantity(productData.id).then((res) => {
+                    setProductQuantity(res);
+                });
+                await fetchProductBackupCharger(productData.id).then((res) => {
+                    setProductBackupCharger(res);
+                });
+                await fetchProductAdapter(productData.id).then((res) => {
+                    setProductAdapter(res);
+                });
+                await fetchProductPhone(productData.id).then((res) => {
+                    setProductPhone(res);
+                });
+                await fetchProductCable(productData.id).then((res) => {
+                    setProductCable(res);
+                });
+            }
+
+            fetchProductInfo();
         } else {
             setProductQuantity([]);
             setProductAdapter({});
@@ -38,53 +54,53 @@ export default function ProductDetail({action, visible, onClose, product}) {
         }
     }, [product]);
 
-    const fetchProductQuantity = async () => {
+    const fetchProductQuantity = async (productId) => {
         try {
-            const productQuantityResponse = await axios.get(`/ProductQuantity/ProductId=${productData.id}`);
-            const productQuantityData = productQuantityResponse.data;
-            setProductQuantity(productQuantityData);
+            const productQuantityResponse = await axios.get(`/ProductQuantity/ProductId=${productId}`);
+            return productQuantityResponse.data;
         } catch (error) {
             console.log("Failed to fetch product quantity list: ", error.message);
+            return [];
         }
     };
 
-    const fetchProductPhone = async () => {
+    const fetchProductPhone = async (productId) => {
         try {
-            const productPhoneResponse = await axios.get(`/ParameterPhone/ProductId=${productData.id}`);
-            const productPhoneData = productPhoneResponse.data;
-            setProductPhone(productPhoneData);
+            const productPhoneResponse = await axios.get(`/ParameterPhone/ProductId=${productId}`);
+            return productPhoneResponse.data;
         } catch (error) {
             console.log("Failed to fetch product phone list: ", error.message);
+            return {};
         }
     };
 
-    const fetchProductAdapter = async () => {
+    const fetchProductAdapter = async (productId) => {
         try {
-            const productAdapterResponse = await axios.get(`/ParameterAdapter/ProductId=${productData.id}`);
-            const productAdapterData = productAdapterResponse.data;
-            setProductAdapter(productAdapterData);
+            const productAdapterResponse = await axios.get(`/ParameterAdapter/ProductId=${productId}`);
+            return productAdapterResponse.data;
         } catch (error) {
             console.log("Failed to fetch product adapter list: ", error.message);
+            return {};
         }
     };
 
-    const fetchProductBackupCharger = async () => {
+    const fetchProductBackupCharger = async (productId) => {
         try {
-            const productBackupChargerResponse = await axios.get(`/ParameterBackupCharger/ProductId=${productData.id}`);
-            const productBackupChargerData = productBackupChargerResponse.data;
-            setProductBackupCharger(productBackupChargerData);
+            const productBackupChargerResponse = await axios.get(`/ParameterBackupCharger/ProductId=${productId}`);
+            return productBackupChargerResponse.data;
         } catch (error) {
             console.log("Failed to fetch product backup charger list: ", error.message);
+            return {};
         }
     };
 
-    const fetchProductCable = async () => {
+    const fetchProductCable = async (productId) => {
         try {
-            const productCableResponse = await axios.get(`/ParameterCable/ProductId=${productData.id}`);
-            const productCableData = productCableResponse.data;
-            setProductCable(productCableData);
+            const productCableResponse = await axios.get(`/ParameterCable/ProductId=${productId}`);
+            return productCableResponse.data;
         } catch (error) {
             console.log("Failed to fetch product cable list: ", error.message);
+            return {};
         }
     };
 
@@ -92,6 +108,39 @@ export default function ProductDetail({action, visible, onClose, product}) {
         const {id, value} = e.target;
         setProductData((prevData) => ({...prevData, [id]: value}));
     };
+
+    const handleUploadImage = (e) => {
+        if (!e.target.files || e.target.files.length === 0) {
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            if (reader.readyState === 2) {
+                const imageDataUrl = reader.result;
+
+                // Tách chuỗi bằng dấu phẩy
+                const parts = imageDataUrl.split(",");
+
+                // Lấy phần sau của dấu phẩy (index 1 trong mảng)
+                const base64String = parts[1];
+
+                setProductData({
+                    ...productData,
+                    image: base64String,
+                });
+            }
+        };
+        reader.readAsDataURL(e.target.files[0]);
+    };
+
+
+    const handleOnDeleteImage = (e) => {
+        setProductData({
+            ...productData,
+            image: null,
+        });
+    }
 
     const handleOnSave = () => {
         if (actionType === "add") {
@@ -166,8 +215,9 @@ export default function ProductDetail({action, visible, onClose, product}) {
                 </div>
                 <div className="content">
                     <table className="col-span-3">
-                        <td>
-                            <form className="form overflow-auto">
+                        <tbody>
+                        <tr>
+                            <td>
                                 <div className="form-group flex justify-between mb-4 ">
                                     <label className="mr-2" htmlFor="id">ID</label>
                                     <input type="text"
@@ -177,6 +227,8 @@ export default function ProductDetail({action, visible, onClose, product}) {
                                            disabled
                                            value={productData.id}/>
                                 </div>
+                            </td>
+                            <td>
                                 <div className="form-group flex justify-between mb-4">
                                     <label className="mr-2" htmlFor="name">Tên sản phẩm</label>
                                     <input type="text"
@@ -185,6 +237,8 @@ export default function ProductDetail({action, visible, onClose, product}) {
                                            onChange={(e) => handleOnChange(e)}
                                            value={productData.name}/>
                                 </div>
+                            </td>
+                            <td>
                                 <div className="form-group flex justify-between  mb-4">
                                     <label className="mr-2" htmlFor="price">Giá sản phẩm</label>
                                     <input type="text"
@@ -193,39 +247,20 @@ export default function ProductDetail({action, visible, onClose, product}) {
                                            onChange={(e) => handleOnChange(e)}
                                            value={productData.price}/>
                                 </div>
-                                <div className="form-group flex justify-between mb-4">
-                                    <label className="mr-2" htmlFor="description">Mô tả</label>
-                                    <input
-                                        type="text"
-                                        className="form-control border border-black rounded-md"
-                                        id="description"
-                                        onChange={(e) => handleOnChange(e)}
-                                        value={productData.description}/>
-                                </div>
-                                <div className="form-group flex justify-between mb-4">
-                                    <label className="mr-2" htmlFor="category">Danh mục</label>
-                                    <input type="text"
-                                           className="form-control border border-black rounded-md"
-                                           id="category"
-                                           onChange={(e) => handleOnChange(e)}
-                                           value={productData.category}/>
-                                </div>
-                                <div className="form-group flex justify-between mb-4">
-                                    <label className="mr-2" htmlFor="brand">Thương hiệu</label>
-                                    <input type="text"
-                                           className="form-control border border-black rounded-md"
-                                           id="brand"
-                                           onChange={(e) => handleOnChange(e)}
-                                           value={productData.brand}/>
-                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
                                 <div className="form-group flex justify-between mb-4">
                                     <label className="mr-2" htmlFor="PreDiscount">Giá trước khi giảm giá</label>
                                     <input type="text"
                                            className="form-control border border-black rounded-md"
                                            id="PreDiscount"
                                            onChange={(e) => handleOnChange(e)}
-                                           value={productData.PreDiscount}/>
+                                           value={productData.preDiscount}/>
                                 </div>
+                            </td>
+                            <td>
                                 <div className="form-group flex justify-between mb-4">
                                     <label className="mr-2" htmlFor="discountPercent">Phần trăm giảm giá</label>
                                     <input type="text"
@@ -234,128 +269,242 @@ export default function ProductDetail({action, visible, onClose, product}) {
                                            onChange={(e) => handleOnChange(e)}
                                            value={productData.discountPercent}/>
                                 </div>
+                            </td>
+                            <td>
                                 <div className="form-group flex justify-between mb-4">
-                                    <label className="mr-2" htmlFor="color">Màu sắc</label>
+                                    <label className="mr-2" htmlFor="brand">Thương hiệu</label>
                                     <input type="text"
                                            className="form-control border border-black rounded-md"
-                                           id="color"
+                                           id="brand"
                                            onChange={(e) => handleOnChange(e)}
-                                           value={productData.color}/>
+                                           value={productData.brand}/>
                                 </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div className="form-group flex justify-between mb-4">
+                                    <label className="mr-2" htmlFor="category">Danh mục</label>
+                                    <input type="text"
+                                           className="form-control border border-black rounded-md"
+                                           id="category"
+                                           onChange={(e) => handleOnChange(e)}
+                                           value={productData.category}/>
+                                </div>
+                            </td>
+                            <td>
+                                <div className="form-group flex justify-between mb-4">
+                                    <label className="mr-2" htmlFor="description">Mô tả</label>
+                                    <textarea
+                                        className="form-control border border-black rounded-md"
+                                        id="description"
+                                        onChange={(e) => handleOnChange(e)}
+                                        value={productData.description}/>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
                                 <div className="form-group flex justify-between mb-4">
                                     <label className="mr-2" htmlFor="image">Hình ảnh</label>
-                                    {productData.image &&
+                                    {
+                                        productData.image &&
                                         <img className={"w-32 h-32"}
                                              src={`data:image/jpeg;base64, ${productData.image}`}
                                              alt={productData.name}/>
                                     }
                                 </div>
-                                <div className="form-group flex justify-end mb-4">
-                                    <input type="file" className="form-control" id="image"/>
-                                </div>
-
-                                <div className="form-group flex justify-end">
-                                    <button type="button"
-                                            className="btn btn-primary border border-green-500 bg-green-500 rounded-md p-2"
-                                            onClick={() => handleOnSave()}>Lưu
-                                    </button>
-                                </div>
-                            </form>
-                        </td>
-                        <td>
-                            <div className="ml-6 flex flex-col items-center">
-                                <tr>
-                                    <button className="border border-black p-3 rounded-lg bg-blue-200"
-                                            onClick={onOpenNewQuantity}
-                                    >
-                                        Thêm số lượng sản phẩm
-                                    </button>
-                                </tr>
-                                <tr className="mt-5">
-                                    <button className="border border-black p-3 rounded-lg bg-blue-200">
-                                        Thêm thông số điện thoại
-                                    </button>
-                                </tr>
-                                <tr className="mt-5">
-                                    <button className="border border-black p-3 rounded-lg bg-blue-200 ">
-                                        Thêm thông số sạc
-                                    </button>
-                                </tr>
-                                <tr className="mt-5">
-                                    <button className="border border-black p-3 rounded-lg bg-blue-200">
-                                        Thêm thông số cáp
-                                    </button>
-                                </tr>
-                                <tr className="mt-5">
-                                    <button className="border border-black p-3 rounded-lg bg-blue-200">
-                                        Thêm thông số sạc dự phòng
-                                    </button>
-                                </tr>
-                            </div>
-                        </td>
-                        {actionType === "edit" && (
+                            </td>
                             <td>
-                                <div className="ml-6 flex flex-col items-center">
-                                    {productQuantity.length > 0 && (
-                                        <tr className="mt-5">
-                                            <button
-                                                className="border border-black p-3 rounded-lg bg-blue-200"
-                                                onClick={onOpenEditQuantity}
-                                            >
-                                                Sửa số lượng sản phẩm
-                                            </button>
-                                        </tr>
-                                    )}
-
-                                    {productPhone.length > 0 && (
-                                        <tr className="mt-5">
-                                            <button className="border border-black p-3 rounded-lg bg-blue-200"
-                                                    onClick={onOpenEditPhone}
-                                            >
-                                                Sửa thông số điện thoại
-                                            </button>
-                                        </tr>
-                                    )}
-
-                                    {productAdapter.length > 0 && (
-                                        <tr className="mt-5">
-                                            <button className="border border-black p-3 rounded-lg bg-blue-200 ">
-                                                Sửa thông số sạc
-                                            </button>
-                                        </tr>
-                                    )}
-
-                                    {productCable.length > 0 && (
-                                        <tr className="mt-5">
-                                            <button className="border border-black p-3 rounded-lg bg-blue-200">
-                                                Sửa thông số cáp
-                                            </button>
-                                        </tr>
-                                    )}
-
-                                    {productBackupCharger.length > 0 && (
-                                        <tr className="mt-5">
-                                            <button className="border border-black p-3 rounded-lg bg-blue-200">
-                                                Sửa thông số sạc dự phòng
-                                            </button>
-                                        </tr>
-                                    )}
-
+                                <div className="form-group flex justify-end mb-4">
+                                    <input
+                                        type="file"
+                                        className="form-control" id="image"
+                                        onChange={(e) => handleUploadImage(e)}
+                                    />
                                 </div>
                             </td>
-                        )}
+                            <td>
+                                <div className="form-group flex justify-between mb-4">
+                                    <button
+                                        className="border border-black p-3 rounded-lg bg-red-500"
+                                        onClick={(e) => handleOnDeleteImage(e)}
+                                    >
+                                        Xoá hình ảnh
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
                     </table>
+                    <table className="col-span-5 flex items-center justify-evenly">
+                        <tbody>
+                        <tr>
+                            {
+                                (productQuantity.length <= 0) ? (
+                                        <td className={""}>
+                                            <div className="">
+                                                <button className="border border-black p-3 rounded-lg bg-blue-200 text-xs"
+                                                        onClick={onOpenNewQuantity}
+                                                >
+                                                    Thêm số lượng sản phẩm
+                                                </button>
+                                            </div>
+                                        </td>
+                                    )
+                                    :
+                                    (
+                                        <td>
+                                            <div className="ml-6 flex flex-col items-center">
+                                                <div className="">
+                                                    <button
+                                                        className="border border-black p-3 rounded-lg bg-yellow-100 text-xs"
+                                                        onClick={onOpenEditQuantity}
+                                                    >
+                                                        Sửa số lượng sản phẩm
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    )
+                            }
+
+                            {
+                                (Object.keys(productPhone).length === 0) ?
+                                    (
+                                        <td>
+                                            <div className="">
+                                                <button
+                                                    className="border border-black p-3 rounded-lg bg-blue-200 text-xs">
+                                                    Thêm thông số điện thoại
+                                                </button>
+                                            </div>
+                                        </td>
+                                    )
+                                    :
+                                    (
+                                        <td>
+                                            <div className="">
+                                                <div className="mt-5">
+                                                    <button
+                                                        className="border border-black p-3 rounded-lg bg-yellow-100 text-xs"
+                                                        onClick={onOpenEditPhone}
+                                                    >
+                                                        Sửa thông số điện thoại
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    )
+                            }
+                            {
+                                (Object.keys(productAdapter).length === 0) ?
+                                    (
+                                        <td>
+                                            <div className="">
+                                                <button
+                                                    className="border border-black p-3 rounded-lg bg-blue-200 text-xs">
+                                                    Thêm thông số sạc
+                                                </button>
+                                            </div>
+                                        </td>
+                                    )
+                                    :
+                                    (
+                                        <td>
+                                            <div className="">
+                                                <div className="mt-5">
+                                                    <button
+                                                        className="border border-black p-3 rounded-lg bg-yellow-100 text-xs">
+                                                        Sửa thông số sạc
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    )
+                            }
+
+                            {
+                                (Object.keys(productCable).length === 0) ?
+                                    (
+                                        <td>
+                                            <div className="">
+                                                <button
+                                                    className="border border-black p-3 rounded-lg bg-blue-200 text-xs">
+                                                    Thêm thông số cáp
+                                                </button>
+                                            </div>
+                                        </td>
+                                    )
+                                    :
+                                    (
+                                        <td>
+                                            <div className="">
+                                                <div className="mt-5">
+                                                    <button
+                                                        className="border border-black p-3 rounded-lg bg-yellow-100 text-xs">
+                                                        Sửa thông số cáp
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    )
+                            }
+                            {
+                                (Object.keys(productPhone).length === 0) ?
+                                    (
+                                        <td>
+                                            <div className="">
+                                                <button
+                                                    className="border border-black p-3 rounded-lg bg-blue-200 text-xs">
+                                                    Thêm thông số điện thoại
+                                                </button>
+                                            </div>
+                                        </td>
+                                    )
+                                    :
+                                    (
+                                        <td>
+                                            <div className="">
+                                                <div className="mt-5">
+                                                    <button
+                                                        className="border border-black p-3 rounded-lg bg-yellow-100 text-xs">
+                                                        Sửa thông số điện thoại
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    )
+                            }
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <div className="form-group flex justify-end">
+                        <button type="button"
+                                className="btn btn-primary border border-green-500 bg-green-500 rounded-md p-2"
+                                onClick={() => handleOnSave()}>Lưu
+                        </button>
+                    </div>
+
                 </div>
             </div>
 
+            {
+                productQuantityVisible &&
+                <ProductQuantity visible={productQuantityVisible} data={productQuantity} onClose={onCloseQuantity}
+                                 action={actionOnProductParameter}/>
+            }
             {/*<productAdapter/>*/}
             {/*<productBackupCharger/>*/}
             {/*<ProductPhone visible={productPhoneVisible} data={productPhone} onClose={onClosePhone}/>*/}
-            {/*<ProductQuantity visible={productQuantityVisible} data={productQuantity} onClose={onCloseQuantity} action={actionOnProductParameter}/>*/}
-            {/*<productCable/>*/}
-            <ProductPhone visible={productPhoneVisible} onClose={onOpenEditPhone} data={productData}
-                          action={actionType}/>
 
+            {/*<productCable/>*/}
+            {
+                productPhoneVisible &&
+                <ProductPhone visible={productPhoneVisible} onClose={onOpenEditPhone} data={productData}
+                              action={actionType}/>
+            }
         </div>
     )
 }

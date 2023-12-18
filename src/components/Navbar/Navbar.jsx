@@ -26,32 +26,32 @@ export default function Navbar() {
     }
 
     return (
-        <div className="navbar grid grid-cols-6 h-full w-full">
+        <div className="navbar grid grid-cols-6 h-full w-full z-0">
             <div className="current-menu w-full h-full col-start-1 col-end-2 flex items-center justify-center ">
 
             </div>
 
-            <div
-                className="notification w-full h-full col-start-5 col-end-6 flex items-center justify-end"
-                onMouseEnter={() => setShowNotifications(true)}
-                onMouseLeave={() => setShowNotifications(false)}
-            >
-                <IoMdNotificationsOutline
-                    className='w-5 h-5 cursor-pointer'
-                    onClick={() => {
-                        alert('notification');
-                    }}
-                />
-            </div>
+            {/*<div*/}
+            {/*    className="notification w-full h-full col-start-5 col-end-6 flex items-center justify-end"*/}
+            {/*    onMouseEnter={() => setShowNotifications(true)}*/}
+            {/*    onMouseLeave={() => setShowNotifications(false)}*/}
+            {/*>*/}
+            {/*    <IoMdNotificationsOutline*/}
+            {/*        className='w-5 h-5 cursor-pointer'*/}
+            {/*        onClick={() => {*/}
+            {/*            alert('notification');*/}
+            {/*        }}*/}
+            {/*    />*/}
+            {/*</div>*/}
 
-            {showNotifications && (
-                <div className="notification-popup">
-                    {/* Nội dung hộp thoại thông báo ở đây */}
-                    {/* Ví dụ: */}
-                    <div>Notification 1</div>
-                    <div>Notification 2</div>
-                </div>
-            )}
+            {/*{showNotifications && (*/}
+            {/*    <div className="notification-popup">*/}
+            {/*        /!* Nội dung hộp thoại thông báo ở đây *!/*/}
+            {/*        /!* Ví dụ: *!/*/}
+            {/*        <div>Notification 1</div>*/}
+            {/*        <div>Notification 2</div>*/}
+            {/*    </div>*/}
+            {/*)}*/}
 
             {(user) &&
                 (<div className="user w-full h-full col-start-6 col-end-7 flex items-center justify-center">

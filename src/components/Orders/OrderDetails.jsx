@@ -45,7 +45,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                 await getLastId().then((res) => {
                         setOrder((prevOrder) => ({
                             ...prevOrder,
-                            id: res,
+                            id: res + 1,
                         }));
                     }
                 );
@@ -331,7 +331,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
             if (action === "add") {
                 handleAddOrder(order, orderProducts);
             } else {
-                handleEditOrder(order, orderProducts);
+                handleEditOrder(order);
             }
         }
     )
@@ -370,20 +370,21 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
     }
 
     const handleOpenDetailProducts = async () => {
-        if (orderProductChanged == false) {
-            await fetchOrderDetail().then((res) => {
+        if (orderProductChanged === false && action === "edit") {
+            await fetchOrderDetail(orderData.id).then((res) => {
                 setOrderDetail(res);
             });
         } else {
             setOrderDetail(orderProducts);
         }
+        console.log(orderDetail);
 
         setVisibleOrderProductDetail(true);
     }
 
-    const fetchOrderDetail = async () => {
+    const fetchOrderDetail = async (orderId) => {
         try {
-            const response = await axios.get(`/OrderDetail/OrderId=${order.id}`);
+            const response = await axios.get(`/OrderDetail/OrderId=${orderId}`);
             return response.data;
         } catch (err) {
             console.error(err);
@@ -393,6 +394,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
 
     const handleCloseOrderProductDetail = () => {
         setVisibleOrderProductDetail(false);
+        setOrderProductChanged(false);
     }
 
     const handleOnSaveOrderProducts = (orderProductsData) => {
@@ -432,6 +434,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
     }
 
     const fetchDiscountId = async (discountCode) => {
+        if (discountCode == "") return "";
         try {
             const response = await axios.get(`/Discount/Code=${discountCode}`);
             return response.data;
@@ -447,7 +450,11 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
             <div className="bg-white p-4 rounded ">
                 <div className="title flex justify-between px-1 mb-5">
                     <div className="text-3xl">Thông tin đơn hàng</div>
-                    <button onClick={onClose}>X</button>
+                    <button onClick={() => {
+                        onClose();
+                        setOrderProductChanged(false);
+                    }}>X
+                    </button>
                 </div>
                 <div className="content">
                     <table className="col-span-3 form overflow-auto w-full">
@@ -480,7 +487,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         onChange={(e) => handleOnChange(e)}
                                         onBlur={(e) => handleSearchCustomer(e)}
                                         value={order.customerEmail}
-                                        disabled={!(order.status === "Processing")}
+                                        disabled={action === "edit"}
                                     />
                                 </div>
                             </td>
@@ -495,7 +502,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         id="phone"
                                         onChange={(e) => handleOnChange(e)}
                                         value={order.name}
-                                        disabled={!(order.status === "Processing")}
+                                        disabled={action === "edit"}
                                     />
                                 </div>
                             </td>
@@ -512,7 +519,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         id="address"
                                         onChange={(e) => handleOnChange(e)}
                                         value={order.address}
-                                        disabled={!(order.status === "Processing")}
+                                        disabled={action === "edit"}
                                     />
                                 </div>
                             </td>
@@ -526,7 +533,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                     id="phone"
                                     onChange={(e) => handleOnChange(e)}
                                     value={order.phone}
-                                    disabled={!(order.status === "Processing")}
+                                    disabled={action === "edit"}
                                 />
                             </td>
                             <td>
@@ -555,7 +562,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         className="form-control border border-black rounded-md mx-2"
                                         onChange={(e) => handleOnChange(e)}
                                         value={order.city}
-                                        disabled={!(order.status === "Processing")}
+                                        disabled={action === "edit"}
                                     >
                                         {
                                             cities.map((tinh) => (
@@ -580,7 +587,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         className="form-control border border-black rounded-md mx-2"
                                         onChange={(e) => handleOnChange(e)}
                                         value={order.district}
-                                        disabled={!(order.status === "Processing")}
+                                        disabled={action === "edit"}
                                     >
                                         {
                                             districts.map((quan) => (quan.parent_code === order.cityCode) && (
@@ -606,7 +613,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         className="form-control border border-black rounded-md mx-2"
                                         onChange={(e) => handleOnChange(e)}
                                         value={order.ward}
-                                        disabled={!(order.status === "Processing")}
+                                        disabled={action === "edit"}
                                     >
                                         {
                                             wards.map((ward) => (
@@ -634,7 +641,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         id="orderDate"
                                         onChange={(e) => handleOnChange(e)}
                                         value={order.orderDate}
-                                        disabled={!(order.status === "Processing")}
+                                        disabled={action === "edit"}
                                     />
                                 </div>
                             </td>
@@ -665,7 +672,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         onChange={(e) => handleOnChange(e)}
                                         onBlur={(e) => handleDiscount(e)}
                                         value={order.discountCode}
-                                        disabled={!(order.status === "Processing")}
+                                        disabled={action === "edit"}
                                     />
                                 </div>
                             </td>
@@ -682,7 +689,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         className="form-control border border-black rounded-md mx-2"
                                         onChange={(e) => handleOnChange(e)}
                                         value={order.paymentType}
-                                        disabled={!(order.status === "Processing")}
+                                        disabled={action === "edit"}
                                     >
                                         <option value={"Credit Card"}>Credit Card</option>
                                         <option value={"PayPal"}>PayPal</option>
@@ -701,7 +708,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         className="form-control border border-black rounded-md mx-2"
                                         onChange={(e) => handleOnChange(e)}
                                         value={order.deliveryType}
-                                        disabled={!(order.status === "Processing")}
+                                        disabled={action === "edit"}
                                     >
                                         <option value={"Standard"}>Tiêu chuẩn</option>
                                         <option value={"Express"}>Nhanh</option>
@@ -719,7 +726,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         className="form-control border border-black rounded-md mx-2"
                                         onChange={(e) => handleOnChange(e)}
                                         value={order.status}
-                                        disabled={(order.status === "Done")}
+                                        disabled={(order.status === "Done") || (order.status === "Cancelled")}
                                     >
                                         <option value={"Processing"}>Đang xử lý</option>
                                         <option value={"Delivering"}>Đang giao</option>
@@ -740,7 +747,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                         id="note"
                                         onChange={(e) => handleOnChange(e)}
                                         value={order.note}
-                                        disabled={!(order.status === "Processing")}
+                                        disabled={action === "edit"}
                                     />
                                 </div>
                             </td>
@@ -756,13 +763,17 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                                     </button>
                                 </div>
                             </td>
-                            <td>
-                                <button className="px-2 py-1 ml-2 text-white bg-blue-500 rounded-md"
-                                        onClick={handleOnSaveOrder}
-                                >
-                                    Lưu
-                                </button>
-                            </td>
+                            {
+                                !(orderData.status === "Done" || orderData.status === "Cancelled") &&
+                                <td>
+                                    <button className="px-2 py-1 ml-2 text-white bg-blue-500 rounded-md"
+                                            onClick={handleOnSaveOrder}
+                                    >
+                                        Lưu
+                                    </button>
+                                </td>
+                            }
+
                         </tr>
                         </tbody>
                     </table>

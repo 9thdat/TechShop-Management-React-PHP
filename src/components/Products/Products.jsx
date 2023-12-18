@@ -17,37 +17,26 @@ export default function Products() {
     }, []);
 
     useEffect(() => {
-        fetchProducts();
+        fetchProducts().then((res) => {
+            setProducts(res);
+        });
     }, [products]);
 
     const fetchProducts = async () => {
         try {
-            const [productRespone, productQuantityResponse] = await Promise.all([
-                axios.get("/Product"),
-                axios.get("/ProductQuantity"),
-            ]);
-
-            const productData = productRespone.data;
-            const productQuantityData = productQuantityResponse.data;
-
-            const quantityMap = new Map(productQuantityData.map(item => [item.productId, item.quantity]));
-
-            const updatedProductData = productData.map(product => ({
-                ...product,
-                quantity: (product.quantity || 0) + (quantityMap.get(product.id) || 0),
-            }));
-
-            setProducts(updatedProductData);
+            const response = await axios.get("/Product/GetProductAndQuantity");
+            return response.data;
         } catch (error) {
             console.log("Failed to fetch product list: ", error.message);
+            return [];
         }
     };
 
     // Product
     const EditProduct = async (e) => {
-        setActionType("edit");
         const product = products.find((product) => product.id === parseInt(e.target.value));
         setProduct(product);
+        setActionType("edit");
 
         // Set visible to ProductDetail
         setVisibleProductDetail(true);
@@ -64,7 +53,6 @@ export default function Products() {
         try {
             // Update productQuantity
             const response = await axios.put(`ProductQuantity/productId=${product.id}&quantity=${0}`);
-            console.log(response);
             if (response.status === 204) {
                 alert("Xóa sản phẩm thành công!");
             } else {
@@ -87,7 +75,7 @@ export default function Products() {
     const handleOnCloseProductDetail = () => {
         setVisibleProductDetail(false);
     }
-    
+
     const AddProduct = (e) => {
         setActionType("add");
         const id = products[products.length - 1].id + 1;
@@ -109,7 +97,7 @@ export default function Products() {
 
     return (
         <div className="relative h-[90vh] overflow-x-scroll overflow-y-scroll shadow-md sm:rounded-lg">
-            <div className="h-[10vh] top-0 right-0 p-4 sticky backdrop-blur-sm">
+            <div className="h-[10vh] top-0 right-0 p-4 sticky backdrop-blur-sm flex items-center justify-end">
                 <button className="px-2 py-1 text-white bg-green-500 rounded-md"
                         onClick={(e) => AddProduct(e)}>Thêm mới sản phẩm
                 </button>
@@ -132,9 +120,6 @@ export default function Products() {
                             Giá
                         </th>
                         <th scope="col" className="px-6 py-3">
-                            Mô tả
-                        </th>
-                        <th scope="col" className="px-6 py-3">
                             Loại
                         </th>
                         <th scope="col" className="px-6 py-3">
@@ -142,12 +127,6 @@ export default function Products() {
                         </th>
                         <th scope="col" className="px-6 py-3">
                             Số lượng
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                            Phần trăm giảm giá
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                            Màu sắc
                         </th>
                         <th scope="col" className="px-6 py-3">
                             Hành động
@@ -167,9 +146,6 @@ export default function Products() {
                                 <td className="px-6 py-4">
                                     {product.price}
                                 </td>
-                                <td className="px-6 py-4">
-                                    {product.description}
-                                </td>
                                 <td className="px-6 py-4 ">
                                     {product.category}
                                 </td>
@@ -178,12 +154,6 @@ export default function Products() {
                                 </td>
                                 <td className="px-6 py-4">
                                     {product.quantity}
-                                </td>
-                                <td className="px-6 py-4">
-                                    {product.discountPercent}
-                                </td>
-                                <td className="px-6 py-4">
-                                    {product.color}
                                 </td>
                                 <td className="px-6 py-4 flex items-center">
                                     <button className="px-2 py-1 text-white bg-blue-500 rounded-md"
@@ -201,11 +171,16 @@ export default function Products() {
                     </tbody>
                 </table>
             </div>
+            {
+                visibleProductDetail &&
+                <ProductDetail action={actionType} visible={visibleProductDetail} onClose={handleOnCloseProductDetail}
+                               product={product}/>
+            }
 
-            <ProductDetail action={actionType} visible={visibleProductDetail} onClose={handleOnCloseProductDetail}
-                           product={product}/>
-
-            <ConfirmDelete visible={visibleDelete} onDelete={handleOnDelete} onAbortDelete={handleOnAbortDelete}/>
+            {
+                visibleDelete &&
+                <ConfirmDelete visible={visibleDelete} onDelete={handleOnDelete} onAbortDelete={handleOnAbortDelete}/>
+            }
         </div>
     );
 }

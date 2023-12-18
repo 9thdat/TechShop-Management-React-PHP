@@ -87,73 +87,137 @@ export default function Orders() {
     }
 
     const handleAddOrder = async (orderData, orderProducts) => {
-        // try {
-        //     const res = await axios.post("/Order", orderData);
-        //     if (res.status === 200) {
-        //         alert("Thêm đơn hàng thành công");
-        //         setVisibleOrderDetail(false);
-        //         setOrder({});
-        //         setOrders([...orders, res.data]);
-        //     }
-        // } catch (e) {
-        //     console.log(e);
-        //     alert("Thêm đơn hàng thất bại");
-        // }
-        console.log(orderData);
-        console.log(orderProducts);
-    }
+        let failedOrderDetail = [];
+        console.log("orderData", orderData);
+        if (orderData.discountId === "") {
+            orderData = {
+                ...orderData,
+                discountId: null,
+            }
+        }
 
-    const handleEditOrder = async (orderData, orderProducts) => {
         try {
-            const res = await axios.put(`/Order/${orderData.id}`, orderData);
-            if (res.status === 200) {
+            const orderResponse = await axios.post("/Order", orderData);
+
+            if (orderResponse.status >= 200 && orderResponse.status < 300) {
+                const orderId = orderResponse.data;
+                const orderDetailsPromises = orderProducts.map(async (order) => {
+                    order = {
+                        ...order,
+                        orderId: orderData.id,
+                    }
+                    try {
+                        const response = await axios.post("/OrderDetail", order);
+
+                        if (response.status >= 200 && response.status < 300) {
+                            return null; // Success
+                        } else {
+                            failedOrderDetail.push(order.productId);
+                        }
+                    } catch (error) {
+                        failedOrderDetail.push(order.productId);
+                    }
+                });
+
+                const orderDetailsResults = await Promise.all(orderDetailsPromises);
+            } else {
+                alert("Thêm đơn hàng thất bại");
+            }
+
+            if (failedOrderDetail.length === 0) {
+                alert("Thêm đơn hàng thành công");
+                setVisibleOrderDetail(false);
+                await fetchOrders().then((res) => {
+                        setOrders(res);
+                        setOriginalOrders(res);
+                    }
+                );
+            } else {
+                alert("Các sản phẩm sau không được thêm vào đơn hàng: " + failedOrderDetail.join(", "));
+            }
+        } catch (error) {
+            alert("Thêm đơn hàng thất bại");
+        }
+    };
+
+
+    const handleEditOrder = async (orderData) => {
+        try {
+            const orderResponse = await axios.put(`/Order/${orderData.id}`, orderData);
+
+            if (orderResponse.status >= 200 && orderResponse.status < 300) {
                 setVisibleOrderDetail(false);
                 setOrder({});
-                const newOrders = orders.map((order) => {
-                    if (order.id === orderData.id) {
-                        return orderData;
-                    }
-                    return order;
-                });
+                const newOrders = orders.map((order) => (order.id === orderData.id ? orderData : order));
                 setOrders(newOrders);
-            }
-
-            let failedUpdateProduct = [];
-            // Update existing order details
-            for (const order of orderProducts) {
-                const response = await axios.put(`/OrderDetail/${order.id}`, JSON.stringify({
-                    id: order.id,
-                    orderId: order.orderId,
-                    productId: order.productId,
-                    color: order.color,
-                    quantity: order.quantity,
-                    price: order.price,
-                }), {
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
-
-                if (response.status !== 200) {
-                    failedUpdateProduct.push(order);
-                }
-            }
-
-            if (failedUpdateProduct.length === 0) {
-                alert("Cập nhật sản phẩm thành công");
             } else {
-                alert("Các sản phẩm sau không được cập nhật thành công: " + failedUpdateProduct.join(", "));
+                alert("Cập nhật đơn hàng thất bại");
+                return;
             }
+
+            alert("Cập nhật hàng thành công");
             setVisibleOrderDetail(false);
-        } catch (e) {
-            console.log(e);
-            alert("Sửa đơn hàng thất bại");
+        } catch (error) {
+            alert("Cập nhật đơn hàng thất bại");
         }
-    }
+        // try {
+        //     const orderResponse = await axios.put(`/Order/${orderData.id}`, orderData);
+        //
+        //     if (orderResponse.status >= 200 && orderResponse.status < 300) {
+        //         setVisibleOrderDetail(false);
+        //         setOrder({});
+        //         const newOrders = orders.map((order) => (order.id === orderData.id ? orderData : order));
+        //         setOrders(newOrders);
+        //     } else {
+        //         alert("Sửa đơn hàng thất bại");
+        //         return;
+        //     }
+        //
+        //     const orderDetailsPromises = orderProducts.map(async (order) => {
+        //         try {
+        //             const response = await axios.put(`/OrderDetail/${order.id}`, JSON.stringify({
+        //                 id: order.id,
+        //                 orderId: order.orderId,
+        //                 productId: order.productId,
+        //                 color: order.color,
+        //                 quantity: order.quantity,
+        //                 price: order.price,
+        //             }), {
+        //                 headers: {
+        //                     "Content-Type": "application/json",
+        //                 },
+        //             });
+        //
+        //             if (response.status >= 200 && response.status < 300) {
+        //                 return null; // Success
+        //             } else {
+        //                 return order; // Failure
+        //             }
+        //         } catch (error) {
+        //             return order; // Error
+        //         }
+        //     });
+        //
+        //     const orderDetailsResults = await Promise.all(orderDetailsPromises);
+        //     const failedUpdateProduct = orderDetailsResults.filter(result => result !== null);
+        //
+        //     if (failedUpdateProduct.length === 0) {
+        //         alert("Cập nhật sản phẩm thành công");
+        //     } else {
+        //         alert("Các sản phẩm sau không được cập nhật thành công: " + failedUpdateProduct.map(failed => failed.id).join(", "));
+        //     }
+        //
+        //     setVisibleOrderDetail(false);
+        // } catch (error) {
+        //     console.log(error);
+        //     alert("Sửa đơn hàng thất bại");
+        // }
+    };
+
 
     return (
-        <div className="relative h-[90vh] overflow-scroll shadow-md sm:rounded-lg">
-            <div className="top-0 right-0 sticky h-[10vh] p-4 backdrop-blur-sm">
+        <div className="relative min-h-[90vh] overflow-scroll shadow-md sm:rounded-lg">
+            <div className="search top-0 right-0 flex items-center justify-end sticky h-[10vh] p-4 backdrop-blur-sm">
                 <button
                     className="px-2 py-1 text-white bg-green-500 rounded-md"
                     onClick={handleOpenAddOrder}
@@ -163,13 +227,13 @@ export default function Orders() {
                 <input
                     type="text"
                     id="searchValue"
-                    className="px-2 py-1 ml-2 rounded-md border border-black w-[60%]"
+                    className="px-2 py-1 ml-2 rounded-md border border-black w-20 sm:w-60 md:w-80 lg:w-[66%]"
                     placeholder="Tìm kiếm đơn hàng"
                     value={search.searchValue}
                     onChange={(e) => handleOnChangeSearchType(e)}
                 />
                 <select
-                    className="px-2 py-1 ml-2 rounded-md border border-black w-[10%]"
+                    className="px-2 py-1 ml-2 rounded-md border border-black w-20 sm:w-24 md:w-28 lg:w-32"
                     id="sortValue"
                     onChange={(e) => handleOnChangeSearchType(e)}
                 >
@@ -178,7 +242,7 @@ export default function Orders() {
                     <option value="phone">Số điện thoại</option>
                 </select>
                 <select
-                    className="px-2 py-1 ml-2 rounded-md border border-black w-[12%]"
+                    className="px-2 py-1 ml-2 rounded-md border border-black w-24 sm:w-32 md:w-40 lg:w-48"
                     id="statusValue"
                     onChange={(e) => handleOnChangeSearchType(e)}
                 >
@@ -195,7 +259,7 @@ export default function Orders() {
                     Tìm kiếm
                 </button>
             </div>
-            <div className="overflow-x-scroll overflow-y-scroll h-[78vh]">
+            <div className="overflow-x-auto overflow-y-auto h-[78vh]">
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500">
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                     <tr>
@@ -237,51 +301,51 @@ export default function Orders() {
                                 >
                                     <td
                                         scope="row"
-                                        className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap"
+                                        className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap"
                                     >
                                         {order.id}
                                     </td>
                                     <td
                                         scope="row"
-                                        className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap"
+                                        className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap"
                                     >
                                         {order.name}
                                     </td>
                                     <td
                                         scope="row"
-                                        className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap"
+                                        className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap"
                                     >
                                         {order.customerEmail}
                                     </td>
                                     <td
                                         scope="row"
-                                        className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap"
+                                        className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap"
                                     >
                                         {order.phone}
                                     </td>
                                     <td
                                         scope="row"
-                                        className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap"
+                                        className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap"
                                     >
                                         {order.address + ', ' + order.ward + ', ' + order.district + ', ' + order.city}
                                     </td>
                                     <td
                                         scope="row"
-                                        className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap"
+                                        className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap"
                                     >
                                         {order.totalPrice}
                                     </td>
                                     <td
                                         scope="row"
-                                        className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap">
+                                        className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap">
                                         {order.orderDate}
                                     </td>
                                     <td
                                         scope="row"
-                                        className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap">
+                                        className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap">
                                         {order.status === "Processing" ? "Đang xử lý" : (order.status === "Delivering" ? "Đang giao hàng" : (order.status === "Done" ? "Hoàn thành" : "Đã hủy"))}
                                     </td>
-                                    <td className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap">
+                                    <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap">
                                         <button
                                             className="px-2 py-1 text-white bg-green-500 rounded-md"
                                             onClick={() => handleOpenOrderDetail(order)}

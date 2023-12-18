@@ -4,6 +4,7 @@ import axios from "../../api/axios";
 export default function OrderProductDetail({visible, onClose, order, action, onSave, orderDetail}) {
     const [orderProducts, setOrderProducts] = useState([]);
     const [orderProduct, setOrderProduct] = useState({
+        id: 0,
         productId: "",
         color: "",
         quantity: 0,
@@ -15,9 +16,60 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
     const [currentOrderProduct, setCurrentOrderProduct] = useState("");
     const [productQuantity, setProductQuantity] = useState([]);
     const [totalProductQuantity, setTotalProductQuantity] = useState(0);
+    const [isValid, setIsValid] = useState({
+        productId: true,
+        color: true,
+        quantity: true,
+    });
+
+    useEffect(() => {
+        console.log(isValid);
+    }, [isValid]);
+
+    useEffect(() => {
+        setOrderProducts((prevOrderProducts) => {
+            const orderProducts = [...prevOrderProducts];
+            orderProducts[currentOrderProduct - 1] = {
+                productId: orderProduct.productId,
+                color: orderProduct.color,
+                quantity: orderProduct.quantity,
+                price: orderProduct.price,
+                totalPrice: orderProduct.totalPrice,
+            };
+            return orderProducts;
+        });
+    }, [orderProduct]);
+
+    useEffect(() => {
+        calculateTotalPrice();
+
+        return () => {
+            console.log("Calculate total price");
+        }
+    }, [orderProduct.price, orderProduct.quantity]);
+
+    useEffect(() => {
+        setOrderProduct(
+            {
+                productId: orderDetail.productId,
+                color: orderDetail.color,
+                quantity: orderDetail.quantity,
+                price: orderDetail.price,
+                totalPrice: orderDetail.totalPrice,
+            }
+        )
+        setOrderProducts(orderDetail);
+        setOrderProductsLength(orderDetail.length);
+
+        return () => {
+            console.log("Set order products");
+        }
+    }, [orderDetail]);
 
     const handleOnChange = useCallback(async (e) => {
         const {id, value} = e.target;
+        let price = 0;
+        let totalPrice = 0;
 
         if (id === "productId" && value !== "") {
             setOrderProduct((prevOrderProduct) => ({
@@ -33,6 +85,18 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
                     } else {
                         setProductQuantity([]);
                     }
+
+                    if (productData.length === 0) {
+                        setIsValid((prevState) => ({
+                            ...prevState,
+                            productId: false,
+                        }));
+                    } else {
+                        setIsValid((prevState) => ({
+                            ...prevState,
+                            productId: true,
+                        }));
+                    }
                 } catch (err) {
                     console.error(err);
                 }
@@ -46,13 +110,26 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
                     setTotalProductQuantity(totalProductQuantity);
 
                     const productData = await fetchProduct(orderProduct.productId);
+                    price = Number(productData.price);
+                    totalPrice = price * Number(orderProduct.quantity);
                     setOrderProduct((prevOrderProduct) => ({
                         ...prevOrderProduct,
                         color: value,
-                        price: Number(productData.price),
-                        totalPrice: Number(productData.price) * Number(prevOrderProduct.quantity),
+                        price: price,
+                        totalPrice: totalPrice,
                     }));
-                    console.log(orderProduct);
+
+                    if (value === "") {
+                        setIsValid((prevState) => ({
+                            ...prevState,
+                            color: false,
+                        }));
+                    } else {
+                        setIsValid((prevState) => ({
+                            ...prevState,
+                            color: true,
+                        }));
+                    }
                 } catch (err) {
                     console.error(err);
                 }
@@ -62,68 +139,32 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
         } else if (id === "quantity") {
             const quantityValue = Number(value);
             const productData = await fetchProduct(orderProduct.productId);
-            const totalPrice = Number(productData.price) * quantityValue;
+            totalPrice = Number(productData.price) * quantityValue;
 
             setOrderProduct((prevOrderProduct) => ({
                 ...prevOrderProduct,
                 quantity: quantityValue,
                 totalPrice: totalPrice,
             }));
+
+            if (typeof (quantityValue) !== "number" || quantityValue > totalProductQuantity) {
+                setIsValid((prevState) => ({
+                    ...prevState,
+                    quantity: false,
+                }));
+            } else {
+                setIsValid((prevState) => ({
+                    ...prevState,
+                    quantity: true,
+                }));
+            }
         } else {
             setOrderProduct((prevOrderProduct) => ({
                 ...prevOrderProduct,
                 [id]: value,
             }));
         }
-
-        setOrderProducts((prevOrderProducts) => {
-            // Check if prevOrderProducts is an array
-            if (Array.isArray(prevOrderProducts)) {
-                const indexToUpdate = currentOrderProduct - 1;
-
-                if (indexToUpdate >= 0 && indexToUpdate < orderProductsLength) {
-                    return prevOrderProducts.map((orderProduct, index) => {
-                        if (index === indexToUpdate) {
-                            return {
-                                ...orderProduct,
-                                [id]: value,
-                                price: Number(orderProduct.price),
-                                totalPrice: Number(orderProduct.price) * Number(orderProduct.quantity),
-                            };
-                        }
-                        return orderProduct;
-                    });
-                }
-            }
-
-            // If prevOrderProducts is not an array or the index is out of bounds, return the unchanged state
-            return prevOrderProducts;
-        });
     }, [orderProduct.productId, orderProduct.price, orderProduct.quantity]);
-
-
-    useEffect(() => {
-        calculateTotalPrice();
-
-        return () => {
-            console.log("Calculate total price");
-        }
-    }, [orderProduct.price, orderProduct.quantity]);
-
-    useEffect(() => {
-        orderProduct.current = {
-            productId: orderDetail.productId,
-            color: orderDetail.color,
-            quantity: orderDetail.quantity,
-            price: orderDetail.price,
-            totalPrice: orderDetail.totalPrice,
-        };
-        setOrderProductsLength(orderDetail.length);
-
-        return () => {
-            console.log("Set order products");
-        }
-    }, [orderDetail]);
 
     const calculateTotalPrice = () => {
         orderProduct.totalPrice = Number(orderProduct.price) * Number(orderProduct.quantity);
@@ -154,7 +195,7 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
 
     const fetchLastId = async () => {
         try {
-            const response = await axios.get("/OrderProductDetail/GetLastId");
+            const response = await axios.get("/OrderDetail/GetLastId");
             return response.data;
         } catch (err) {
             console.error(err);
@@ -204,26 +245,26 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
         if (value === "") {
             setCurrentOrderProduct(() => value);
 
-            orderProduct.current = {
+            setOrderProduct({
                 productId: "",
                 color: "",
                 quantity: "",
                 price: "",
                 totalPrice: "",
-            };
+            });
         } else {
             const totalProductQuantity = await fetchTotalProductQuantity(orderProducts[value - 1].productId, orderProducts[value - 1].color);
             setTotalProductQuantity(totalProductQuantity);
             setCurrentOrderProduct(() => value);
 
             if (orderProducts[value - 1]) {
-                orderProduct.current = {
+                setOrderProduct({
                     productId: orderProducts[value - 1].productId,
                     color: orderProducts[value - 1].color,
                     quantity: orderProducts[value - 1].quantity,
                     price: orderProducts[value - 1].price,
                     totalPrice: orderProducts[value - 1].totalPrice,
-                };
+                });
 
                 const productQuantityData = await fetchProductQuantity(orderProducts[value - 1].productId);
                 setProductQuantity(productQuantityData);
@@ -232,12 +273,13 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
     };
 
 
-    const handleOnAddOrderProduct = () => {
+    const handleOnAddOrderProduct = async () => {
+        const lastId = await fetchLastId();
         setOrderProductsLength((prevState) => prevState + 1);
         setOrderProducts((prevState) => [
             ...prevState,
             {
-                id: 0,
+                id: lastId + 1,
                 productId: "",
                 color: "",
                 quantity: "",
@@ -248,9 +290,13 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
     };
 
     const handleOnSave = () => {
-        onSave(orderProducts);
-        console.log(orderProducts);
-        onClose();
+        if (isValid.productId && isValid.color && isValid.quantity) {
+            onSave(orderProducts);
+            console.log(orderProducts);
+            onClose();
+        } else {
+            alert("Vui lòng nhập đúng thông tin");
+        }
     };
 
     const handleOnDeleteProduct = () => {
@@ -264,23 +310,24 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
                 if (indexToDelete === orderProductsLength - 1) {
                     setCurrentOrderProduct((prevState) => prevState - 1);
 
-                    orderProduct.current = {
-                        productId: orderProducts[indexToDelete - 1]?.productId || "",
-                        color: orderProducts[indexToDelete - 1]?.color || "",
-                        quantity: orderProducts[indexToDelete - 1]?.quantity || "",
-                        price: orderProducts[indexToDelete - 1]?.price || "",
-                        totalPrice: orderProducts[indexToDelete - 1]?.totalPrice || "",
-                    };
+                    setOrderProduct({
+                            productId: orderProducts[indexToDelete - 1]?.productId || "",
+                            color: orderProducts[indexToDelete - 1]?.color || "",
+                            quantity: orderProducts[indexToDelete - 1]?.quantity || "",
+                            price: orderProducts[indexToDelete - 1]?.price || "",
+                            totalPrice: orderProducts[indexToDelete - 1]?.totalPrice || "",
+                        }
+                    );
                 } else {
                     setCurrentOrderProduct((prevState) => prevState);
 
-                    orderProduct.current = {
+                    setOrderProduct({
                         productId: orderProducts[indexToDelete]?.productId || "",
                         color: orderProducts[indexToDelete]?.color || "",
                         quantity: orderProducts[indexToDelete]?.quantity || "",
                         price: orderProducts[indexToDelete]?.price || "",
                         totalPrice: orderProducts[indexToDelete]?.totalPrice || "",
-                    };
+                    });
                 }
             }
         }
@@ -335,7 +382,7 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
                                         type="button"
                                         className="btn btn-primary border border-green-500 bg-amber-400 rounded-md p-2"
                                         onClick={handleOnAddOrderProduct}
-                                        disabled={!(order.status === "Processing")}
+                                        disabled={action === "edit"}
                                     >
                                         Thêm một sản phẩm
                                     </button>
@@ -353,8 +400,11 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
                                         onChange={(e) => handleOnChange(e)}
                                         onBlur={setProductsData}
                                         value={orderProduct.productId}
-                                        disabled={currentOrderProduct === "" || !(order.status === "Processing")}
+                                        disabled={currentOrderProduct === "" || action === "edit"}
                                     />
+                                    {!isValid.productId && (
+                                        <h5 className="text-red-500 text-xs">"Mã sản phẩm không tồn tại"</h5>
+                                    )}
                                 </td>
                                 <td>
                                     <label htmlFor="color">Màu sắc</label>
@@ -363,7 +413,7 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
                                         id="color"
                                         onChange={(e) => handleOnChange(e)}
                                         value={orderProduct.color}
-                                        disabled={currentOrderProduct === "" || !(order.status === "Processing")}
+                                        disabled={currentOrderProduct === "" || action === "edit"}
                                     >
                                         <option value={""}></option>
                                         {
@@ -378,6 +428,9 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
                                             ))
                                         }
                                     </select>
+                                    {!isValid.color && (
+                                        <h5 className="text-red-500 text-xs">"Màu sắc không hợp lệ"</h5>
+                                    )}
                                 </td>
                             </tr>
                             <tr>
@@ -388,14 +441,17 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
                                         className="form-control border border-black rounded-md disabled:bg-slate-200 mb-2"
                                         id="quantity"
                                         onChange={(e) => handleOnChange(e)}
-                                        value={orderProduct.quantity}
-                                        disabled={currentOrderProduct === "" || !(order.status === "Processing")}
+                                        value={orderProduct.quantity || ""}
+                                        disabled={currentOrderProduct === "" || action === "edit"}
                                     />
                                     <span
                                         className="text-red-500 text-xs"
                                     >
                                         Còn lại: {totalProductQuantity}
                                     </span>
+                                    {!isValid.quantity && (
+                                        <h5 className="text-red-500 text-xs">"Số lượng không hợp lệ"</h5>
+                                    )}
                                 </td>
                                 <td>
                                     <label htmlFor="price">Giá tiền</label>
@@ -403,7 +459,7 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
                                         type="text"
                                         className="form-control border border-black rounded-md disabled:bg-slate-200 mb-2"
                                         id="price"
-                                        value={orderProduct.price}
+                                        value={orderProduct.price || ""}
                                         disabled={true}
                                     />
                                 </td>
@@ -415,7 +471,7 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
                                         type="text"
                                         className="form-control border border-black rounded-md disabled:bg-slate-200 mb-2"
                                         id="totalPrice"
-                                        value={orderProduct.totalPrice}
+                                        value={orderProduct.totalPrice || ""}
                                         disabled={true}
                                     />
                                 </td>
@@ -427,7 +483,7 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
                                 type="button"
                                 className="btn btn-primary border border-green-500 bg-red-400 rounded-md p-2"
                                 onClick={handleOnDeleteProduct}
-                                disabled={!(order.status === "Processing")}
+                                disabled={action === "edit"}
                             >
                                 Xóa sản phẩm
                             </button>

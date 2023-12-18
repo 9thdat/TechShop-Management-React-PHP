@@ -85,9 +85,9 @@ function Sidebar() {
                 setMenu("staffs");
                 navigate("/staffs");
                 break;
-            case "schedule":
-                setMenu("schedule");
-                navigate("/schedule");
+            case "review":
+                setMenu("review");
+                navigate("/review");
                 break;
             case "statistics":
                 setMenu("statistics");
@@ -162,12 +162,12 @@ function Sidebar() {
                 </button>
                 <button
                     onClick={(e) => handleMenuClick(e)}
-                    value={"schedule"}
-                    className={(menu === "schedule") ? activeLink : normalLink}
+                    value={"review"}
+                    className={(menu === "review") ? activeLink : normalLink}
                 >
                     <BsFillCalendar2RangeFill className="inline-block"/>
                     <a href="" className="pl-1">
-                        Lịch biểu
+                        Đánh giá
                     </a>
                 </button>
                 <button

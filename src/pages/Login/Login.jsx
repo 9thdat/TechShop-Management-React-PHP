@@ -4,7 +4,6 @@ import AuthContext from "../../contexts/AuthProvider";
 import axios from "../../api/axios";
 
 import techShopLogo from "../../assets/images/logo/techShopLogo.svg";
-import Home from "../Management/Management";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");

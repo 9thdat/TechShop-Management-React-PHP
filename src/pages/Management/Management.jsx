@@ -17,7 +17,7 @@ export default function Management() {
           <Route path="/products" element={<Products />} />
           <Route path="/customers" element={<Customers />} />
           <Route path="/staffs" element={<Staffs />} />
-          <Route path="/schedule" element={<Schedule />} />
+          <Route path="/schedule" element={<Review />} />
           <Route path="/statistics" element={<Statistics />} />
         </Routes>
       </div> */}

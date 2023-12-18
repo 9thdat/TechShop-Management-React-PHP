@@ -5,7 +5,7 @@ import Orders from "./components/Orders/Orders";
 import Products from "./components/Products/Products";
 import Customers from "./components/Customers/Customers";
 import Staffs from "./components/Staffs/Staffs";
-import Schedule from "./components/Schedule/Schedule";
+import Review from "./components/Review/Review";
 import Statistics from "./components/Statistics/Statistics";
 import Sidebar from "./components/Sidebar/Sidebar";
 import Navbar from "./components/Navbar/Navbar";
@@ -46,7 +46,8 @@ function App() {
                                     className="sidebar w-full h-screen col-start-1 col-end-2 row-start-1 row-end-7">
                                     <Sidebar/>
                                 </div>
-                                <div className="navbar w-full h-[10vh] col-start-2 col-end-8 row-start-1 row-end-7 ">
+                                <div
+                                    className="navbar w-full h-[10vh] col-start-2 col-end-8 row-start-1 row-end-7 z-0">
                                     <Navbar/>
                                 </div>
                                 <div
@@ -63,7 +64,7 @@ function App() {
                                         <Route path="/customers" element={<Customers/>}/>
                                         <Route path="/discounts" element={<Discounts/>}/>
                                         <Route path="/staffs" element={<Staffs/>}/>
-                                        <Route path="/schedule" element={<Schedule/>}/>
+                                        <Route path="/review" element={<Review/>}/>
                                         <Route path="/statistics" element={<Statistics/>}/>
                                     </Routes>
                                 </div>

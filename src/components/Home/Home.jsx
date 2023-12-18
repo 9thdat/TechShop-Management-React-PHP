@@ -149,39 +149,48 @@ export default function Home() {
     return (
         <div className={"home grid grid-cols-4 grid-rows-6 w-full h-full py-5"}>
             <div
-                className="pending-order col-start-1 col-end-2 row-start-1 row-end-2 flex flex-col items-center justify-center border-solid border-black border mx-8">
-                <span className="font-semibold text-lg">ĐƠN HÀNG CHỜ XỬ LÝ</span>
-                <div className="revenue-month-value text-xl"> {ordersProcessing} </div>
-            </div>
-            <div
-                className="successed-order-today col-start-2 col-end-3 row-start-1 row-end-2 flex flex-col items-center justify-center border-solid border-black border mx-8">
+                className="col-start-1 col-end-5 row-start-1 row-end-2 flex flex-row items-center justify-evenly"
+            >
+                <div
+                    className="pending-order flex flex-col items-center justify-center rounded-3xl bg-amber-100 p-5"
+                >
+                    <span className="font-semibold text-lg">ĐƠN HÀNG CHỜ XỬ LÝ</span>
+                    <div className="revenue-month-value text-xl"> {ordersProcessing} </div>
+                </div>
+                <div
+                    className="successed-order-today flex flex-col items-center justify-center rounded-3xl bg-green-100 p-5"
+                >
                 <span className="font-semibold text-lg text-center">
                   ĐƠN HÀNG HOÀN THÀNH HÔM NAY
                 </span>
-                <div className="revenue-month-value text-xl">{ordersTodayCompleted}</div>
-            </div>
-            <div
-                className="revenue-today col-start-3 col-end-4 row-start-1 row-end-2 flex flex-col items-center justify-center border-solid border-black border mx-8">
-                <span className="font-semibold text-lg">DOANH THU HÔM NAY</span>
-                <div className="revenue-month-value text-xl">{revenueToday}</div>
-            </div>
-            <div
-                className="revenue-month col-start-4 col-end-5 row-start-1 row-end-2 flex flex-col items-center justify-center border-solid border-black border mx-8">
-                <span className="font-semibold text-lg">DOANH THU THÁNG NÀY</span>
-                <div className="revenue-month-value text-xl">{revenueMonth}</div>
+                    <div className="revenue-month-value text-xl">{ordersTodayCompleted}</div>
+                </div>
+                <div
+                    className="revenue-today flex flex-col items-center justify-center rounded-3xl bg-blue-100 p-5"
+                >
+                    <span className="font-semibold text-lg">DOANH THU HÔM NAY</span>
+                    <div className="revenue-month-value text-xl">{revenueToday}</div>
+                </div>
+                <div
+                    className="revenue-month flex flex-col items-center justify-center rounded-3xl bg-red-100 p-5"
+                >
+                    <span className="font-semibold text-lg">DOANH THU THÁNG NÀY</span>
+                    <div className="revenue-month-value text-xl">{revenueMonth}</div>
+                </div>
+
             </div>
 
             {chartData && chartData.labels && (
                 <div
-                    className="col-start-1 col-end-4 row-start-2 row-end-7 flex flex-col items-center justify-center border-solid border-black border mx-8 p-5">
+                    className="col-start-1 col-end-4 row-start-2 row-end-7 flex flex-col items-center justify-center mx-8 p-5">
                     <span className="font-semibold text-lg">BIỂU ĐỒ DOANH THU THÁNG NÀY</span>
                     <RevenueThisMonth chartData={chartData}/>
                 </div>
             )}
 
             <div
-                className="top-5-customers col-start-4 col-end-5 row-start-2 row-end-7 flex flex-col items-center  border-solid border-black border mx-8 pt-5">
-                <span className="font-semibold text-lg">TOP 5 KHÁCH HÀNG</span>
+                className="top-5-customers col-start-4 col-end-5 row-start-2 row-end-7 flex flex-col border-solid pt-5">
+                <span className="font-semibold text-lg text-center">TOP 5 KHÁCH HÀNG</span>
                 <div className="top-5-customers-list">
                     <table
                         className="w-full text-sm text-left rtl:text-right text-gray-500"
@@ -200,16 +209,13 @@ export default function Home() {
                             <th scope="col" className="text-center">
                                 Số điện thoại
                             </th>
-                            <th scope="col" className="text-center">
-                                Tổng tiền
-                            </th>
                         </tr>
                         </thead>
                         <tbody className="text-gray-700">
                         {Top5Customers && Top5Customers.length > 0 && Top5Customers.map((item, index) => (
-                            <tr key={index}>
-                                <td className="text-center py-3">{index + 1}</td>
-                                <td className="text-center">
+                            <tr key={index} className={"border border-black"}>
+                                <td className="text-center p-3">{index + 1}</td>
+                                <td className="text-center items-center justify-center">
                                     <img
                                         className="w-10 h-10 rounded-full"
                                         src={item.avatar ? `data:image/jpeg;base64, ${item.image}` : defaultAvatar}
@@ -218,7 +224,6 @@ export default function Home() {
                                 </td>
                                 <td className="text-center">{item.name}</td>
                                 <td className="text-center">{item.phone}</td>
-                                <td className="text-center">{item.revenue}</td>
                             </tr>
                         ))}
                         </tbody>
