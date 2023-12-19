@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 import axios from "../../api/axios";
 
-export default function ProductQuantity({visible, onClose, data, action}) {
+export default function ProductQuantity({visible, onClose, data, action, onSave}) {
     const [productQuantityData, setProductQuantityData] = useState([]);
     const [productQuantity, setProductQuantity] = useState([]);
     const [isValid, setIsValid] = useState(true);
@@ -10,7 +10,6 @@ export default function ProductQuantity({visible, onClose, data, action}) {
         setProductQuantityData(
             data.map((item) => ({
                     ...item,
-                    colorValid: true,
                     quantityValid: true,
                 })
             )
@@ -59,23 +58,6 @@ export default function ProductQuantity({visible, onClose, data, action}) {
                 );
                 setIsValid(true);
             }
-        } else if (id === "color") {
-            const isColorExist = productQuantityData.some(
-                (item, i) => i !== index && item.color === value
-            );
-
-            setProductQuantityData((prevData) =>
-                prevData.map((item, i) =>
-                    i === index
-                        ? {
-                            ...item,
-                            colorValid: !isColorExist,
-                        }
-                        : item
-                )
-            );
-
-            setIsValid(!isColorExist);
         }
     };
 
@@ -86,14 +68,19 @@ export default function ProductQuantity({visible, onClose, data, action}) {
                 id: "",
                 productId: data[0].productId, // data[0] is the first product in the list of products
                 color: "",
-                quantity: "",
+                quantity: 0,
+                quantityValid: true,
             },
         ]);
     }
 
     const handleOnSave = () => {
-        console.log(productQuantityData);
-        data = productQuantityData;
+        if (!isValid) {
+            alert("Vui lòng nhập đầy đủ thông tin");
+        } else {
+            onSave(productQuantityData);
+            onClose();
+        }
     };
 
     const fetchProductQuantity = async (productId) => {
@@ -138,27 +125,13 @@ export default function ProductQuantity({visible, onClose, data, action}) {
                             {productQuantityData.map((product, index) => (
                                 <tr key={index}>
                                     <td>
-                                        <select
+                                        <input
+                                            type="text"
                                             className="form-control border border-black rounded-md disabled:bg-slate-200 mb-2 mr-2"
                                             id="color"
                                             onChange={(e) => handleOnChange(e, index)}
                                             value={product.color}
-                                        >
-                                            {
-                                                productQuantity.map((item) => (
-                                                    <option key={item.id} value={item.color}>
-                                                        {item.color}
-                                                    </option>
-                                                ))
-                                            }
-                                        </select>
-                                        <span>
-                                            {
-                                                !product.colorValid ? (
-                                                    <h5 className="text-red-500 text-xs">Màu sắc đã tồn tại</h5>
-                                                ) : null
-                                            }
-                                        </span>
+                                        />
                                     </td>
 
                                     <td>
