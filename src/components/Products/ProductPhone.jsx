@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 import axios from "../../api/axios";
 
-export default function ProductPhone({visible, onClose, data, action}) {
+export default function ProductPhone({visible, onClose, data, action, onSave}) {
     const [originalProductPhoneData, setOriginalProductPhoneData] = useState({});
     const [productPhoneData, setProductPhoneData] = useState({});
 
@@ -41,49 +41,104 @@ export default function ProductPhone({visible, onClose, data, action}) {
 
                 <div className="content">
                     <form className="form overflow-auto">
-                        <table className="col-span-2">
-                            <td>
-                                <form className="form overflow-auto">
+                        <table className="col-span-3">
+                            <tr>
+                                <td>
                                     <div className="form-group flex justify-between mb-4 ">
-                                        <label className="mr-2" htmlFor="id">ID</label>
-                                        <input type="text"
-                                               className="form-control border border-black rounded-md disabled:bg-slate-200"
-                                               id="id"
-                                               onChange={(e) => handleOnChange(e)}
-                                               disabled
-                                               value={productPhoneData.id}/>
-                                    </div>
-
-                                    <div className="form-group flex justify-between mb-4 ">
-                                        <label className="mr-2" htmlFor="name">Id Sản phẩm</label>
+                                        <label className="mr-2" htmlFor="screen">Màn hình</label>
                                         <input type="text"
                                                className="form-control border border-black rounded-md"
-                                               id="name"
-                                               onChange={(e) => handleOnChange(e)}
-                                               value={productPhoneData.productId}/>
-                                    </div>
-
-                                    <div className="form-group flex justify-between mb-4 ">
-                                        <label className="mr-2" htmlFor="name">Màn hình</label>
-                                        <input type="text"
-                                               className="form-control border border-black rounded-md"
-                                               id="name"
+                                               id="screen"
                                                onChange={(e) => handleOnChange(e)}
                                                value={productPhoneData.screen}/>
                                     </div>
-
+                                </td>
+                                <td>
                                     <div className="form-group flex justify-between mb-4 ">
-                                        <label className="mr-2" htmlFor="name">Hệ điều hành</label>
+                                        <label className="mr-2" htmlFor="operatingSystem">Hệ điều hành</label>
+                                        <input type="text"
+                                               className="form-control border border-black rounded-md"
+                                               id="operatingSystem"
+                                               onChange={(e) => handleOnChange(e)}
+                                               value={productPhoneData.operatingSystem}/>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div className="form-group flex justify-between mb-4 ">
+                                        <label className="mr-2" htmlFor="name">Camera sau</label>
                                         <input type="text"
                                                className="form-control border border-black rounded-md"
                                                id="name"
                                                onChange={(e) => handleOnChange(e)}
-                                               value={productPhoneData.operatingSystem}/>
+                                               value={productPhoneData.backCamera}/>
                                     </div>
-                                </form>
-                            </td>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div className="form-group flex justify-between mb-4 ">
+                                        <label className="mr-2" htmlFor="backCamera">Camera trước</label>
+                                        <input type="text"
+                                               className="form-control border border-black rounded-md"
+                                               id="frontCamera"
+                                               onChange={(e) => handleOnChange(e)}
+                                               value={productPhoneData.frontCamera}/>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div className="form-group flex justify-between mb-4 ">
+                                        <label className="mr-2" htmlFor="chip">Chip</label>
+                                        <input type="text"
+                                               className="form-control border border-black rounded-md"
+                                               id="chip"
+                                               onChange={(e) => handleOnChange(e)}
+                                               value={productPhoneData.chip}/>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div className="form-group flex justify-between mb-4 ">
+                                        <label className="mr-2" htmlFor="ram">Ram</label>
+                                        <input type="text"
+                                               className="form-control border border-black rounded-md"
+                                               id="ram"
+                                               onChange={(e) => handleOnChange(e)}
+                                               value={productPhoneData.ram}/>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div className="form-group flex justify-between mb-4 ">
+                                        <label className="mr-2" htmlFor="rom">Rom</label>
+                                        <input type="text"
+                                               className="form-control border border-black rounded-md"
+                                               id="rom"
+                                               onChange={(e) => handleOnChange(e)}
+                                               value={productPhoneData.rom}/>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div className="form-group flex justify-between mb-4 ">
+                                        <label className="mr-2" htmlFor="sim">Sim</label>
+                                        <input type="text"
+                                               className="form-control border border-black rounded-md"
+                                               id="sim"
+                                               onChange={(e) => handleOnChange(e)}
+                                               value={productPhoneData.sim}/>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div className="form-group flex justify-between mb-4 ">
+                                        <label className="mr-2" htmlFor="batteryCharger">Sạc pin</label>
+                                        <input type="text"
+                                               className="form-control border border-black rounded-md"
+                                               id="batteryCharger"
+                                               onChange={(e) => handleOnChange(e)}
+                                               value={productPhoneData.batteryCharger}/>
+                                    </div>
+                                </td>
+                            </tr>
                         </table>
-
                         <div className="form-group flex justify-end">
                             <button
                                 type="button"

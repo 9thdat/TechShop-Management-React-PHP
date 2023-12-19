@@ -190,7 +190,7 @@ export default function Home() {
 
             <div
                 className="top-5-customers col-start-4 col-end-5 row-start-2 row-end-7 flex flex-col border-solid pt-5">
-                <span className="font-semibold text-lg text-center">TOP 5 KHÁCH HÀNG</span>
+                <span className="font-semibold text-lg text-center">TOP KHÁCH HÀNG</span>
                 <div className="top-5-customers-list">
                     <table
                         className="w-full text-sm text-left rtl:text-right text-gray-500"

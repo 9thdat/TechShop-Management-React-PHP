@@ -6,15 +6,23 @@ export default function ProductCable({visible, onClose, data, action, onSave}) {
     const [isValid, setIsValid] = useState(true);
 
     useEffect(() => {
-        setProductCable(data[0]);
+        setProductCable(data);
         console.log(data);
     }, [data]);
 
-    const handleOnChange = (e, index) => {
+    const handleOnChange = (e) => {
+        const {id, value} = e.target;
+        setProductCable(
+            {
+                ...productCable,
+                [id]: value
+            }
+        );
     }
 
     const handleOnSave = async () => {
-        console.log(productCable);
+        onSave(productCable);
+        onClose();
     }
 
     if (!visible) return null;
@@ -42,7 +50,7 @@ export default function ProductCable({visible, onClose, data, action, onSave}) {
                                         id="tech"
                                         className="form-control border border-black rounded-md disabled:bg-slate-200 mb-2 mr-2"
                                         value={productCable.tech}
-                                        onChange={(e, index) => handleOnChange(e, index)}
+                                        onChange={(e, index) => handleOnChange(e)}
                                     />
                                 </td>
 
@@ -54,7 +62,7 @@ export default function ProductCable({visible, onClose, data, action, onSave}) {
                                         id="function"
                                         className="form-control border border-black rounded-md disabled:bg-slate-200 mb-2 mr-2"
                                         value={productCable.function}
-                                        onChange={(e, index) => handleOnChange(e, index)}
+                                        onChange={(e, index) => handleOnChange(e)}
                                     />
                                 </td>
 
@@ -66,7 +74,7 @@ export default function ProductCable({visible, onClose, data, action, onSave}) {
                                         id="input"
                                         className="form-control border border-black rounded-md disabled:bg-slate-200 mb-2 mr-2"
                                         value={productCable.input}
-                                        onChange={(e, index) => handleOnChange(e, index)}
+                                        onChange={(e, index) => handleOnChange(e)}
                                     />
                                 </td>
                             </tr>
@@ -79,7 +87,7 @@ export default function ProductCable({visible, onClose, data, action, onSave}) {
                                         id="output"
                                         className="form-control border border-black rounded-md disabled:bg-slate-200 mb-2 mr-2"
                                         value={productCable.output}
-                                        onChange={(e, index) => handleOnChange(e, index)}
+                                        onChange={(e, index) => handleOnChange(e)}
                                     />
                                 </td>
 
@@ -91,7 +99,7 @@ export default function ProductCable({visible, onClose, data, action, onSave}) {
                                         id="length"
                                         className="form-control border border-black rounded-md disabled:bg-slate-200 mb-2 mr-2"
                                         value={productCable.length}
-                                        onChange={(e, index) => handleOnChange(e, index)}
+                                        onChange={(e, index) => handleOnChange(e)}
                                     />
                                 </td>
 
@@ -103,7 +111,7 @@ export default function ProductCable({visible, onClose, data, action, onSave}) {
                                         id="maximum"
                                         className="form-control border border-black rounded-md disabled:bg-slate-200 mb-2 mr-2"
                                         value={productCable.maximum}
-                                        onChange={(e, index) => handleOnChange(e, index)}
+                                        onChange={(e, index) => handleOnChange(e)}
                                     />
                                 </td>
                             </tr>
@@ -117,7 +125,7 @@ export default function ProductCable({visible, onClose, data, action, onSave}) {
                                         id="madein"
                                         className="form-control border border-black rounded-md disabled:bg-slate-200 mb-2 mr-2"
                                         value={productCable.madein}
-                                        onChange={(e, index) => handleOnChange(e, index)}
+                                        onChange={(e, index) => handleOnChange(e)}
                                     />
                                 </td>
 
@@ -129,7 +137,7 @@ export default function ProductCable({visible, onClose, data, action, onSave}) {
                                         id="brandof"
                                         className="form-control border border-black rounded-md disabled:bg-slate-200 mb-2 mr-2"
                                         value={productCable.brandof}
-                                        onChange={(e, index) => handleOnChange(e, index)}
+                                        onChange={(e, index) => handleOnChange(e)}
                                     />
                                 </td>
 
@@ -141,7 +149,7 @@ export default function ProductCable({visible, onClose, data, action, onSave}) {
                                         id="brand"
                                         className="form-control border border-black rounded-md disabled:bg-slate-200 mb-2 mr-2"
                                         value={productCable.brand}
-                                        onChange={(e, index) => handleOnChange(e, index)}
+                                        onChange={(e, index) => handleOnChange(e)}
                                     />
                                 </td>
                             </tr>

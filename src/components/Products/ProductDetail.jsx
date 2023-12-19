@@ -60,7 +60,7 @@ export default function ProductDetail({action, visible, onClose, product}) {
     const fetchProductQuantity = async (productId) => {
         try {
             const productQuantityResponse = await axios.get(`/ProductQuantity/ProductId=${productId}`);
-            return productQuantityResponse.data;
+            return productQuantityResponse.data.length > 0 ? productQuantityResponse.data : [];
         } catch (error) {
             console.log("Failed to fetch product quantity list: ", error.message);
             return [];
@@ -70,7 +70,8 @@ export default function ProductDetail({action, visible, onClose, product}) {
     const fetchProductPhone = async (productId) => {
         try {
             const productPhoneResponse = await axios.get(`/ParameterPhone/ProductId=${productId}`);
-            return productPhoneResponse.data;
+            console.log(productPhoneResponse.data);
+            return productPhoneResponse.data.length > 0 ? productPhoneResponse.data[0] : {};
         } catch (error) {
             console.log("Failed to fetch product phone list: ", error.message);
             return {};
@@ -80,7 +81,7 @@ export default function ProductDetail({action, visible, onClose, product}) {
     const fetchProductAdapter = async (productId) => {
         try {
             const productAdapterResponse = await axios.get(`/ParameterAdapter/ProductId=${productId}`);
-            return productAdapterResponse.data;
+            return productAdapterResponse.data.length > 0 ? productAdapterResponse.data[0] : {};
         } catch (error) {
             console.log("Failed to fetch product adapter list: ", error.message);
             return {};
@@ -90,7 +91,7 @@ export default function ProductDetail({action, visible, onClose, product}) {
     const fetchProductBackupCharger = async (productId) => {
         try {
             const productBackupChargerResponse = await axios.get(`/ParameterBackupCharger/ProductId=${productId}`);
-            return productBackupChargerResponse.data;
+            return productBackupChargerResponse.data.length > 0 ? productBackupChargerResponse.data[0] : {};
         } catch (error) {
             console.log("Failed to fetch product backup charger list: ", error.message);
             return {};
@@ -100,7 +101,7 @@ export default function ProductDetail({action, visible, onClose, product}) {
     const fetchProductCable = async (productId) => {
         try {
             const productCableResponse = await axios.get(`/ParameterCable/ProductId=${productId}`);
-            return productCableResponse.data;
+            return productCableResponse.data.length > 0 ? productCableResponse.data[0] : {};
         } catch (error) {
             console.log("Failed to fetch product cable list: ", error.message);
             return {};
@@ -188,6 +189,17 @@ export default function ProductDetail({action, visible, onClose, product}) {
                             }
                         })
                     );
+
+                    try {
+                        const productCableResponse = await axios.put(`ParameterCable/${productCable.id}`, productCable);
+                        if (productCableResponse.status !== 204) {
+                            falseUpdate.push(productCable);
+                        }
+                    } catch (productCableError) {
+                        falseUpdate.push(productCable);
+                        console.error(productCableError);
+                    }
+
                 } else {
                     alert("Sửa sản phẩm thất bại!");
                 }
@@ -257,6 +269,11 @@ export default function ProductDetail({action, visible, onClose, product}) {
         setActionOnProductParameter("edit");
         setProductCable(productCable);
         setProductCableVisible(true);
+    }
+
+    const handleOnSaveProductCable = (productCableData) => {
+        setProductCable(productCableData);
+        console.log(productCable);
     }
 
     const onCloseEditPhone = () => {
@@ -515,13 +532,13 @@ export default function ProductDetail({action, visible, onClose, product}) {
                                     )
                             }
                             {
-                                (Object.keys(productPhone).length === 0) ?
+                                (Object.keys(productBackupCharger).length === 0) ?
                                     (
                                         <td>
                                             <div className="">
                                                 <button
                                                     className="border border-black p-3 rounded-lg bg-blue-200 text-xs">
-                                                    Thêm thông số điện thoại
+                                                    Thêm thông số sạc dự phòng
                                                 </button>
                                             </div>
                                         </td>
@@ -533,7 +550,7 @@ export default function ProductDetail({action, visible, onClose, product}) {
                                                 <div className="mt-5">
                                                     <button
                                                         className="border border-black p-3 rounded-lg bg-yellow-100 text-xs">
-                                                        Sửa thông số điện thoại
+                                                        Sửa thông số sạc dự phòng
                                                     </button>
                                                 </div>
                                             </div>
@@ -573,7 +590,7 @@ export default function ProductDetail({action, visible, onClose, product}) {
             {
                 productCableVisible &&
                 <ProductCable visible={productCableVisible} onClose={onCloseEditPhone} data={productCable}
-                              action={actionOnProductParameter}/>
+                              action={actionOnProductParameter} onSave={handleOnSaveProductCable}/>
 
             }
             {/*{*/}

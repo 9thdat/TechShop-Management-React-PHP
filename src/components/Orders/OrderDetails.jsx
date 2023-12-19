@@ -53,8 +53,9 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
 
             getLastOrderId();
         } else {
+            console.log(orderData);
             const getDiscountCode = async () => {
-                const DiscountCode = await fetchDiscountId(orderData.discountId);
+                const DiscountCode = await fetchDiscountCodeById(orderData.discountId);
                 setOrder((prevOrder) => {
                     const newCity = cities.find((tinh) => tinh.name === orderData.city);
                     const newDistrict = districts.find((quan) => quan.parent_code === newCity?.code);
@@ -410,7 +411,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
     }
 
     const handleDiscount = async (e) => {
-        const discountCode = await fetchDiscountId(e.target.value);
+        const discountCode = await fetchDiscountIdByCode(e.target.value);
         setOrder((prevOrder) => ({
             ...prevOrder,
             discountId: discountCode.id,
@@ -433,13 +434,24 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
         }
     }
 
-    const fetchDiscountId = async (discountCode) => {
-        if (discountCode == "") return "";
+    const fetchDiscountIdByCode = async (code) => {
+        if (code === "") return "";
         try {
-            const response = await axios.get(`/Discount/Code=${discountCode}`);
+            const response = await axios.get(`/Discount/Code=${code}`);
             return response.data;
         } catch (e) {
             console.log(e);
+        }
+    }
+
+    const fetchDiscountCodeById = async (id) => {
+        if (id === "") return "";
+        try {
+            const response = await axios.get(`/Discount/${id}`);
+            return response.data;
+        } catch (e) {
+            console.log(e);
+            return "";
         }
     }
 
