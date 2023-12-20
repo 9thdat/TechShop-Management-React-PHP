@@ -6,9 +6,18 @@ import ProductPhone from "./ProductPhone";
 import ProductQuantity from "./ProductQuantity";
 import productCable from "./ProductCable";
 import ProductCable from "./ProductCable";
+import ProductBackupCharger from "./ProductBackupCharger";
+import ProductAdapter from "./ProductAdapter";
 
-export default function ProductDetail({action, visible, onClose, product}) {
+export default function ProductDetail({action, visible, onClose, product, onReload}) {
     const [productData, setProductData] = useState(product); // Data of product
+    const [category, setCategory] = useState([]); // List of category
+    const categoryNames = {
+        1: "Điện thoại",
+        2: "Sạc",
+        3: "Cáp",
+        4: "Sạc dự phòng",
+    };
     const [actionType, setActionType] = useState(action); // Action type of ProductDetail
 
     const [productQuantity, setProductQuantity] = useState([]); // List of product quantity
@@ -28,6 +37,13 @@ export default function ProductDetail({action, visible, onClose, product}) {
     useEffect(() => {
         setProductData(product);
 
+        const fetchCategoryList = async () => {
+            await fetchCategory().then((res) => {
+                setCategory(res);
+            });
+        }
+
+        fetchCategoryList();
         if (actionType === "edit") {
             const fetchProductInfo = async () => {
                 await fetchProductQuantity(productData.id).then((res) => {
@@ -56,6 +72,16 @@ export default function ProductDetail({action, visible, onClose, product}) {
             setProductCable({});
         }
     }, [product]);
+
+    const fetchCategory = async () => {
+        try {
+            const categoryResponse = await axios.get("/Category");
+            return categoryResponse.data.length > 0 ? categoryResponse.data : [];
+        } catch (error) {
+            console.log("Failed to fetch category list: ", error.message);
+            return [];
+        }
+    };
 
     const fetchProductQuantity = async (productId) => {
         try {
@@ -110,7 +136,12 @@ export default function ProductDetail({action, visible, onClose, product}) {
 
     const handleOnChange = (e) => {
         const {id, value} = e.target;
-        setProductData((prevData) => ({...prevData, [id]: value}));
+        setProductData(
+            {
+                ...productData,
+                [id]: value
+            }
+        );
     };
 
     const handleUploadImage = (e) => {
@@ -148,33 +179,16 @@ export default function ProductDetail({action, visible, onClose, product}) {
 
     const handleOnSave = async () => {
         if (actionType === "add") {
-            try {
-                const response = await axios.post("Products", productData);
-                if (response.status === 201) {
-                    alert("Thêm sản phẩm thành công!");
-                } else {
-                    alert("Thêm sản phẩm thất bại!");
-                }
-            } catch (error) {
-                alert("Thêm sản phẩm thất bại!");
-                console.error(error);
-            }
-        } else if (actionType === "edit") {
             let falseUpdate = [];
             try {
-                const productUpdateResponse = await axios.put(`Product/${productData.id}`, productData);
+                const productUpdateResponse = await axios.post(`Product`, productData);
                 if (productUpdateResponse.status === 204) {
-                    await Promise.all(
-                        productQuantity.map(async (item) => {
-                            try {
-                                if (item.id) {
-                                    const quantityUpdateResponse = await axios.put(`ProductQuantity/${item.id}`, item);
-                                    if (quantityUpdateResponse.status !== 200) {
-                                        falseUpdate.push(item);
-                                    }
-                                } else {
+                    if (productQuantity.length > 0) {
+                        await Promise.all(
+                            productQuantity.map(async (item) => {
+                                try {
                                     const quantityCreateResponse = await axios.post(`ProductQuantity`, {
-                                        productId: item.productId,
+                                        productId: productData.id,
                                         color: item.color,
                                         quantity: item.quantity,
                                         sold: 0,
@@ -182,22 +196,167 @@ export default function ProductDetail({action, visible, onClose, product}) {
                                     if (quantityCreateResponse.status !== 201) {
                                         falseUpdate.push(item);
                                     }
+                                } catch (quantityError) {
+                                    falseUpdate.push(item);
+                                    console.error(quantityError);
                                 }
-                            } catch (quantityError) {
-                                falseUpdate.push(item);
-                                console.error(quantityError);
-                            }
-                        })
-                    );
+                            }));
+                    }
 
-                    try {
-                        const productCableResponse = await axios.put(`ParameterCable/${productCable.id}`, productCable);
-                        if (productCableResponse.status !== 204) {
+                    if (Object.keys(productCable).length > 0) {
+                        try {
+                            const productCableResponse = await axios.post(`ParameterCable`, {
+                                ...productCable,
+                                productId: productData.id,
+                            });
+                            if (productCableResponse.status !== 204) {
+                                falseUpdate.push(productCable);
+                            }
+                        } catch (productCableError) {
                             falseUpdate.push(productCable);
+                            console.error(productCableError);
                         }
-                    } catch (productCableError) {
-                        falseUpdate.push(productCable);
-                        console.error(productCableError);
+                    }
+
+                    if (Object.keys(productPhone).length > 0) {
+                        try {
+                            const productPhoneResponse = await axios.post(`ParameterPhone`, {
+                                ...productPhone,
+                                productId: productData.id,
+
+                            });
+                            if (productPhoneResponse.status !== 204) {
+                                falseUpdate.push(productPhone);
+                            }
+                        } catch (productPhoneError) {
+                            falseUpdate.push(productPhone);
+                            console.error(productPhoneError);
+                        }
+                    }
+
+                    if (Object.keys(productBackupCharger).length > 0) {
+                        try {
+                            const productBackupChargerResponse = await axios.post(`ParameterBackupCharger`, {
+                                ...productBackupCharger,
+                                productId: productData.id,
+                            });
+                            if (productBackupChargerResponse.status !== 204) {
+                                falseUpdate.push(productBackupCharger);
+                            }
+                        } catch (productBackupChargerError) {
+                            falseUpdate.push(productBackupCharger);
+                            console.error(productBackupChargerError);
+                        }
+                    }
+
+                    if (Object.keys(productAdapter).length > 0) {
+                        try {
+                            const productAdapterResponse = await axios.post(`ParameterAdapter`, {
+                                ...productAdapter,
+                                productId: productData.id,
+                            });
+                            if (productAdapterResponse.status !== 204) {
+                                falseUpdate.push(productAdapter);
+                            }
+                        } catch (productAdapterError) {
+                            falseUpdate.push(productAdapter);
+                            console.error(productAdapterError);
+                        }
+                    }
+
+                } else {
+                    alert("Thêm sản phẩm thất bại!");
+                }
+            } catch (productUpdateError) {
+                alert("Thêm sản phẩm thất bại!");
+                console.error(productUpdateError);
+            }
+
+            if (falseUpdate.length > 0) {
+                alert("Thêm sản phẩm thất bại! " + falseUpdate.join(", ").toString());
+            } else {
+                alert("Thêm sản phẩm thành công!");
+                onReload();
+                onClose();
+            }
+        } else if (actionType === "edit") {
+            let falseUpdate = [];
+            try {
+                const productUpdateResponse = await axios.put(`Product/${productData.id}`, productData);
+                if (productUpdateResponse.status === 204) {
+                    if (productQuantity.length > 0) {
+                        await Promise.all(
+                            productQuantity.map(async (item) => {
+                                try {
+                                    if (item.id) {
+                                        const quantityUpdateResponse = await axios.put(`ProductQuantity/${item.id}`, item);
+                                        if (quantityUpdateResponse.status !== 200) {
+                                            falseUpdate.push(item);
+                                        }
+                                    } else {
+                                        const quantityCreateResponse = await axios.post(`ProductQuantity`, {
+                                            productId: productData.id,
+                                            color: item.color,
+                                            quantity: item.quantity,
+                                            sold: 0,
+                                        });
+                                        if (quantityCreateResponse.status !== 201) {
+                                            falseUpdate.push(item);
+                                        }
+                                    }
+                                } catch (quantityError) {
+                                    falseUpdate.push(item);
+                                    console.error(quantityError);
+                                }
+                            }));
+                    }
+
+                    if (Object.keys(productCable).length > 0) {
+                        try {
+                            const productCableResponse = await axios.put(`ParameterCable/${productCable.id}`, productCable);
+                            if (productCableResponse.status !== 204) {
+                                falseUpdate.push(productCable);
+                            }
+                        } catch (productCableError) {
+                            falseUpdate.push(productCable);
+                            console.error(productCableError);
+                        }
+                    }
+
+                    if (Object.keys(productPhone).length > 0) {
+                        try {
+                            const productPhoneResponse = await axios.put(`ParameterPhone/${productPhone.id}`, productPhone);
+                            if (productPhoneResponse.status !== 204) {
+                                falseUpdate.push(productPhone);
+                            }
+                        } catch (productPhoneError) {
+                            falseUpdate.push(productPhone);
+                            console.error(productPhoneError);
+                        }
+                    }
+
+                    if (Object.keys(productBackupCharger).length > 0) {
+                        try {
+                            const productBackupChargerResponse = await axios.put(`ParameterBackupCharger/${productBackupCharger.id}`, productBackupCharger);
+                            if (productBackupChargerResponse.status !== 204) {
+                                falseUpdate.push(productBackupCharger);
+                            }
+                        } catch (productBackupChargerError) {
+                            falseUpdate.push(productBackupCharger);
+                            console.error(productBackupChargerError);
+                        }
+                    }
+
+                    if (Object.keys(productAdapter).length > 0) {
+                        try {
+                            const productAdapterResponse = await axios.put(`ParameterAdapter/${productAdapter.id}`, productAdapter);
+                            if (productAdapterResponse.status !== 204) {
+                                falseUpdate.push(productAdapter);
+                            }
+                        } catch (productAdapterError) {
+                            falseUpdate.push(productAdapter);
+                            console.error(productAdapterError);
+                        }
                     }
 
                 } else {
@@ -209,7 +368,7 @@ export default function ProductDetail({action, visible, onClose, product}) {
             }
 
             if (falseUpdate.length > 0) {
-                alert("Sửa sản phẩm thất bại! " + falseUpdate.toString());
+                alert("Sửa sản phẩm thất bại! " + falseUpdate.join(", ").toString());
             } else {
                 alert("Sửa sản phẩm thành công!");
                 onClose();
@@ -222,23 +381,7 @@ export default function ProductDetail({action, visible, onClose, product}) {
 
     const onOpenNewQuantity = async () => {
         setActionOnProductParameter("add");
-        const lastProductQuantityId = await axios.get("ProductQuantity/GetLastId").then((response) => {
-                return response.data;
-            }
-        );
-        const newId = lastProductQuantityId + 1;
-        const newProductQuantity = {
-            id: newId,
-            productId: productData.id,
-            color: "",
-            quantity: 0
-        }
-        setProductQuantity([newProductQuantity]);
         setProductQuantityVisible(true);
-    }
-
-    const onCloseNewQuantity = () => {
-        setProductQuantityVisible(false);
     }
 
     const onOpenEditQuantity = () => {
@@ -249,20 +392,29 @@ export default function ProductDetail({action, visible, onClose, product}) {
 
     const handleOnSaveProductQuantity = (productQuantityData) => {
         setProductQuantity(productQuantityData);
-        console.log(productQuantityData);
     }
 
     const onCloseQuantity = () => {
         setProductQuantityVisible(false);
     }
 
-    const onOpenEditPhone = () => {
-        setActionType("edit");
+    const onOpenNewPhone = () => {
+
         setProductPhoneVisible(true);
     }
 
-    const onClosePhone = () => {
-        setProductPhoneVisible(false);
+    const onOpenEditPhone = () => {
+        setActionOnProductParameter("edit");
+        setProductPhoneVisible(true);
+    }
+
+    const handleOnSaveProductPhone = (productPhoneData) => {
+        setProductPhone(productPhoneData);
+    }
+
+    const onOpenNewCable = () => {
+        setActionOnProductParameter("add");
+        setProductCableVisible(true);
     }
 
     const onOpenEditCable = () => {
@@ -270,14 +422,53 @@ export default function ProductDetail({action, visible, onClose, product}) {
         setProductCable(productCable);
         setProductCableVisible(true);
     }
+    const onCloseCable = () => {
+        setProductCableVisible(false);
+    }
 
     const handleOnSaveProductCable = (productCableData) => {
         setProductCable(productCableData);
-        console.log(productCable);
     }
 
-    const onCloseEditPhone = () => {
-        setProductCableVisible(false);
+    const onClosePhone = () => {
+        setProductPhoneVisible(false);
+    }
+
+    const onOpenNewBackupCharger = () => {
+        setActionOnProductParameter("add");
+        setProductBackupChargerVisible(true);
+    }
+
+    const openEditBackupCharger = () => {
+        setActionOnProductParameter("edit");
+        setProductBackupChargerVisible(true);
+    }
+
+    const onCloseBackupCharger = () => {
+        setProductBackupChargerVisible(false);
+    }
+
+    const handleOnSaveProductBackupCharger = (productBackupChargerData) => {
+        setProductBackupCharger(productBackupChargerData);
+        console.log(productBackupChargerData);
+    }
+
+    const onOpenNewAdapter = () => {
+        setActionOnProductParameter("add");
+        setProductAdapterVisible(true);
+    }
+
+    const openEditAdapter = () => {
+        setActionOnProductParameter("edit");
+        setProductAdapterVisible(true);
+    }
+
+    const onCloseAdapter = () => {
+        setProductAdapterVisible(false);
+    }
+
+    const handleOnSaveProductAdapter = (productAdapterData) => {
+        setProductAdapter(productAdapterData);
     }
 
     if (!visible) {
@@ -364,13 +555,23 @@ export default function ProductDetail({action, visible, onClose, product}) {
                             <td>
                                 <div className="form-group flex justify-between mb-4">
                                     <label className="mr-2" htmlFor="category">Danh mục</label>
-                                    <input type="text"
-                                           className="form-control border border-black rounded-md"
-                                           id="category"
-                                           onChange={(e) => handleOnChange(e)}
-                                           value={productData.category}/>
+                                    <select
+                                        className="form-control border border-black rounded-md"
+                                        id="category"
+                                        onChange={(e) => handleOnChange(e)}
+                                        value={productData.category}
+                                    >
+                                        {
+                                            category.map((item) => (
+                                                <option key={item.id} value={item.id}>
+                                                    {categoryNames[item.id] || ""}
+                                                </option>
+                                            ))
+                                        }
+                                    </select>
                                 </div>
                             </td>
+
                             <td>
                                 <div className="form-group flex justify-between mb-4">
                                     <label className="mr-2" htmlFor="description">Mô tả</label>
@@ -454,7 +655,9 @@ export default function ProductDetail({action, visible, onClose, product}) {
                                         <td>
                                             <div className="">
                                                 <button
-                                                    className="border border-black p-3 rounded-lg bg-blue-200 text-xs">
+                                                    className="border border-black p-3 rounded-lg bg-blue-200 text-xs"
+                                                    onClick={onOpenNewPhone}
+                                                >
                                                     Thêm thông số điện thoại
                                                 </button>
                                             </div>
@@ -482,7 +685,9 @@ export default function ProductDetail({action, visible, onClose, product}) {
                                         <td>
                                             <div className="">
                                                 <button
-                                                    className="border border-black p-3 rounded-lg bg-blue-200 text-xs">
+                                                    className="border border-black p-3 rounded-lg bg-blue-200 text-xs"
+                                                    onClick={onOpenNewAdapter}
+                                                >
                                                     Thêm thông số sạc
                                                 </button>
                                             </div>
@@ -494,7 +699,9 @@ export default function ProductDetail({action, visible, onClose, product}) {
                                             <div className="">
                                                 <div className="mt-5">
                                                     <button
-                                                        className="border border-black p-3 rounded-lg bg-yellow-100 text-xs">
+                                                        className="border border-black p-3 rounded-lg bg-yellow-100 text-xs"
+                                                        onClick={openEditAdapter}
+                                                    >
                                                         Sửa thông số sạc
                                                     </button>
                                                 </div>
@@ -509,7 +716,9 @@ export default function ProductDetail({action, visible, onClose, product}) {
                                         <td>
                                             <div className="">
                                                 <button
-                                                    className="border border-black p-3 rounded-lg bg-blue-200 text-xs">
+                                                    className="border border-black p-3 rounded-lg bg-blue-200 text-xs"
+                                                    onClick={onOpenNewCable}
+                                                >
                                                     Thêm thông số cáp
                                                 </button>
                                             </div>
@@ -537,7 +746,9 @@ export default function ProductDetail({action, visible, onClose, product}) {
                                         <td>
                                             <div className="">
                                                 <button
-                                                    className="border border-black p-3 rounded-lg bg-blue-200 text-xs">
+                                                    className="border border-black p-3 rounded-lg bg-blue-200 text-xs"
+                                                    onClick={onOpenNewBackupCharger}
+                                                >
                                                     Thêm thông số sạc dự phòng
                                                 </button>
                                             </div>
@@ -549,7 +760,9 @@ export default function ProductDetail({action, visible, onClose, product}) {
                                             <div className="">
                                                 <div className="mt-5">
                                                     <button
-                                                        className="border border-black p-3 rounded-lg bg-yellow-100 text-xs">
+                                                        className="border border-black p-3 rounded-lg bg-yellow-100 text-xs"
+                                                        onClick={openEditBackupCharger}
+                                                    >
                                                         Sửa thông số sạc dự phòng
                                                     </button>
                                                 </div>
@@ -576,28 +789,33 @@ export default function ProductDetail({action, visible, onClose, product}) {
                 <ProductQuantity visible={productQuantityVisible} data={productQuantity} onClose={onCloseQuantity}
                                  action={actionOnProductParameter} onSave={handleOnSaveProductQuantity}/>
             }
-            {/*{*/}
-            {/*    productAdapterVisible &&*/}
-            {/*    <ProductAdapter visible={productAdapterVisible} onClose={onOpenEditPhone} data={productData}*/}
-            {/*                    action={actionType}/>*/}
-            {/*}*/}
-            {/*{*/}
-            {/*    productBackupChargerVisible &&*/}
-            {/*    <ProductBackupCharger visible={productBackupChargerVisible} onClose={onOpenEditPhone}*/}
-            {/*                          data={productData}*/}
-            {/*                          action={actionType}/>*/}
-            {/*}*/}
+
+
+            {
+                productAdapterVisible &&
+                <ProductAdapter visible={productAdapterVisible} onClose={onCloseAdapter} data={productAdapter}
+                                action={actionOnProductParameter} onSave={handleOnSaveProductAdapter}/>
+            }
+
+            {
+                productBackupChargerVisible &&
+                <ProductBackupCharger visible={productBackupChargerVisible} onClose={onCloseBackupCharger}
+                                      data={productBackupCharger}
+                                      action={actionOnProductParameter} onSave={handleOnSaveProductBackupCharger}/>
+            }
+
             {
                 productCableVisible &&
-                <ProductCable visible={productCableVisible} onClose={onCloseEditPhone} data={productCable}
+                <ProductCable visible={productCableVisible} onClose={onCloseCable} data={productCable}
                               action={actionOnProductParameter} onSave={handleOnSaveProductCable}/>
 
             }
-            {/*{*/}
-            {/*    productPhoneVisible &&*/}
-            {/*    <ProductPhone visible={productPhoneVisible} onClose={onOpenEditPhone} data={productData}*/}
-            {/*                  action={actionType}/>*/}
-            {/*}*/}
+
+            {
+                productPhoneVisible &&
+                <ProductPhone visible={productPhoneVisible} onClose={onClosePhone} data={productPhone}
+                              action={actionOnProductParameter} onSave={handleOnSaveProductPhone}/>
+            }
         </div>
     )
 }

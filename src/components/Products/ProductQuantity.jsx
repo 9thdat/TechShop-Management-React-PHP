@@ -7,19 +7,22 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
     const [isValid, setIsValid] = useState(true);
 
     useEffect(() => {
-        setProductQuantityData(
-            data.map((item) => ({
-                    ...item,
-                    quantityValid: true,
-                })
-            )
-        );
-        console.log(data);
+        if (action === "edit") {
+            setProductQuantityData(
+                data.map((item) => ({
+                        ...item,
+                        quantityValid: true,
+                    })
+                )
+            );
 
-        fetchProductQuantity(data[0].productId).then((res) => {
-                setProductQuantity(res);
-            }
-        );
+            fetchProductQuantity(data[0].productId).then((res) => {
+                    setProductQuantity(res);
+                }
+            );
+        } else {
+            setProductQuantityData(data);
+        }
     }, [data]);
 
     const handleOnChange = (e, index) => {
@@ -66,7 +69,6 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
             ...prevData,
             {
                 id: "",
-                productId: data[0].productId, // data[0] is the first product in the list of products
                 color: "",
                 quantity: 0,
                 quantityValid: true,

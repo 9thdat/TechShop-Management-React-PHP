@@ -1,9 +1,7 @@
 import React, {useState, useEffect} from "react";
-import axios from "../../api/axios";
 
 export default function ProductCable({visible, onClose, data, action, onSave}) {
     const [productCable, setProductCable] = useState({});
-    const [isValid, setIsValid] = useState(true);
 
     useEffect(() => {
         setProductCable(data);
@@ -20,7 +18,7 @@ export default function ProductCable({visible, onClose, data, action, onSave}) {
         );
     }
 
-    const handleOnSave = async () => {
+    const handleOnSave = () => {
         onSave(productCable);
         onClose();
     }
@@ -118,7 +116,7 @@ export default function ProductCable({visible, onClose, data, action, onSave}) {
 
                             <tr>
                                 <td>
-                                    <label htmlFor="madein" className={"mr-2"}>Sản xuất</label>
+                                    <label htmlFor="madein" className={"mr-2"}>Nước sản xuất</label>
                                     <input
                                         type="text"
                                         name="madein"

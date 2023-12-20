@@ -1,26 +1,25 @@
 import React, {useState, useEffect} from "react";
-import axios from "../../api/axios";
 
 export default function ProductPhone({visible, onClose, data, action, onSave}) {
-    const [originalProductPhoneData, setOriginalProductPhoneData] = useState({});
     const [productPhoneData, setProductPhoneData] = useState({});
 
     useEffect(() => {
-        setOriginalProductPhoneData(data);
         setProductPhoneData(data);
     }, [data]);
 
     const handleOnChange = (e, index) => {
         const {id, value} = e.target;
-        setOriginalProductPhoneData((prevData) =>
-            prevData.map((item, i) =>
-                i === index ? {...item, [id]: value} : item
-            )
+        setProductPhoneData(
+            {
+                ...productPhoneData,
+                [id]: value
+            }
         );
     };
 
-    const handleOnSave = async () => {
-
+    const handleOnSave = () => {
+        onSave(productPhoneData);
+        onClose();
     };
 
     if (!visible) {
@@ -34,7 +33,6 @@ export default function ProductPhone({visible, onClose, data, action, onSave}) {
                     <div className="text-3xl">Thông số điện thoại</div>
                     <button onClick={() => {
                         onClose();
-                        setProductPhoneData(originalProductPhoneData);
                     }}>X
                     </button>
                 </div>
@@ -65,10 +63,10 @@ export default function ProductPhone({visible, onClose, data, action, onSave}) {
                                 </td>
                                 <td>
                                     <div className="form-group flex justify-between mb-4 ">
-                                        <label className="mr-2" htmlFor="name">Camera sau</label>
+                                        <label className="mr-2" htmlFor="backCamera">Camera sau</label>
                                         <input type="text"
                                                className="form-control border border-black rounded-md"
-                                               id="name"
+                                               id="backCamera"
                                                onChange={(e) => handleOnChange(e)}
                                                value={productPhoneData.backCamera}/>
                                     </div>

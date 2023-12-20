@@ -20,7 +20,7 @@ export default function Products() {
         fetchProducts().then((res) => {
             setProducts(res);
         });
-    }, [products]);
+    }, []);
 
     const fetchProducts = async () => {
         try {
@@ -76,23 +76,32 @@ export default function Products() {
         setVisibleProductDetail(false);
     }
 
-    const AddProduct = (e) => {
+    const AddProduct = async (e) => {
         setActionType("add");
-        const id = products[products.length - 1].id + 1;
+        const id = await fetchLastProductId() + 1;
         const product = {
             id: id,
             name: "",
             price: "",
             image: "",
             description: "",
-            category: "",
+            category: "1",
             brand: "",
             PreDiscount: "",
             discountPercent: "",
-            color: "",
         };
         setProduct(product);
         setVisibleProductDetail(true);
+    }
+
+    const fetchLastProductId = async () => {
+        try {
+            const response = await axios.get("/Product/GetLastId");
+            return response.data;
+        } catch (error) {
+            console.log("Failed to fetch last product id: ", error.message);
+            return "";
+        }
     }
 
     return (
@@ -174,7 +183,7 @@ export default function Products() {
             {
                 visibleProductDetail &&
                 <ProductDetail action={actionType} visible={visibleProductDetail} onClose={handleOnCloseProductDetail}
-                               product={product}/>
+                               product={product} onReload={fetchProducts}/>
             }
 
             {
