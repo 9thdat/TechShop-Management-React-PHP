@@ -1,12 +1,12 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useRef} from "react";
 
 export default function ProductCable({visible, onClose, data, action, onSave}) {
     const [productCable, setProductCable] = useState({});
 
     useEffect(() => {
         setProductCable(data);
-        console.log(data);
     }, [data]);
+
 
     const handleOnChange = (e) => {
         const {id, value} = e.target;

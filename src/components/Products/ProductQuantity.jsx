@@ -1,10 +1,16 @@
 import React, {useState, useEffect} from "react";
 import axios from "../../api/axios";
+import ProductImage from "./ProductImage";
 
 export default function ProductQuantity({visible, onClose, data, action, onSave}) {
     const [productQuantityData, setProductQuantityData] = useState([]);
     const [productQuantity, setProductQuantity] = useState([]);
     const [isValid, setIsValid] = useState(true);
+
+    const [visibleProductImage, setVisibleProductImage] = useState(false);
+    const [originalProductImage, setOriginalProductImage] = useState([]);
+    const [productImageData, setProductImageData] = useState([]);
+    const [actionProductImage, setActionProductImage] = useState("");
 
     useEffect(() => {
         if (action === "edit") {
@@ -15,15 +21,19 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
                     })
                 )
             );
-
-            fetchProductQuantity(data[0].productId).then((res) => {
-                    setProductQuantity(res);
-                }
-            );
         } else {
             setProductQuantityData(data);
         }
     }, [data]);
+
+    useEffect(() => {
+        if (action === "edit") {
+            fetchProductImage(data[0].productId).then((res) => {
+                    setOriginalProductImage(res);
+                }
+            );
+        }
+    }, []);
 
     const handleOnChange = (e, index) => {
         const {id, value} = e.target;
@@ -80,7 +90,7 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
         if (!isValid) {
             alert("Vui lòng nhập đầy đủ thông tin");
         } else {
-            onSave(productQuantityData);
+            onSave(productQuantityData, originalProductImage);
             onClose();
         }
     };
@@ -91,6 +101,61 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
         }
         try {
             const response = await axios.get(`/ProductQuantity/ProductId=${productId}`);
+            return response.data;
+        } catch (err) {
+            console.error(err);
+            return [];
+        }
+    };
+
+    const handleOpenDetailImage = (e, index) => {
+        const product = productQuantityData[index];
+
+        originalProductImage.map((item) => {
+            if (item.color === product.color) {
+                productImageData.push(item);
+            }
+        });
+
+        if (productImageData.length === 0) {
+            setProductImageData([{
+                id: "",
+                productId: product.productId,
+                color: product.color,
+                image: "",
+                ordinal: "",
+                new: true,
+            }]);
+            setActionProductImage("add");
+        } else {
+            setActionProductImage("edit");
+        }
+        setVisibleProductImage(true);
+    }
+
+    const handleOnCloseProductImage = () => {
+        setVisibleProductImage(false);
+        setProductImageData([]);
+    }
+
+    const handleOnSaveProductImage = (productImageData) => {
+        setOriginalProductImage((prevData) => {
+            // Filter out the item with the matching color from originalProductImage
+            const updatedOriginalProductImage = prevData.filter((item) => item.color !== productImageData[0].color);
+
+            // Concatenate the elements of productImageData to updatedOriginalProductImage
+            return [...updatedOriginalProductImage, ...productImageData];
+        });
+        setVisibleProductImage(false);
+    };
+
+
+    const fetchProductImage = async (productId) => {
+        if (productId === "") {
+            return [];
+        }
+        try {
+            const response = await axios.get(`/ImageDetail/ProductId=${productId}`);
             return response.data;
         } catch (err) {
             console.error(err);
@@ -145,15 +210,22 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
                                             value={product.quantity}
                                         />
                                         <span>
-                                            {
-                                                !product.quantityValid ? (
-                                                    <h5 className="text-red-500 text-xs">Vui lòng nhập đầy đủ thông
-                                                        tin</h5>
-                                                ) : null
-                                            }
-                                        </span>
+                                                {
+                                                    !product.quantityValid ? (
+                                                        <h5 className="text-red-500 text-xs">Vui lòng nhập đầy đủ thông
+                                                            tin</h5>
+                                                    ) : null
+                                                }
+                                            </span>
                                     </td>
                                     <td>
+                                        <button
+                                            type="button"
+                                            className="btn btn-primary border border-green-500 bg-amber-200 rounded-md p-1 text-xl"
+                                            onClick={(e) => handleOpenDetailImage(e, index)}
+                                        >
+                                            Chi tiết hình ảnh
+                                        </button>
                                         <button
                                             type="button"
                                             className="btn btn-danger border border-red-400 bg-red-500 rounded-md p-1 text-xl"
@@ -192,6 +264,16 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
                     </form>
                 </div>
             </div>
+            {
+                visibleProductImage &&
+                <ProductImage
+                    visible={visibleProductImage}
+                    data={productImageData}
+                    onClose={handleOnCloseProductImage}
+                    onSave={handleOnSaveProductImage}
+                    action={actionProductImage}
+                />
+            }
         </div>
     );
 }

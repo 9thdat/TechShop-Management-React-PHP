@@ -25,6 +25,7 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
     const [productBackupCharger, setProductBackupCharger] = useState({}); // Product backup charger
     const [productPhone, setProductPhone] = useState({}); // Product phone
     const [productCable, setProductCable] = useState({}); // Product cable
+    const [productImage, setProductImage] = useState([]); // Product image
 
     const [productQuantityVisible, setProductQuantityVisible] = useState(false); // Visible of ProductQuantity
     const [productPhoneVisible, setProductPhoneVisible] = useState(false); // Visible of ProductPhone
@@ -96,7 +97,6 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
     const fetchProductPhone = async (productId) => {
         try {
             const productPhoneResponse = await axios.get(`/ParameterPhone/ProductId=${productId}`);
-            console.log(productPhoneResponse.data);
             return productPhoneResponse.data.length > 0 ? productPhoneResponse.data[0] : {};
         } catch (error) {
             console.log("Failed to fetch product phone list: ", error.message);
@@ -264,6 +264,26 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                         }
                     }
 
+                    if (Object.keys(productImage).length > 0) {
+                        try {
+                            productImage.map(async (item) => {
+                                try {
+                                    delete item.id;
+                                    const productImageResponse = await axios.post(`ImageDetail`, item);
+                                    if (productImageResponse.status !== 204) {
+                                        falseUpdate.push(item);
+                                    }
+                                } catch (productImageError) {
+                                    falseUpdate.push(item);
+                                    console.error(productImageError);
+                                }
+                            });
+                        } catch (e) {
+                            falseUpdate.push(productImage);
+                            console.error(e);
+                        }
+                    }
+
                 } else {
                     alert("Thêm sản phẩm thất bại!");
                 }
@@ -359,6 +379,33 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                         }
                     }
 
+                    if (Object.keys(productImage).length > 0) {
+                        try {
+                            productImage.map(async (item) => {
+                                try {
+                                    if (item.id) {
+                                        const productImageResponse = await axios.put(`ImageDetail/${item.id}`, item);
+                                        if (productImageResponse.status !== 204) {
+                                            falseUpdate.push(item);
+                                        }
+                                    } else {
+                                        delete item.id;
+                                        const productImageResponse = await axios.post(`ImageDetail`, item);
+                                        if (productImageResponse.status !== 204) {
+                                            falseUpdate.push(item);
+                                        }
+                                    }
+                                } catch (productImageError) {
+                                    falseUpdate.push(item);
+                                    console.error(productImageError);
+                                }
+                            });
+                        } catch (e) {
+                            falseUpdate.push(productImage);
+                            console.error(e);
+                        }
+                    }
+
                 } else {
                     alert("Sửa sản phẩm thất bại!");
                 }
@@ -390,8 +437,9 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
         setProductQuantityVisible(true);
     }
 
-    const handleOnSaveProductQuantity = (productQuantityData) => {
+    const handleOnSaveProductQuantity = (productQuantityData, productImageData) => {
         setProductQuantity(productQuantityData);
+        setProductImage(productImageData);
     }
 
     const onCloseQuantity = () => {
@@ -450,7 +498,6 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
 
     const handleOnSaveProductBackupCharger = (productBackupChargerData) => {
         setProductBackupCharger(productBackupChargerData);
-        console.log(productBackupChargerData);
     }
 
     const onOpenNewAdapter = () => {

@@ -23,10 +23,6 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
     });
 
     useEffect(() => {
-        console.log(isValid);
-    }, [isValid]);
-
-    useEffect(() => {
         setOrderProducts((prevOrderProducts) => {
             const orderProducts = [...prevOrderProducts];
             orderProducts[currentOrderProduct - 1] = {
@@ -292,7 +288,6 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
     const handleOnSave = () => {
         if (isValid.productId && isValid.color && isValid.quantity) {
             onSave(orderProducts);
-            console.log(orderProducts);
             onClose();
         } else {
             alert("Vui lòng nhập đúng thông tin");

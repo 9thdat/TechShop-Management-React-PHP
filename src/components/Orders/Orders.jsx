@@ -140,7 +140,6 @@ export default function Orders() {
         }
     };
 
-
     const handleEditOrder = async (orderData) => {
         try {
             const orderResponse = await axios.put(`/Order/${orderData.id}`, orderData);
@@ -160,58 +159,6 @@ export default function Orders() {
         } catch (error) {
             alert("Cập nhật đơn hàng thất bại");
         }
-        // try {
-        //     const orderResponse = await axios.put(`/Order/${orderData.id}`, orderData);
-        //
-        //     if (orderResponse.status >= 200 && orderResponse.status < 300) {
-        //         setVisibleOrderDetail(false);
-        //         setOrder({});
-        //         const newOrders = orders.map((order) => (order.id === orderData.id ? orderData : order));
-        //         setOrders(newOrders);
-        //     } else {
-        //         alert("Sửa đơn hàng thất bại");
-        //         return;
-        //     }
-        //
-        //     const orderDetailsPromises = orderProducts.map(async (order) => {
-        //         try {
-        //             const response = await axios.put(`/OrderDetail/${order.id}`, JSON.stringify({
-        //                 id: order.id,
-        //                 orderId: order.orderId,
-        //                 productId: order.productId,
-        //                 color: order.color,
-        //                 quantity: order.quantity,
-        //                 price: order.price,
-        //             }), {
-        //                 headers: {
-        //                     "Content-Type": "application/json",
-        //                 },
-        //             });
-        //
-        //             if (response.status >= 200 && response.status < 300) {
-        //                 return null; // Success
-        //             } else {
-        //                 return order; // Failure
-        //             }
-        //         } catch (error) {
-        //             return order; // Error
-        //         }
-        //     });
-        //
-        //     const orderDetailsResults = await Promise.all(orderDetailsPromises);
-        //     const failedUpdateProduct = orderDetailsResults.filter(result => result !== null);
-        //
-        //     if (failedUpdateProduct.length === 0) {
-        //         alert("Cập nhật sản phẩm thành công");
-        //     } else {
-        //         alert("Các sản phẩm sau không được cập nhật thành công: " + failedUpdateProduct.map(failed => failed.id).join(", "));
-        //     }
-        //
-        //     setVisibleOrderDetail(false);
-        // } catch (error) {
-        //     console.log(error);
-        //     alert("Sửa đơn hàng thất bại");
-        // }
     };
 
 

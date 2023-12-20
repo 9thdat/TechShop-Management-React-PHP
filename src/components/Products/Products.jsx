@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useRef} from "react";
 import axios from "../../api/axios";
 import ProductDetail from "./ProductDetail";
 import ConfirmDelete from "./ConfirmDelete";
@@ -12,6 +12,54 @@ export default function Products() {
 
     const [actionType, setActionType] = useState(""); // Action type of ProductDetail
 
+    const [originalProducts, setOriginalProducts] = useState([]);
+
+    const search = useRef({
+        searchValue: "",
+        sortValue: "name",
+        statusValue: "all",
+    });
+
+    const handleOnSearch = async () => {
+        try {
+            const searchValue = search.current.searchValue;
+            const sortValue = search.current.sortValue;
+            const statusValue = search.current.statusValue;
+
+            let searchResult = originalProducts;
+
+            // Apply search filter
+            searchResult = searchResult.filter((product) => {
+                if (statusValue === "all") {
+                    if (sortValue === "id") {
+                        return product[sortValue].toString().includes(searchValue);
+                    } else {
+                        return product[sortValue].toLowerCase().includes(searchValue.toLowerCase());
+                    }
+                } else {
+                    return (
+                        product[sortValue].toLowerCase().includes(searchValue.toLowerCase()) &&
+                        (statusValue === "Stocking" ? product.quantity > 0 : product.quantity === 0)
+                    );
+                }
+            });
+
+            // Update the state with the filtered products
+            setProducts(searchResult);
+        } catch (error) {
+            console.error("Error while searching:", error.message);
+        }
+    };
+
+
+    const handleOnChangeSearchType = (e) => {
+        const {id, value} = e.target;
+        search.current = {
+            ...search.current,
+            [id]: value
+        };
+    }
+
     useEffect(() => {
         localStorage.setItem("menu", "products");
     }, []);
@@ -19,6 +67,7 @@ export default function Products() {
     useEffect(() => {
         fetchProducts().then((res) => {
             setProducts(res);
+            setOriginalProducts(res);
         });
     }, []);
 
@@ -106,14 +155,45 @@ export default function Products() {
 
     return (
         <div className="relative h-[90vh] overflow-x-scroll overflow-y-scroll shadow-md sm:rounded-lg">
-            <div className="h-[10vh] top-0 right-0 p-4 sticky backdrop-blur-sm flex items-center justify-end">
-                <button className="px-2 py-1 text-white bg-green-500 rounded-md"
-                        onClick={(e) => AddProduct(e)}>Thêm mới sản phẩm
+            <div className="search top-0 right-0 flex items-center justify-end sticky h-[10vh] p-4 backdrop-blur-sm">
+                <button
+                    className="px-2 py-1 text-white bg-green-500 rounded-md"
+                    onClick={AddProduct}
+                >
+                    Thêm
                 </button>
+                <input
+                    type="text"
+                    id="searchValue"
+                    className="px-2 py-1 ml-2 rounded-md border border-black w-20 sm:w-60 md:w-80 lg:w-[66%]"
+                    placeholder="Tìm kiếm sản phẩm"
+                    value={search.searchValue}
+                    onChange={(e) => handleOnChangeSearchType(e)}
+                />
+                <select
+                    className="px-2 py-1 ml-2 rounded-md border border-black w-20 sm:w-24 md:w-28 lg:w-32"
+                    id="sortValue"
+                    onChange={(e) => handleOnChangeSearchType(e)}
+                >
+                    <option value="id">ID</option>
+                    <option value="name">Tên</option>
+                    <option value="brand">Hãng</option>
+                </select>
+                <select
+                    className="px-2 py-1 ml-2 rounded-md border border-black w-24 sm:w-32 md:w-40 lg:w-48"
+                    id="statusValue"
+                    onChange={(e) => handleOnChangeSearchType(e)}
+                >
+                    <option value="all">Tất cả</option>
+                    <option value="Stocking">Còn hàng</option>
+                    <option value="OutOfStock">Hết hàng</option>
+                </select>
 
-                <input type="text" className="px-2 py-1 ml-2 rounded-md border border-black w-4/5"
-                       placeholder="Tìm kiếm sản phẩm"/>
-                <button className="px-2 py-1 ml-2 text-white bg-blue-500 rounded-md">Tìm kiếm</button>
+                <button className={"px-2 py-1 ml-2 text-white bg-blue-500 rounded-md"}
+                        onClick={handleOnSearch}
+                >
+                    Tìm kiếm
+                </button>
             </div>
             <div className="overflow-scroll">
                 <table className="w-full overflow-scroll text-sm text-left rtl:text-right text-gray-500">
