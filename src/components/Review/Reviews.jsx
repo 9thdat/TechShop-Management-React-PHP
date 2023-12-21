@@ -32,8 +32,8 @@ export default function Reviews() {
     }
 
     return (
-        <div className="relative h-[90vh] overflow-scroll shadow-md sm:rounded-lg">
-            <div className=" top-0 right-0 sticky h-[10vh] p-4 backdrop-blur-sm">
+        <div className="relative min-h-[90vh] overflow-scroll shadow-md sm:rounded-lg">
+            <div className="search top-0 right-0 flex items-center justify-end sticky h-[10vh] p-4 backdrop-blur-sm">
                 <input
                     type="text"
                     id="searchValue"
@@ -62,8 +62,9 @@ export default function Reviews() {
                 </select>
 
                 <button className={"px-2 py-1 ml-2 text-white bg-blue-500 rounded-md"}
-                    // onClick={handleOnSearch}>Tìm kiếm
+                    // onClick={handleOnSearch}
                 >
+                    Tìm kiếm
                 </button>
             </div>
             <div className="overflow-x-scroll overflow-y-scroll h-[78vh]">
@@ -83,48 +84,41 @@ export default function Reviews() {
                             Đánh giá
                         </th>
                         <th scope="col" className="text-center">
-                            Nội dung
+                            Trạng thái
                         </th>
-                        <th scope="col" className="text-center">
-                            Admin trả lời
+                        <th scope={"col"} className="text-center">
+                            Hành động
                         </th>
                     </tr>
                     </thead>
                     <tbody>
                     {
-                        customers.map((customer) => (
-                                <tr key={customer.email}
+                        reviews.map((review) => (
+                                <tr key={review.id}
                                     className="odd:bg-white even:bg-gray-50 border-b dark:border-gray-700">
                                     <td scope="row" className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap">
-                                        {customer.email}
+                                        {review.id}
                                     </td>
                                     <td scope="row" className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap">
-                                        {customer.name}
+                                        {review.productId}
                                     </td>
                                     <td scope="row" className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap">
-                                        {customer.phone}
+                                        {review.customerEmail}
                                     </td>
                                     <td scope="row" className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap">
-                                        {customer.gender}
+                                        {review.rating}
                                     </td>
                                     <td scope="row" className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap">
-                                        {customer.birthday}
-                                    </td>
-                                    <td scope="row"
-                                        className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap">
-                                        {customer.address + ', ' + customer.ward + ', ' + customer.district + ', ' + customer.city}
+                                        {review.adminReply ? "Đã trả lời" : "Chưa trả lời"}
                                     </td>
                                     <td scope="row" className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap">
-                                        {customer.status === "active" ? "Đang hoạt động" : "Ngừng hoạt động"}
-                                    </td>
-                                    <td className="px-6 py-2 whitespace-nowrap">
-                                        <button className="px-2 py-1 text-white bg-green-500 rounded-md"
-                                                value={customer.email}
-                                                onClick={(e) => handleDetailCustomer(customer)}>Chi tiết
-                                        </button>
-                                        <button className="px-2 py-1 ml-2 text-white bg-red-400 rounded-md"
-                                                value={customer.email}
-                                                onClick={(e) => handleChangeStatusCustomer(e)}>Đổi tình trạng
+                                        <button className="px-2 py-1 text-white bg-blue-500 rounded-md"
+                                            // onClick={() => {
+                                            //     setReview(review);
+                                            //     setVisibleReviewDetail(true);
+                                            // }}
+                                        >
+                                            Chi tiết
                                         </button>
                                     </td>
                                 </tr>
@@ -134,18 +128,6 @@ export default function Reviews() {
                     </tbody>
                 </table>
             </div>
-
-            {
-                visibleCustomerDetail &&
-                <CustomerDetail visible={visibleCustomerDetail} onClose={handleCloseCustomerDetail}
-                                customerData={customer} action={action} addCustomer={handleAddCustomer}/>
-            }
-
-            {
-                visibleCustomerStatus &&
-                <CustomerStatus visible={visibleCustomerStatus} onClose={handleCloseCustomerStatus}
-                                customerData={customer} onChangeStatus={handleOnChangeStatus}/>
-            }
 
         </div>
 

@@ -208,7 +208,7 @@ export default function Orders() {
             </div>
             <div className="overflow-x-auto overflow-y-auto h-[78vh]">
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500">
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                    <tbody className="text-xs text-gray-700 uppercase bg-gray-50">
                     <tr>
                         <th scope="col" className="text-center py-3">
                             ID
@@ -238,7 +238,7 @@ export default function Orders() {
                             Hành động
                         </th>
                     </tr>
-                    </thead>
+                    </tbody>
                     <tbody className={"text-xs"}>
                     {
                         orders.map((order) => (
