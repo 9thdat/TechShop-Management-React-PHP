@@ -5,7 +5,7 @@ import Orders from "./components/Orders/Orders";
 import Products from "./components/Products/Products";
 import Customers from "./components/Customers/Customers";
 import Staffs from "./components/Staffs/Staffs";
-import Review from "./components/Review/Review";
+import Reviews from "./components/Review/Reviews";
 import Statistics from "./components/Statistics/Statistics";
 import Sidebar from "./components/Sidebar/Sidebar";
 import Navbar from "./components/Navbar/Navbar";
@@ -64,7 +64,7 @@ function App() {
                                         <Route path="/customers" element={<Customers/>}/>
                                         <Route path="/discounts" element={<Discounts/>}/>
                                         <Route path="/staffs" element={<Staffs/>}/>
-                                        <Route path="/review" element={<Review/>}/>
+                                        <Route path="/review" element={<Reviews/>}/>
                                         <Route path="/statistics" element={<Statistics/>}/>
                                     </Routes>
                                 </div>

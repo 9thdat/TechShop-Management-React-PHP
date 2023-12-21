@@ -23,13 +23,18 @@ export default function LoginPage() {
                 })
 
             if (response.status === 200) {
-                setAuth({email, password});
-                const token = response.data;
-                axios.defaults.headers.common["Authorization"] = "Bearer " + token;
-                sessionStorage.setItem("token", token);
-                localStorage.setItem("menu", "home");
-                localStorage.setItem("userEmail", email);
-                window.location.href = "/home";
+                if (response.data.status === "inactive") {
+                    alert("Tài khoản đã ngừng hoạt động");
+                    return;
+                } else {
+                    setAuth({email, password});
+                    const token = response.data.token;
+                    axios.defaults.headers.common["Authorization"] = "Bearer " + token;
+                    sessionStorage.setItem("token", token);
+                    localStorage.setItem("menu", "home");
+                    localStorage.setItem("userEmail", email);
+                    window.location.href = "/home";
+                }
             }
 
         } catch (err) {

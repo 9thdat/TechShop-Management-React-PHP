@@ -411,26 +411,29 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
     }
 
     const handleDiscount = async (e) => {
-        const discountCode = await fetchDiscountIdByCode(e.target.value);
-        setOrder((prevOrder) => ({
-            ...prevOrder,
-            discountId: discountCode.id,
-        }));
-        const discountValue = discountCode.value;
-        const discountType = discountCode.type;
+        const discount = await fetchDiscountIdByCode(e.target.value);
+        if (discount.status === "expired") {
+            alert("Mã giảm giá đã hết hạn");
+            setOrder((prevOrder) => ({
+                ...prevOrder,
+                discountCode: "",
+            }));
+            return;
+        }
 
-        if (discountType === "percent") {
-            const newTotalPrice = order.totalPrice * discountValue;
-            setOrder((prevOrder) => ({
-                ...prevOrder,
-                totalPrice: newTotalPrice,
-            }));
-        } else if (discountType === "fixed") {
-            const newTotalPrice = order.totalPrice - discountValue;
-            setOrder((prevOrder) => ({
-                ...prevOrder,
-                totalPrice: newTotalPrice,
-            }));
+        if (order.totalPrice >= discount.minApply) {
+            let newTotalPrice = order.totalPrice;
+            if (discount.type === "percent") {
+                const discountValue = order.totalPrice * (1 - discount.value) >= discount.maxSpeed ? discount.maxSpeed : order.totalPrice * (1 - discount.value);
+                newTotalPrice = order.totalPrice - discountValue;
+            } else if (discount.type === "fixed") {
+                newTotalPrice = order.totalPrice - discount.value;
+                setOrder((prevOrder) => ({
+                    ...prevOrder,
+                    discountId: discount.id,
+                    totalPrice: newTotalPrice,
+                }));
+            }
         }
     }
 
@@ -441,6 +444,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
             return response.data;
         } catch (e) {
             console.log(e);
+            return "";
         }
     }
 

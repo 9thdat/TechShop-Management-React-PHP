@@ -1,176 +1,51 @@
-import React, {useState, useEffect, useRef} from "react";
+import React, {useEffect, useState, useRef} from "react";
 import axios from "../../api/axios";
-import CustomerDetail from "./CustomerDetail";
-import CustomerStatus from "./CustomerStatus";
+import CustomerDetail from "../Customers/CustomerDetail";
+import CustomerStatus from "../Customers/CustomerStatus";
 
-export default function Customers() {
-    const [customers, setCustomers] = useState([]); // List of customers
-    const [customer, setCustomer] = useState({}); // Data of customer
-    const [visibleCustomerDetail, setVisibleCustomerDetail] = useState(false); // Visible of CustomerDetail
-    const [visibleCustomerStatus, setVisibleCustomerStatus] = useState(false); // Visible of CustomerStatus
-    const [action, setAction] = useState(""); // Action of CustomerDetail
-    const [originCustomers, setOriginCustomers] = useState([]); // List of customers before search
-
-    const search = useRef({
-        searchValue: "",
-        sortValue: "name",
-        statusValue: "all"
-    });
+export default function Reviews() {
+    const [reviews, setReviews] = useState([]);
+    const [review, setReview] = useState({});
+    const [visibleReviewDetail, setVisibleReviewDetail] = useState(false);
+    const [action, setAction] = useState("");
+    const [originalReviews, setOriginalReviews] = useState({});
 
     useEffect(() => {
-        localStorage.setItem("menu", "customers");
+        localStorage.setItem("menu", "review");
     }, []);
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const data = await fetchCustomers();
-                setCustomers(data);
-                setOriginCustomers(data);
-            } catch (error) {
-                console.log("Failed to fetch customer list: ", error.message);
-            }
-        };
-
-        fetchData();
-
-        // Cleanup function
-        return () => {
-            // Perform any cleanup if needed
-        };
-    }, []);  // Empty dependency array means this effect runs once after the initial render
-
-    const fetchCustomers = async () => {
-        try {
-            const response = await axios.get("/Customer");
-            return response.data;
-        } catch (error) {
-            console.log("Failed to fetch customer list: ", error.message);
-            return [];
-        }
-    }
-
-    const handleOpenAddCustomer = () => {
-        setAction("add");
-        // Sử dụng hàm callback để đảm bảo cập nhật đồng bộ
-        setCustomer(() => {
-            // Reset trạng thái customer thành đối tượng rỗng
-            return {};
+        fetchReviews().then((data) => {
+            setReviews(data);
+            setOriginalReviews(data);
         });
-        setVisibleCustomerDetail(true);
-    }
+    }, []);
 
-    const handleAddCustomer = async (newCustomer) => {
+    const fetchReviews = async () => {
         try {
-            const res = await axios.post("/Customer", newCustomer);
-
-            if (res.status === 201) {
-                alert("Thêm khách hàng thành công!");
-                handleCloseCustomerDetail("add");
-
-                const data = await fetchCustomers();
-                setCustomers(data);
-            }
-        } catch (error) {
-            console.log("Thêm khách hàng thất bại: ", error.message);
-        }
-    }
-
-    const handleDetailCustomer = (customerData) => {
-        setCustomer(customerData);
-        setAction("detail");
-        setVisibleCustomerDetail(true);
-    }
-
-    const handleCloseCustomerDetail = (a) => {
-        setVisibleCustomerDetail(false);
-        if (a === "add") {
-            fetchCustomers().then(r => setCustomers(r));
-        }
-    }
-
-    const handleChangeStatusCustomer = (e) => {
-        const customer = customers.find((c) => c.email === e.target.value);
-        setCustomer(customer);
-        setVisibleCustomerStatus(true);
-    }
-
-    const handleCloseCustomerStatus = () => {
-        setVisibleCustomerStatus(false);
-    }
-
-    const handleOnSearch = () => {
-        const searchValue = search.current.searchValue;
-        const sortValue = search.current.sortValue;
-        const statusValue = search.current.statusValue;
-
-        const searchResult = originCustomers.filter((customer) => {
-                if (statusValue === "all") {
-                    return customer[sortValue].toLowerCase().includes(searchValue.toLowerCase());
-                } else {
-                    return customer[sortValue].toLowerCase().includes(searchValue.toLowerCase()) && customer.status === statusValue;
-                }
-            }
-        );
-
-        setCustomers(searchResult);
-    }
-
-    const handleOnChangeSearchType = (e) => {
-        const {id, value} = e.target;
-        search.current = {
-            ...search.current,
-            [id]: value
-        };
-    }
-
-    const handleOnChangeStatus = () => {
-        const customerData = {
-            ...customer,
-            status: customer.status === "active" ? "inactive" : "active"
-        };
-
-        setCustomer(customerData);
-
-        changeCustomerStatus();
-
-        setVisibleCustomerStatus(false);
-    }
-
-    const changeCustomerStatus = async () => {
-        try {
-            const response = await axios.put(`Customer/ChangeStatus/Email=${customer.email}`);
-            if (response.status === 204) {
-                alert("Đổi tình trạng thành công!");
-                const data = await fetchCustomers();
-                setCustomers(data);
-            }
-            setVisibleCustomerStatus(false);
-        } catch (error) {
-            alert("Đổi tình trạng thất bại!");
+            const response = await axios.get("/Review");
+            return response.data;
+        } catch (err) {
+            console.log(err);
+            return [];
         }
     }
 
     return (
         <div className="relative h-[90vh] overflow-scroll shadow-md sm:rounded-lg">
             <div className=" top-0 right-0 sticky h-[10vh] p-4 backdrop-blur-sm">
-                <button
-                    className="px-2 py-1 text-white bg-green-500 rounded-md"
-                    onClick={handleOpenAddCustomer}>Thêm khách hàng
-                </button>
-
                 <input
                     type="text"
                     id="searchValue"
                     className="px-2 py-1 ml-2 rounded-md border border-black w-[60%]"
                     placeholder="Tìm kiếm khách hàng"
-                    value={search.searchValue}
-                    onChange={(e) => handleOnChangeSearchType(e)}
+                    // value={search.searchValue}
+                    // onChange={(e) => handleOnChangeSearchType(e)}
                 />
                 <select
                     className="px-2 py-1 ml-2 rounded-md border border-black w-[10%]"
                     id="sortValue"
-                    onChange={(e) => handleOnChangeSearchType(e)}
+                    // onChange={(e) => handleOnChangeSearchType(e)}
                 >
                     <option value="name">Tên</option>
                     <option value="email">Email</option>
@@ -179,7 +54,7 @@ export default function Customers() {
                 <select
                     className="px-2 py-1 ml-2 rounded-md border border-black w-[12%]"
                     id="statusValue"
-                    onChange={(e) => handleOnChangeSearchType(e)}
+                    // onChange={(e) => handleOnChangeSearchType(e)}
                 >
                     <option value="all">Tất cả</option>
                     <option value="active">Đang hoạt động</option>
@@ -187,7 +62,8 @@ export default function Customers() {
                 </select>
 
                 <button className={"px-2 py-1 ml-2 text-white bg-blue-500 rounded-md"}
-                        onClick={handleOnSearch}>Tìm kiếm
+                    // onClick={handleOnSearch}>Tìm kiếm
+                >
                 </button>
             </div>
             <div className="overflow-x-scroll overflow-y-scroll h-[78vh]">
@@ -195,28 +71,22 @@ export default function Customers() {
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                     <tr>
                         <th scope="col" className="text-center py-3">
-                            Email
+                            ID
                         </th>
                         <th scope="col" className="text-center">
-                            Tên
+                            ID Sản phẩm
                         </th>
                         <th scope="col" className="text-center">
-                            Số điện thoại
+                            Email khách hàng
                         </th>
                         <th scope="col" className="text-center">
-                            Giới tính
+                            Đánh giá
                         </th>
                         <th scope="col" className="text-center">
-                            Ngày sinh
+                            Nội dung
                         </th>
                         <th scope="col" className="text-center">
-                            Địa chỉ
-                        </th>
-                        <th scope="col" className="text-center">
-                            Tình trạng
-                        </th>
-                        <th scope="col" className="text-center">
-                            Hành động
+                            Admin trả lời
                         </th>
                     </tr>
                     </thead>
@@ -278,5 +148,6 @@ export default function Customers() {
             }
 
         </div>
+
     );
 }

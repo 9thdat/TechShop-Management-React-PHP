@@ -9,43 +9,9 @@ const xa_phuong = require("../../Models/Address/xa-phuong.json");
 export default function CustomerDetail({visible, onClose, customerData, action, addCustomer}) {
     const [customer, setCustomer] = useState(customerData);
 
-    const [cities, setCities] = useState();
-    const [districts, setDistricts] = useState();
-    const [wards, setWards] = useState();
-
-
-    const cityList = Object.keys(tinh_tp).map((tinh) => { // List of provinces
-        return {
-            name: tinh_tp[tinh].name_with_type,
-            code: tinh_tp[tinh].code
-        };
-    });
-
-    const districtList = Object.keys(quan_huyen).map((quan) => {
-        return {
-            name: quan_huyen[quan].name_with_type,
-            code: quan_huyen[quan].code,
-            parent_code: quan_huyen[quan].parent_code
-        };
-    });
-
-    const wardList = Object.keys(xa_phuong).map((xa) => {
-            return {
-                name: xa_phuong[xa].name_with_type,
-                code: xa_phuong[xa].code,
-                parent_code: xa_phuong[xa].parent_code
-            };
-        }
-    );
-
-    const [selectedAddress, setSelectedAddress] = useState({
-        street: "",
-        city: cityList[0].name,
-        cityCode: cityList[0].code,
-        district: districtList[0].name,
-        districtCode: districtList[0].code,
-        ward: wardList[0].name,
-    });
+    const [cities, setCities] = useState(tinh_tp);
+    const [districts, setDistricts] = useState(quan_huyen);
+    const [wards, setWards] = useState(xa_phuong);
 
     useEffect(() => { // Set customer data
         if (action === "add") {
@@ -54,68 +20,56 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
                 name: "",
                 password: "",
                 phone: "",
-                image: "",
-                birthday: new Date().toISOString().split('T')[0],
                 gender: "Nam",
+                birthday: new Date().toISOString().split('T')[0],
+                address: "",
+                ward: "Phường Tân Định",
+                district: "Quận 1",
+                city: "Thành phố Hồ Chí Minh",
+                image: "",
                 status: "active",
-                city: "Tỉnh Lào Cai",
-                district: "Thành phố Lào Cai",
-                ward: "Xã Mường Pồn",
-            });
-            setSelectedAddress({
-                ...selectedAddress,
-                street: customer.address,
+                cityCode: 79,
+                districtCode: 760,
             });
         } else {
-            setCustomer(customerData);
+            const newCity = cities.find((tinh) => tinh.name === customerData.city);
+            const newDistrict = districts.find((quan) => quan.parent_code === newCity?.code);
+            setCustomer(
+                {
+                    ...customerData,
+                    cityCode: newCity?.code,
+                    districtCode: newDistrict?.code,
+                }
+            );
         }
     }, [customerData]);
-
-    useEffect(() => { // Set citys
-        setCities(cityList);
-    }, []);
-
-    useEffect(() => {
-        setDistricts(districtList.filter((quan) => quan.parent_code === selectedAddress.cityCode));
-    }, [selectedAddress.cityCode]);
-
-    useEffect(() => {
-        setWards(wardList.filter((xa) => xa.parent_code === selectedAddress.districtCode));
-    }, [selectedAddress.districtCode, selectedAddress.cityCode]);
-
-    useEffect(() => {
-        setSelectedAddress({
-            street: "",
-            city: cityList[0].name,
-            cityCode: cityList[0].code,
-            district: districtList[0].name,
-            districtCode: districtList[0].code,
-            ward: wardList[0].name,
-        });
-    }, [visible]);
 
     const handleOnChange = (e) => {
         const {id, value} = e.target;
 
         if (id === "city") {
-            setSelectedAddress({
-                    ...selectedAddress,
-                    cityCode: cityList.find((tinh) => tinh.name === value).code,
-                    districtCode: districtList.find((quan) => quan.parent_code === cityList.find((tinh) => tinh.name === value).code).code,
-                }
-            );
+            const newCity = cities.find((tinh) => tinh.name === value);
+            const newDistrict = districts.find((quan) => quan.parent_code === newCity?.code);
+            const newWard = wards.find((xa) => xa.parent_code === newDistrict?.code);
+
+            setCustomer((prevCustomer) => ({
+                ...prevCustomer,
+                city: value,
+                cityCode: newCity?.code,
+                districtCode: newDistrict?.code,
+                district: newDistrict?.name,
+                ward: newWard?.name,
+            }));
         } else if (id === "district") {
-            setSelectedAddress({
-                ...selectedAddress,
-                districtCode: districtList.find((quan) => quan.name === value).code,
-            });
-        } else if (id === "ward" || id === "street") {
-            setSelectedAddress(
-                {
-                    ...selectedAddress,
-                    [id]: value,
-                }
-            );
+            const newDistrict = districts.find((quan) => quan.name === value);
+            const newWard = wards.find((xa) => xa.parent_code === newDistrict?.code);
+
+            setCustomer((prevCustomer) => ({
+                ...prevCustomer,
+                district: value,
+                districtCode: newDistrict?.code,
+                ward: newWard?.name,
+            }));
         } else if (id === "image") {
             const reader = new FileReader();
             reader.onload = () => {
@@ -155,7 +109,6 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
         } else {
             customer.image = "";
         }
-        customer.address = selectedAddress.street;
 
         addCustomer(customer);
     }
@@ -277,17 +230,15 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
                         <tr>
                             <td colSpan="2">
                                 <div className="form-group flex justify-between mb-4">
-                                    <label className="" htmlFor="street">
+                                    <label className="" htmlFor="address">
                                         Địa chỉ(*)
                                     </label>
                                     <input
                                         type="text"
                                         className="form-control border border-black rounded-md w-4/5 mx-2"
-                                        id="street"
+                                        id="address"
                                         onChange={(e) => handleOnChange(e)}
-                                        value={
-                                            (action === "add") ? (selectedAddress.street) : (customer.address)
-                                        }
+                                        value={customer.address}
                                         required={true}
                                         disabled={action === "detail"}
                                     />
@@ -323,25 +274,23 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
                                         id={"city"}
                                         className="form-control border border-black rounded-md mx-2"
                                         onChange={(e) => handleOnChange(e)}
+                                        value={customer.city}
                                         disabled={action === "detail"}
                                     >
-                                        {(action === "add") ? (
+                                        {
                                             cities.map((tinh) => (
-                                                <option key={tinh.code} value={tinh.name}>
+                                                <option value={tinh.name}
+                                                        key={tinh.code}
+                                                >
                                                     {tinh.name}
                                                 </option>
                                             ))
-                                        ) : (
-                                            <option value={customer.city}>
-                                                {customer.city}
-                                            </option>
-                                        )}
+                                        }
                                     </select>
                                 </div>
                             </td>
                             <td>
-                                <div className="form-group flex justify-between mb-4 ">v
-
+                                <div className="form-group flex justify-between mb-4 ">
                                     <label className="m" htmlFor={"district"}>
                                         Quận/Huyện(*)
                                     </label>
@@ -350,21 +299,17 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
                                         id={"district"}
                                         className="form-control border border-black rounded-md mx-2"
                                         onChange={(e) => handleOnChange(e)}
+                                        value={customer.district}
                                         disabled={action === "detail"}
                                     >
                                         {
-                                            (action === "add") ? (
-                                                districts &&
-                                                districts.map((quan) => (
-                                                    <option key={quan.code} value={quan.name}>
-                                                        {quan.name}
-                                                    </option>
-                                                ))
-                                            ) : (
-                                                <option value={customer.district}>
-                                                    {customer.district}
+                                            districts.map((quan) => (quan.parent_code === customer.cityCode) && (
+                                                <option key={quan.code}
+                                                        value={quan.name}
+                                                >
+                                                    {quan.name}
                                                 </option>
-                                            )
+                                            ))
                                         }
                                     </select>
 
@@ -380,21 +325,18 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
                                         id={"ward"}
                                         className="form-control border border-black rounded-md mx-2"
                                         onChange={(e) => handleOnChange(e)}
+                                        value={customer.ward}
                                         disabled={action === "detail"}
                                     >
                                         {
-                                            (action === "add") ? (
-                                                wards &&
-                                                wards.map((xa) => (
-                                                    <option key={xa.code} value={xa.name}>
-                                                        {xa.name}
-                                                    </option>
-                                                ))
-                                            ) : (
-                                                <option value={customer.ward}>
-                                                    {customer.ward}
+                                            wards.map((ward) => (
+                                                (ward.parent_code === customer.districtCode) &&
+                                                <option key={ward.code}
+                                                        value={ward.name}
+                                                >
+                                                    {ward.name}
                                                 </option>
-                                            )
+                                            ))
                                         }
                                     </select>
                                 </div>
