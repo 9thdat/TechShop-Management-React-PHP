@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 import axios from "../../api/axios";
-import RevenueThisMonth from "../Charts/RevenueThisMonth";
+import LineChart from "../Charts/LineChart";
 import defaultAvatar from "../../assets/images/defaultAvatar/defaultAvatar.jpeg";
 
 export default function Home() {
@@ -10,7 +10,7 @@ export default function Home() {
     const [revenueMonth, setRevenueMonth] = useState(0);
 
     const [revenueEachDayThisMonth, setRevenueEachDayThisMonth] = useState();
-    const [Top5Customers, setTop5Customers] = useState();
+    const [TopCustomer, setTopCustomer] = useState();
     const [chartData, setChartData] = useState({
         labels: [],
         datasets: [
@@ -81,8 +81,8 @@ export default function Home() {
     }, [revenueEachDayThisMonth]);
 
     useEffect(() => {
-        fetchTop5Customers().then((res) => {
-            setTop5Customers(res);
+        fetchTop9Customers().then((res) => {
+            setTopCustomer(res);
         });
     }, []);
 
@@ -136,9 +136,9 @@ export default function Home() {
         }
     }
 
-    const fetchTop5Customers = async () => {
+    const fetchTop9Customers = async () => {
         try {
-            const res = await axios.get("/Order/Top5Customers");
+            const res = await axios.get("/Order/Top9Customers");
             return res.data;
         } catch (err) {
             console.log(err);
@@ -184,7 +184,7 @@ export default function Home() {
                 <div
                     className="col-start-1 col-end-4 row-start-2 row-end-7 flex flex-col items-center justify-center mx-8 p-5">
                     <span className="font-semibold text-lg">BIỂU ĐỒ DOANH THU THÁNG NÀY</span>
-                    <RevenueThisMonth chartData={chartData}/>
+                    <LineChart chartData={chartData}/>
                 </div>
             )}
 
@@ -212,7 +212,7 @@ export default function Home() {
                         </tr>
                         </thead>
                         <tbody className="text-gray-700">
-                        {Top5Customers && Top5Customers.length > 0 && Top5Customers.map((item, index) => (
+                        {TopCustomer && TopCustomer.length > 0 && TopCustomer.map((item, index) => (
                             <tr key={index} className={"border border-black"}>
                                 <td className="text-center p-3">{index + 1}</td>
                                 <td className="text-center items-center justify-center">

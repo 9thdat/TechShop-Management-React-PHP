@@ -37,6 +37,10 @@ export default function Products() {
                         return product[sortValue].toLowerCase().includes(searchValue.toLowerCase());
                     }
                 } else {
+                    if (sortValue === "id") {
+                        return product[sortValue].toString().includes(searchValue) &&
+                            (statusValue === "Stocking" ? product.quantity > 0 : product.quantity === 0);
+                    }
                     return (
                         product[sortValue].toLowerCase().includes(searchValue.toLowerCase()) &&
                         (statusValue === "Stocking" ? product.quantity > 0 : product.quantity === 0)
