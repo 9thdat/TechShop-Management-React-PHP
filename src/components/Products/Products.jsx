@@ -16,7 +16,7 @@ export default function Products() {
 
     const search = useRef({
         searchValue: "",
-        sortValue: "name",
+        sortValue: "id",
         statusValue: "all",
     });
 
@@ -75,6 +75,37 @@ export default function Products() {
         });
     }, []);
 
+    const reloadProduct = async (productId) => {
+        const res = await fetchProduct(productId);
+        const newProduct = products.map((product) => {
+                if (product.id === productId) {
+                    return res;
+                }
+                return product;
+            }
+        );
+        setProducts(newProduct);
+        setOriginalProducts(
+            originalProducts.map((product) => {
+                    if (product.id === productId) {
+                        return res;
+                    }
+                    return product;
+                }
+            )
+        );
+    }
+
+    const fetchProduct = async (productId) => {
+        try {
+            const response = await axios.get(`/Product/${productId}`);
+            return response.data;
+        } catch (error) {
+            console.log("Failed to fetch product: ", error.message);
+            return {};
+        }
+    };
+
     const fetchProducts = async () => {
         try {
             const response = await axios.get("/Product/GetProductAndQuantity");
@@ -105,19 +136,39 @@ export default function Products() {
         const product = products.find((product) => product.id === product.id);
         try {
             // Update productQuantity
-            const response = await axios.put(`ProductQuantity/productId=${product.id}&quantity=${0}`);
+            const response = await axios.put(`Product/DeleteProduct/${product.id}`);
             if (response.status === 204) {
                 alert("Xóa sản phẩm thành công!");
+                setVisibleDelete(false);
+                const newProduct = products.map((product) => {
+                        if (product.id === product.id) {
+                            return {
+                                ...product,
+                                quantity: 0,
+                            };
+                        }
+                        return product;
+                    }
+                );
+                setProducts(newProduct);
+                setOriginalProducts(
+                    originalProducts.map((product) => {
+                            if (product.id === product.id) {
+                                return {
+                                    ...product,
+                                    quantity: 0,
+                                };
+                            }
+                            return product;
+                        }
+                    )
+                );
             } else {
                 alert("Xóa sản phẩm thất bại!");
             }
         } catch {
             console.log("productQuantity not found")
         }
-
-        const newProducts = products.filter((product) => product.id !== product.id);
-        setProducts(newProducts);
-        setVisibleDelete(false);
     }
 
     const handleOnAbortDelete = () => {
@@ -267,7 +318,7 @@ export default function Products() {
             {
                 visibleProductDetail &&
                 <ProductDetail action={actionType} visible={visibleProductDetail} onClose={handleOnCloseProductDetail}
-                               product={product} onReload={fetchProducts}/>
+                               product={product} onReload={reloadProduct}/>
             }
 
             {

@@ -47,7 +47,6 @@ function App() {
             };
 
             const isValid = await checkToken();
-            console.log(isValid);
             if (isValid.length > 0) {
                 setIsLogin(true);
                 sessionStorage.setItem("userEmail", isValid[0].value);

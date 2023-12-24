@@ -1,7 +1,10 @@
 import React, {useState, useEffect} from "react";
+import axios from "../../api/axios";
+import ConfirmDeleteProductParameter from "./ConfirmDeleteProductParameter";
 
-export default function ProductPhone({visible, onClose, data, action, onSave}) {
+export default function ProductPhone({visible, onClose, data, action, onSave, onReload}) {
     const [productPhoneData, setProductPhoneData] = useState({});
+    const [visibleConfirmDelete, setVisibleConfirmDelete] = useState(false);
 
     useEffect(() => {
         setProductPhoneData(data);
@@ -24,6 +27,33 @@ export default function ProductPhone({visible, onClose, data, action, onSave}) {
 
     if (!visible) {
         return null;
+    }
+
+    const handleOpenDelete = () => {
+        setVisibleConfirmDelete(true);
+    }
+
+    const handleOnDelete = async () => {
+        try {
+            const res = await axios.delete(`/ParameterPhone/${productPhoneData.id}`);
+            if (res.status === 204) {
+                alert("Xóa thông số điện thoại thành công!");
+                onReload();
+                setVisibleConfirmDelete(false);
+                onClose();
+            } else {
+                alert("Xóa thông số điện thoại thất bại!");
+                setVisibleConfirmDelete(false);
+            }
+        } catch (e) {
+            alert("Xóa thông số điện thoại thất bại!");
+            console.log(e);
+            setVisibleConfirmDelete(false);
+        }
+    }
+
+    const handleOnAbortDelete = () => {
+        setVisibleConfirmDelete(false);
     }
 
     return (
@@ -138,6 +168,16 @@ export default function ProductPhone({visible, onClose, data, action, onSave}) {
                             </tr>
                         </table>
                         <div className="form-group flex justify-end">
+                            {
+                                !productPhoneData.new &&
+                                <button
+                                    type="button"
+                                    className="btn btn-danger border border-red-500 bg-red-300 rounded-md p-2 mr-2"
+                                    onClick={handleOpenDelete}
+                                >
+                                    Xoá thông số điện thoại
+                                </button>
+                            }
                             <button
                                 type="button"
                                 className="btn btn-primary border border-green-500 bg-green-500 rounded-md p-2"
@@ -149,6 +189,11 @@ export default function ProductPhone({visible, onClose, data, action, onSave}) {
                     </form>
                 </div>
             </div>
+            {
+                visibleConfirmDelete &&
+                <ConfirmDeleteProductParameter visible={visibleConfirmDelete} onAbortDelete={handleOnAbortDelete}
+                                               onDelete={handleOnDelete}/>
+            }
         </div>
     );
 }

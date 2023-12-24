@@ -1,12 +1,14 @@
 import React, {useState, useEffect, useRef} from "react";
+import ConfirmDeleteProductParameter from "./ConfirmDeleteProductParameter";
+import axios from "../../api/axios";
 
-export default function ProductCable({visible, onClose, data, action, onSave}) {
+export default function ProductCable({visible, onClose, data, action, onSave, onReload}) {
     const [productCable, setProductCable] = useState({});
+    const [visibleConfirmDelete, setVisibleConfirmDelete] = useState(false);
 
     useEffect(() => {
         setProductCable(data);
     }, [data]);
-
 
     const handleOnChange = (e) => {
         const {id, value} = e.target;
@@ -21,6 +23,33 @@ export default function ProductCable({visible, onClose, data, action, onSave}) {
     const handleOnSave = () => {
         onSave(productCable);
         onClose();
+    }
+
+    const handleOpenDelete = () => {
+        setVisibleConfirmDelete(true);
+    }
+
+    const handleOnDelete = async () => {
+        try {
+            const res = await axios.delete(`/ParameterCable/${productCable.id}`);
+            if (res.status === 204) {
+                alert("Xóa thông số cáp thành công!");
+                onReload();
+                setVisibleConfirmDelete(false);
+                onClose();
+            } else {
+                alert("Xóa thông số cáp thất bại!");
+                setVisibleConfirmDelete(false);
+            }
+        } catch (e) {
+            alert("Xóa thông số cáp thất bại!");
+            console.log(e);
+            setVisibleConfirmDelete(false);
+        }
+    }
+
+    const handleOnAbortDelete = () => {
+        setVisibleConfirmDelete(false);
     }
 
     if (!visible) return null;
@@ -153,7 +182,17 @@ export default function ProductCable({visible, onClose, data, action, onSave}) {
                             </tr>
                             </tbody>
                         </table>
-                        <div className="form-group flex justify-end">
+                        <div className="form-group flex justify-between">
+                            {
+                                !productCable.new &&
+                                <button
+                                    type="button"
+                                    className="btn btn-danger border border-red-500 bg-red-300 rounded-md p-2 mr-2"
+                                    onClick={handleOpenDelete}
+                                >
+                                    Xoá thông số cáp
+                                </button>
+                            }
                             <button
                                 type="button"
                                 className="btn btn-primary border border-green-500 bg-green-500 rounded-md p-2"
@@ -165,6 +204,12 @@ export default function ProductCable({visible, onClose, data, action, onSave}) {
                     </form>
                 </div>
             </div>
+
+            {
+                visibleConfirmDelete &&
+                <ConfirmDeleteProductParameter visible={visibleConfirmDelete} onAbortDelete={handleOnAbortDelete}
+                                               onDelete={handleOnDelete}/>
+            }
         </div>
     )
 }

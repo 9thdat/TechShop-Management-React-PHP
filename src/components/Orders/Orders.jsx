@@ -142,7 +142,7 @@ export default function Orders() {
 
     const handleEditOrder = async (orderData) => {
         try {
-            const orderResponse = await axios.put(`/Order/${orderData.id}`, orderData);
+            const orderResponse = await axios.put(`/Order/ChangeStatus/${orderData.id}`, orderData);
 
             if (orderResponse.status >= 200 && orderResponse.status < 300) {
                 setVisibleOrderDetail(false);

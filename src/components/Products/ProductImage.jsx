@@ -10,13 +10,26 @@ export default function ProductImage({visible, onClose, data, action, onSave}) {
     const [isValid, setIsValid] = useState(true);
 
     useEffect(() => {
-        if (data[0].new === true) {
-            setProductImages([]);
+        console.log(data);
+        if (action === "add") {
             setLength(0);
+            setCurrent(0);
+            setProductImages([]);
         } else {
-            setProductImages(data);
-            setLength(data.length);
+            const filteredImages = data.filter(item => !item.isDeleted || false);
+
+            console.log(data);
+            setProductImages(filteredImages.map(item => ({
+                id: item.id,
+                productId: item.productId,
+                color: item.color,
+                ordinal: item.ordinal,
+                image: item.image,
+            })));
+
+            setLength(filteredImages.length);
         }
+
     }, [data]);
 
 
@@ -87,12 +100,14 @@ export default function ProductImage({visible, onClose, data, action, onSave}) {
     const handleAddProductImage = () => {
         setLength(length + 1);
         setCurrent(length + 1);
+        console.log(data);
         setProductImage({
             "id": "",
             "productId": data[0].productId,
             "color": data[0].color,
             "ordinal": "",
             "image": "",
+            "new": true,
         });
         setProductImages((prevData) => [
             ...prevData,
@@ -102,15 +117,17 @@ export default function ProductImage({visible, onClose, data, action, onSave}) {
                 "color": data[0].color,
                 "ordinal": "",
                 "image": "",
+                "new": true,
             },
         ]);
     }
 
     const handleOnDeleteImage = () => {
         setProductImages((prevData) =>
-            prevData.filter((item, i) => i !== current - 1)
+            prevData.map((item, i) =>
+                i === current - 1 ? {...item, isDeleted: true} : item
+            )
         );
-
         setLength((prevLength) => prevLength - 1);
 
         // Update productImage after the state has been updated
@@ -123,6 +140,7 @@ export default function ProductImage({visible, onClose, data, action, onSave}) {
 
     const handleOnSave = () => {
         onSave(productImages);
+        console.log(productImages);
         onClose();
     }
 
@@ -219,14 +237,16 @@ export default function ProductImage({visible, onClose, data, action, onSave}) {
                     </form>
                 </div>
                 <div className="footer flex justify-between">
-                    <button
-                        type="button"
-                        className="btn btn-primary border border-green-500 bg-red-400 rounded-md p-2"
-                        onClick={handleOnDeleteImage}
-                        disabled={current === 0}
-                    >
-                        Xóa sản phẩm
-                    </button>
+                    {
+                        (current !== 0 && !productImage.new) &&
+                        <button
+                            type="button"
+                            className="btn btn-primary border border-green-500 bg-red-400 rounded-md p-2"
+                            onClick={handleOnDeleteImage}
+                        >
+                            Xóa hình ảnh
+                        </button>
+                    }
                     <button className="btn btn-primary border border-green-500 bg-green-400 rounded-md p-2"
                             onClick={handleOnSave}>Lưu
                     </button>

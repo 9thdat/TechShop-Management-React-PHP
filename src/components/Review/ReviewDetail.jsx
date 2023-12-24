@@ -16,7 +16,7 @@ export default function ReviewDetail({visible, onClose, data, onSave}) {
     }, [data]);
 
     useEffect(() => {
-        if (data.adminReply === "") {
+        if (data.adminReply === null) {
             setAdminReply(false);
         }
     }, [data]);

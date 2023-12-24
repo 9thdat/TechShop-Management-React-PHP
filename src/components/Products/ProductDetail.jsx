@@ -286,6 +286,7 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
 
                 } else {
                     alert("Thêm sản phẩm thất bại!");
+                    return;
                 }
             } catch (productUpdateError) {
                 alert("Thêm sản phẩm thất bại!");
@@ -302,18 +303,38 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
         } else if (actionType === "edit") {
             let falseUpdate = [];
             try {
+                if (productData.image === null) {
+                    productData.image = "";
+                }
                 const productUpdateResponse = await axios.put(`Product/${productData.id}`, productData);
                 if (productUpdateResponse.status === 204) {
                     if (productQuantity.length > 0) {
                         await Promise.all(
                             productQuantity.map(async (item) => {
-                                try {
-                                    if (item.id) {
-                                        const quantityUpdateResponse = await axios.put(`ProductQuantity/${item.id}`, item);
-                                        if (quantityUpdateResponse.status !== 200) {
+                                if (item.id) {
+                                    if (item.isDeleted === true) {
+                                        try {
+                                            const quantityDeleteResponse = await axios.delete(`ProductQuantity/${item.id}`);
+                                            if (quantityDeleteResponse.status !== 200) {
+                                                falseUpdate.push(item);
+                                            }
+                                        } catch (quantityDeleteError) {
                                             falseUpdate.push(item);
+                                            console.error(quantityDeleteError);
                                         }
                                     } else {
+                                        try {
+                                            const quantityUpdateResponse = await axios.put(`ProductQuantity/${item.id}`, item);
+                                            if (quantityUpdateResponse.status !== 200) {
+                                                falseUpdate.push(item);
+                                            }
+                                        } catch (quantityUpdateError) {
+                                            falseUpdate.push(item);
+                                            console.error(quantityUpdateError);
+                                        }
+                                    }
+                                } else {
+                                    try {
                                         const quantityCreateResponse = await axios.post(`ProductQuantity`, {
                                             productId: productData.id,
                                             color: item.color,
@@ -323,89 +344,162 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                                         if (quantityCreateResponse.status !== 201) {
                                             falseUpdate.push(item);
                                         }
+                                    } catch (quantityCreateError) {
+                                        falseUpdate.push(item);
+                                        console.error(quantityCreateError);
                                     }
-                                } catch (quantityError) {
-                                    falseUpdate.push(item);
-                                    console.error(quantityError);
                                 }
-                            }));
+                            })
+                        );
                     }
 
+
                     if (Object.keys(productCable).length > 0) {
-                        try {
-                            const productCableResponse = await axios.put(`ParameterCable/${productCable.id}`, productCable);
-                            if (productCableResponse.status !== 204) {
+                        if (productCable.id) {
+                            try {
+                                const productCableResponse = await axios.put(`ParameterCable/${productCable.id}`, productCable);
+                                if (productCableResponse.status !== 204) {
+                                    falseUpdate.push(productCable);
+                                }
+                            } catch (productCableError) {
                                 falseUpdate.push(productCable);
+                                console.error(productCableError);
                             }
-                        } catch (productCableError) {
-                            falseUpdate.push(productCable);
-                            console.error(productCableError);
+                        } else {
+                            try {
+                                const productCableResponse = await axios.post(`ParameterCable`, {
+                                    ...productCable,
+                                    productId: productData.id,
+                                });
+                                if (productCableResponse.status !== 204) {
+                                    falseUpdate.push(productCable);
+                                }
+                            } catch (productCableError) {
+                                falseUpdate.push(productCable);
+                                console.error(productCableError);
+                            }
                         }
                     }
 
                     if (Object.keys(productPhone).length > 0) {
-                        try {
-                            const productPhoneResponse = await axios.put(`ParameterPhone/${productPhone.id}`, productPhone);
-                            if (productPhoneResponse.status !== 204) {
+                        if (productPhone.id) {
+                            try {
+                                const productPhoneResponse = await axios.put(`ParameterPhone/${productPhone.id}`, productPhone);
+                                if (productPhoneResponse.status !== 204) {
+                                    falseUpdate.push(productPhone);
+                                }
+                            } catch (productPhoneError) {
                                 falseUpdate.push(productPhone);
+                                console.error(productPhoneError);
                             }
-                        } catch (productPhoneError) {
-                            falseUpdate.push(productPhone);
-                            console.error(productPhoneError);
+                        } else {
+                            try {
+                                const productPhoneResponse = await axios.post(`ParameterPhone`, {
+                                    ...productPhone,
+                                    productId: productData.id,
+                                });
+                                if (productPhoneResponse.status !== 204) {
+                                    falseUpdate.push(productPhone);
+                                }
+                            } catch (productPhoneError) {
+                                falseUpdate.push(productPhone);
+                                console.error(productPhoneError);
+                            }
                         }
                     }
 
                     if (Object.keys(productBackupCharger).length > 0) {
-                        try {
-                            const productBackupChargerResponse = await axios.put(`ParameterBackupCharger/${productBackupCharger.id}`, productBackupCharger);
-                            if (productBackupChargerResponse.status !== 204) {
+                        if (productBackupCharger.id) {
+                            try {
+                                const productBackupChargerResponse = await axios.put(`ParameterBackupCharger/${productBackupCharger.id}`, productBackupCharger);
+                                if (productBackupChargerResponse.status !== 204) {
+                                    falseUpdate.push(productBackupCharger);
+                                }
+                            } catch (productBackupChargerError) {
                                 falseUpdate.push(productBackupCharger);
+                                console.error(productBackupChargerError);
                             }
-                        } catch (productBackupChargerError) {
-                            falseUpdate.push(productBackupCharger);
-                            console.error(productBackupChargerError);
+                        } else {
+                            try {
+                                const productBackupChargerResponse = await axios.post(`ParameterBackupCharger`, {
+                                    ...productBackupCharger,
+                                    productId: productData.id,
+                                });
+                                if (productBackupChargerResponse.status !== 204) {
+                                    falseUpdate.push(productBackupCharger);
+                                }
+                            } catch (productBackupChargerError) {
+                                falseUpdate.push(productBackupCharger);
+                                console.error(productBackupChargerError);
+                            }
                         }
                     }
 
                     if (Object.keys(productAdapter).length > 0) {
-                        try {
-                            const productAdapterResponse = await axios.put(`ParameterAdapter/${productAdapter.id}`, productAdapter);
-                            if (productAdapterResponse.status !== 204) {
+                        if (productAdapter.id) {
+                            try {
+                                const productAdapterResponse = await axios.put(`ParameterAdapter/${productAdapter.id}`, productAdapter);
+                                if (productAdapterResponse.status !== 204) {
+                                    falseUpdate.push(productAdapter);
+                                }
+                            } catch (productAdapterError) {
                                 falseUpdate.push(productAdapter);
+                                console.error(productAdapterError);
                             }
-                        } catch (productAdapterError) {
-                            falseUpdate.push(productAdapter);
-                            console.error(productAdapterError);
+                        } else {
+                            try {
+                                const productAdapterResponse = await axios.post(`ParameterAdapter`, {
+                                    ...productAdapter,
+                                    productId: productData.id,
+                                });
+                                if (productAdapterResponse.status !== 204) {
+                                    falseUpdate.push(productAdapter);
+                                }
+                            } catch (productAdapterError) {
+                                falseUpdate.push(productAdapter);
+                                console.error(productAdapterError);
+                            }
                         }
                     }
 
                     if (Object.keys(productImage).length > 0) {
-                        try {
-                            productImage.map(async (item) => {
-                                try {
-                                    if (item.id) {
+                        productImage.map(async (item) => {
+                            if (item.id) {
+                                if (item.isDeleted === true) {
+                                    try {
+                                        const productImageResponse = await axios.delete(`ImageDetail/${item.id}`);
+                                        if (productImageResponse.status !== 200) {
+                                            falseUpdate.push(item);
+                                        }
+                                    } catch (productImageError) {
+                                        falseUpdate.push(item);
+                                        console.error(productImageError);
+                                    }
+                                } else {
+                                    try {
                                         const productImageResponse = await axios.put(`ImageDetail/${item.id}`, item);
                                         if (productImageResponse.status !== 204) {
                                             falseUpdate.push(item);
                                         }
-                                    } else {
-                                        delete item.id;
-                                        const productImageResponse = await axios.post(`ImageDetail`, item);
-                                        if (productImageResponse.status !== 204) {
-                                            falseUpdate.push(item);
-                                        }
+                                    } catch (productImageError) {
+                                        falseUpdate.push(item);
+                                        console.error(productImageError);
+                                    }
+                                }
+                            } else {
+                                try {
+                                    delete item.id;
+                                    const productImageResponse = await axios.post(`ImageDetail`, item);
+                                    if (productImageResponse.status !== 204) {
+                                        falseUpdate.push(item);
                                     }
                                 } catch (productImageError) {
                                     falseUpdate.push(item);
                                     console.error(productImageError);
                                 }
-                            });
-                        } catch (e) {
-                            falseUpdate.push(productImage);
-                            console.error(e);
-                        }
+                            }
+                        });
                     }
-
                 } else {
                     alert("Sửa sản phẩm thất bại!");
                 }
@@ -418,10 +512,8 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                 alert("Sửa sản phẩm thất bại! " + falseUpdate.join(", ").toString());
             } else {
                 alert("Sửa sản phẩm thành công!");
+                onReload(productData.id);
                 onClose();
-                await fetchProductQuantity(productData.id).then((res) => {
-                    setProductQuantity(res);
-                });
             }
         }
     };
@@ -434,6 +526,7 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
     const onOpenEditQuantity = () => {
         setActionOnProductParameter("edit");
         setProductQuantity(productQuantity);
+        console.log(productQuantity);
         setProductQuantityVisible(true);
     }
 
@@ -442,12 +535,21 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
         setProductImage(productImageData);
     }
 
+    useEffect(() => {
+        console.log(productImage);
+    }, [productImage]);
+
     const onCloseQuantity = () => {
         setProductQuantityVisible(false);
     }
 
     const onOpenNewPhone = () => {
-
+        setProductPhone(
+            {
+                new: true,
+            }
+        )
+        setActionOnProductParameter("add");
         setProductPhoneVisible(true);
     }
 
@@ -461,6 +563,11 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
     }
 
     const onOpenNewCable = () => {
+        setProductCable(
+            {
+                new: true,
+            }
+        )
         setActionOnProductParameter("add");
         setProductCableVisible(true);
     }
@@ -483,6 +590,11 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
     }
 
     const onOpenNewBackupCharger = () => {
+        setProductBackupCharger(
+            {
+                new: true,
+            }
+        )
         setActionOnProductParameter("add");
         setProductBackupChargerVisible(true);
     }
@@ -516,6 +628,30 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
 
     const handleOnSaveProductAdapter = (productAdapterData) => {
         setProductAdapter(productAdapterData);
+    }
+
+    const handleReloadProductCable = () => {
+        fetchProductCable(productData.id).then((res) => {
+            setProductCable(res);
+        });
+    }
+
+    const handleReloadProductBackupCharger = () => {
+        fetchProductBackupCharger(productData.id).then((res) => {
+            setProductBackupCharger(res);
+        });
+    }
+
+    const handleReloadProductAdapter = () => {
+        fetchProductAdapter(productData.id).then((res) => {
+            setProductAdapter(res);
+        });
+    }
+
+    const handleReloadProductPhone = () => {
+        fetchProductPhone(productData.id).then((res) => {
+            setProductPhone(res);
+        });
     }
 
     if (!visible) {
@@ -841,27 +977,31 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
             {
                 productAdapterVisible &&
                 <ProductAdapter visible={productAdapterVisible} onClose={onCloseAdapter} data={productAdapter}
-                                action={actionOnProductParameter} onSave={handleOnSaveProductAdapter}/>
+                                action={actionOnProductParameter} onSave={handleOnSaveProductAdapter}
+                                onReload={handleReloadProductAdapter}/>
             }
 
             {
                 productBackupChargerVisible &&
                 <ProductBackupCharger visible={productBackupChargerVisible} onClose={onCloseBackupCharger}
                                       data={productBackupCharger}
-                                      action={actionOnProductParameter} onSave={handleOnSaveProductBackupCharger}/>
+                                      action={actionOnProductParameter} onSave={handleOnSaveProductBackupCharger}
+                                      onReload={handleReloadProductBackupCharger}/>
             }
 
             {
                 productCableVisible &&
                 <ProductCable visible={productCableVisible} onClose={onCloseCable} data={productCable}
-                              action={actionOnProductParameter} onSave={handleOnSaveProductCable}/>
+                              action={actionOnProductParameter} onSave={handleOnSaveProductCable}
+                              onReload={handleReloadProductCable}/>
 
             }
 
             {
                 productPhoneVisible &&
                 <ProductPhone visible={productPhoneVisible} onClose={onClosePhone} data={productPhone}
-                              action={actionOnProductParameter} onSave={handleOnSaveProductPhone}/>
+                              action={actionOnProductParameter} onSave={handleOnSaveProductPhone}
+                              onReload={handleReloadProductPhone}/>
             }
         </div>
     )

@@ -1,7 +1,10 @@
 import React, {useState, useEffect} from "react";
+import ConfirmDeleteProductParameter from "./ConfirmDeleteProductParameter";
+import axios from "../../api/axios";
 
-export default function ProductAdapter({visible, onClose, onSave, data, action}) {
+export default function ProductAdapter({visible, onClose, onSave, data, action, onReload}) {
     const [productAdapter, setProductAdapter] = useState({});
+    const [visibleConfirmDelete, setVisibleConfirmDelete] = useState(false);
 
     useEffect(() => {
         setProductAdapter(data);
@@ -20,6 +23,33 @@ export default function ProductAdapter({visible, onClose, onSave, data, action})
     const handleOnSave = () => {
         onSave(productAdapter);
         onClose();
+    }
+
+    const handleOpenDelete = () => {
+        setVisibleConfirmDelete(true);
+    }
+
+    const handleOnDelete = async () => {
+        try {
+            const res = await axios.delete(`/ParameterAdapter/${productAdapter.id}`);
+            if (res.status === 204) {
+                alert("Xóa thông số cục sạc thành công!");
+                onReload();
+                setVisibleConfirmDelete(false);
+                onClose();
+            } else {
+                alert("Xóa thông số cục sạc thất bại!");
+                setVisibleConfirmDelete(false);
+            }
+        } catch (e) {
+            alert("Xóa thông số cục sạc thất bại!");
+            console.log(e);
+            setVisibleConfirmDelete(false);
+        }
+    }
+
+    const handleOnAbortDelete = () => {
+        setVisibleConfirmDelete(false);
     }
 
     if (!visible) return null;
@@ -154,6 +184,16 @@ export default function ProductAdapter({visible, onClose, onSave, data, action})
                             </tbody>
                         </table>
                         <div className="form-group flex justify-end">
+                            {
+                                !productAdapter.new &&
+                                <button
+                                    type="button"
+                                    className="btn btn-danger border border-red-500 bg-red-300 rounded-md p-2 mr-2"
+                                    onClick={handleOpenDelete}
+                                >
+                                    Xoá thông số cục sạc
+                                </button>
+                            }
                             <button
                                 type="button"
                                 className="btn btn-primary border border-green-500 bg-green-500 rounded-md p-2"
@@ -165,6 +205,11 @@ export default function ProductAdapter({visible, onClose, onSave, data, action})
                     </form>
                 </div>
             </div>
+            {
+                visibleConfirmDelete &&
+                <ConfirmDeleteProductParameter visible={visibleConfirmDelete} onAbortDelete={handleOnAbortDelete}
+                                               onDelete={handleOnDelete}/>
+            }
         </div>
     );
 }

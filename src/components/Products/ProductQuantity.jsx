@@ -79,6 +79,7 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
             ...prevData,
             {
                 id: "",
+                productId: data[0].productId,
                 color: "",
                 quantity: 0,
                 quantityValid: true,
@@ -124,7 +125,6 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
                 color: product.color,
                 image: "",
                 ordinal: "",
-                new: true,
             }]);
             setActionProductImage("add");
         } else {
@@ -146,9 +146,10 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
             // Concatenate the elements of productImageData to updatedOriginalProductImage
             return [...updatedOriginalProductImage, ...productImageData];
         });
+
+
         setVisibleProductImage(false);
     };
-
 
     const fetchProductImage = async (productId) => {
         if (productId === "") {
@@ -162,6 +163,20 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
             return [];
         }
     };
+
+    const handleOnDeleteProductQuantity = (e, index) => {
+        setProductQuantityData((prevData) =>
+            prevData.map((item, i) =>
+                i === index ?
+                    {
+                        ...item,
+                        isDeleted: true,
+                    }
+                    :
+                    item
+            )
+        );
+    }
 
     if (!visible) {
         return null;
@@ -190,26 +205,27 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
                             </thead>
                             <tbody>
                             {productQuantityData.map((product, index) => (
-                                <tr key={index}>
-                                    <td>
-                                        <input
-                                            type="text"
-                                            className="form-control border border-black rounded-md disabled:bg-slate-200 mb-2 mr-2"
-                                            id="color"
-                                            onChange={(e) => handleOnChange(e, index)}
-                                            value={product.color}
-                                        />
-                                    </td>
+                                (product.isDeleted === false || product.isDeleted === undefined) && (
+                                    <tr key={index}>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                className="form-control border border-black rounded-md disabled:bg-slate-200 mb-2 mr-2"
+                                                id="color"
+                                                onChange={(e) => handleOnChange(e, index)}
+                                                value={product.color}
+                                            />
+                                        </td>
 
-                                    <td>
-                                        <input
-                                            type="text"
-                                            className="form-control border border-black rounded-md disabled:bg-slate-200 mb-2 mr-2"
-                                            id="quantity"
-                                            onChange={(e) => handleOnChange(e, index)}
-                                            value={product.quantity}
-                                        />
-                                        <span>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                className="form-control border border-black rounded-md disabled:bg-slate-200 mb-2 mr-2"
+                                                id="quantity"
+                                                onChange={(e) => handleOnChange(e, index)}
+                                                value={product.quantity}
+                                            />
+                                            <span>
                                                 {
                                                     !product.quantityValid ? (
                                                         <h5 className="text-red-500 text-xs">Vui lòng nhập đầy đủ thông
@@ -217,28 +233,25 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
                                                     ) : null
                                                 }
                                             </span>
-                                    </td>
-                                    <td>
-                                        <button
-                                            type="button"
-                                            className="btn btn-primary border border-green-500 bg-amber-200 rounded-md p-1 text-xl"
-                                            onClick={(e) => handleOpenDetailImage(e, index)}
-                                        >
-                                            Chi tiết hình ảnh
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="btn btn-danger border border-red-400 bg-red-500 rounded-md p-1 text-xl"
-                                            onClick={() => {
-                                                setProductQuantityData((prevData) =>
-                                                    prevData.filter((item, i) => i !== index)
-                                                );
-                                            }}
-                                        >
-                                            Xóa
-                                        </button>
-                                    </td>
-                                </tr>
+                                        </td>
+                                        <td>
+                                            <button
+                                                type="button"
+                                                className="btn btn-primary border border-green-500 bg-amber-200 rounded-md p-1 text-xl"
+                                                onClick={(e) => handleOpenDetailImage(e, index)}
+                                            >
+                                                Chi tiết hình ảnh
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="btn btn-danger border border-red-400 bg-red-500 rounded-md p-1 text-xl"
+                                                onClick={(e) => handleOnDeleteProductQuantity(e, index)}
+                                            >
+                                                Xóa
+                                            </button>
+                                        </td>
+                                    </tr>
+                                )
                             ))
                             }
                             </tbody>

@@ -147,10 +147,9 @@ export default function Home() {
     }
 
     return (
-        <div className={"home grid grid-cols-4 grid-rows-6 w-full h-full py-5"}>
+        <div className={"home grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 grid-rows-6 w-full h-full py-5"}>
             <div
-                className="col-start-1 col-end-5 row-start-1 row-end-2 flex flex-row items-center justify-evenly"
-            >
+                className="col-span-1 md:col-span-2 lg:col-span-4 row-start-1 row-end-2 flex flex-col md:flex-row lg:flex-row items-center justify-evenly">
                 <div
                     className="pending-order flex flex-col items-center justify-center rounded-3xl bg-amber-100 p-5"
                 >
@@ -181,15 +180,13 @@ export default function Home() {
             </div>
 
             {chartData && chartData.labels && (
-                <div
-                    className="col-start-1 col-end-4 row-start-2 row-end-7 flex flex-col items-center justify-center mx-8 p-5">
+                <div className="col-span-1 md:col-span-2 lg:col-span-3 row-start-2 row-end-7 mx-8 p-5">
                     <span className="font-semibold text-lg">BIỂU ĐỒ DOANH THU THÁNG NÀY</span>
                     <LineChart chartData={chartData}/>
                 </div>
             )}
 
-            <div
-                className="top-5-customers col-start-4 col-end-5 row-start-2 row-end-7 flex flex-col border-solid pt-5">
+            <div className="col-span-1 md:col-span-1 lg:col-span-1 row-start-2 row-end-7 pt-5">
                 <span className="font-semibold text-lg text-center">TOP KHÁCH HÀNG</span>
                 <div className="top-5-customers-list">
                     <table

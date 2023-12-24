@@ -1,7 +1,10 @@
 import React, {useState, useEffect} from "react";
+import axios from "../../api/axios";
+import ConfirmDeleteProductParameter from "./ConfirmDeleteProductParameter";
 
-export default function ProductBackupCharger({visible, onClose, data, action, onSave}) {
+export default function ProductBackupCharger({visible, onClose, data, action, onSave, onReload}) {
     const [productBackupCharger, setProductBackupCharger] = useState({});
+    const [visibleConfirmDelete, setVisibleConfirmDelete] = useState(false);
 
     useEffect(() => {
         setProductBackupCharger(data);
@@ -20,6 +23,33 @@ export default function ProductBackupCharger({visible, onClose, data, action, on
     const handleOnSave = () => {
         onSave(productBackupCharger);
         onClose();
+    }
+
+    const handleOpenDelete = () => {
+        setVisibleConfirmDelete(true);
+    }
+
+    const handleOnDelete = async () => {
+        try {
+            const res = await axios.delete(`/ParameterBackupCharger/${productBackupCharger.id}`);
+            if (res.status === 204) {
+                alert("Xóa thông số sạc dự phòng thành công!");
+                onReload();
+                setVisibleConfirmDelete(false);
+                onClose();
+            } else {
+                alert("Xóa thông số sạc dự phòng thất bại!");
+                setVisibleConfirmDelete(false);
+            }
+        } catch (e) {
+            alert("Xóa thông số sạc dự phòng thất bại!");
+            console.log(e);
+            setVisibleConfirmDelete(false);
+        }
+    }
+
+    const handleOnAbortDelete = () => {
+        setVisibleConfirmDelete(false);
     }
 
     if (!visible) return null;
@@ -182,6 +212,16 @@ export default function ProductBackupCharger({visible, onClose, data, action, on
                             </tbody>
                         </table>
                         <div className="form-group flex justify-end">
+                            {
+                                !productBackupCharger.new &&
+                                <button
+                                    type="button"
+                                    className="btn btn-danger border border-red-500 bg-red-300 rounded-md p-2 mr-2"
+                                    onClick={handleOpenDelete}
+                                >
+                                    Xoá thông số sạc dự phòng
+                                </button>
+                            }
                             <button
                                 type="button"
                                 className="btn btn-primary border border-green-500 bg-green-500 rounded-md p-2"
@@ -193,6 +233,11 @@ export default function ProductBackupCharger({visible, onClose, data, action, on
                     </form>
                 </div>
             </div>
+            {
+                visibleConfirmDelete &&
+                <ConfirmDeleteProductParameter visible={visibleConfirmDelete} onAbortDelete={handleOnAbortDelete}
+                                               onDelete={handleOnDelete}/>
+            }
         </div>
     );
 }
