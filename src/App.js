@@ -16,22 +16,48 @@ import axios from "./api/axios"
 
 function App() {
     const [isLogin, setIsLogin] = useState(false);
+
     useEffect(() => {
-        const checkToken = async () => {
-            try {
-                const token = sessionStorage.getItem("token");
-
-                if (token) {
-                    setIsLogin(true);
-                    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-                }
-            } catch (err) {
-                console.log(err);
-            }
-        };
-
-        checkToken();
+        if (isLogin === false) {
+            checkLogin();
+        }
     }, []);
+
+    const checkLogin = async () => {
+        const token = sessionStorage.getItem("token") || "";
+        if (token) {
+            const checkToken = async () => {
+                try {
+                    const token = sessionStorage.getItem("token") || "";
+                    if (token) {
+                        const response = await axios.post("/User/ValidateToken", {
+                            token: token,
+                        });
+
+                        if (response.status === 401) {
+                            return [];
+                        } else {
+                            return response.data;
+                        }
+                    }
+                } catch (err) {
+                    console.log(err);
+                    return [];
+                }
+            };
+
+            const isValid = await checkToken();
+            console.log(isValid);
+            if (isValid.length > 0) {
+                setIsLogin(true);
+                sessionStorage.setItem("userEmail", isValid[0].value);
+                sessionStorage.setItem("role", isValid[1].value);
+                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            } else {
+                setIsLogin(false);
+            }
+        }
+    }
 
 
     return (

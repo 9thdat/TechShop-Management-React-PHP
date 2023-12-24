@@ -17,6 +17,7 @@ function Sidebar() {
     const [menu, setMenu] = useState(
         localStorage.getItem("menu") ? localStorage.getItem("menu") : "home"
     );
+    const [role, setRole] = useState(sessionStorage.getItem("role"));
     const navigate = useNavigate();
 
     const sidebarRef = useRef(null);
@@ -152,14 +153,17 @@ function Sidebar() {
                     <BiSolidDiscount className="inline-block"/>
                     <span className="pl-1">Mã giảm giá</span>
                 </button>
-                <button
-                    onClick={(e) => handleMenuClick(e)}
-                    value={"staffs"}
-                    className={(menu === "staffs") ? activeLink : normalLink}
-                >
-                    <FaUsers className="inline-block"/>
-                    <span className="pl-1">Nhân viên</span>
-                </button>
+                {
+                    role === "admin" &&
+                    <button
+                        onClick={(e) => handleMenuClick(e)}
+                        value={"staffs"}
+                        className={(menu === "staffs") ? activeLink : normalLink}
+                    >
+                        <FaUsers className="inline-block"/>
+                        <span className="pl-1">Nhân viên</span>
+                    </button>
+                }
                 <button
                     onClick={(e) => handleMenuClick(e)}
                     value={"review"}
@@ -170,15 +174,17 @@ function Sidebar() {
                         Đánh giá
                     </a>
                 </button>
-                <button
-                    onClick={(e) => handleMenuClick(e)}
-                    value={"statistics"}
-                    className={(menu === "statistics") ? activeLink : normalLink}
-                >
-                    <SiGoogleanalytics className="inline-block"/>
-                    <span className="pl-1">Thống kê</span>
-                </button>
-
+                {
+                    role === "admin" &&
+                    <button
+                        onClick={(e) => handleMenuClick(e)}
+                        value={"statistics"}
+                        className={(menu === "statistics") ? activeLink : normalLink}
+                    >
+                        <SiGoogleanalytics className="inline-block"/>
+                        <span className="pl-1">Thống kê</span>
+                    </button>
+                }
                 <button
                     value={"logout"}
                     onClick={(e) => handleMenuClick(e)}

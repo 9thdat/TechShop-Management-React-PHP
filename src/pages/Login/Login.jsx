@@ -28,11 +28,11 @@ export default function LoginPage() {
                     return;
                 } else {
                     setAuth({email, password});
-                    const token = response.data.token;
-                    axios.defaults.headers.common["Authorization"] = "Bearer " + token;
-                    sessionStorage.setItem("token", token);
+                    sessionStorage.setItem("token", response.data.token);
+                    sessionStorage.setItem("role", response.data.role);
                     localStorage.setItem("menu", "home");
                     localStorage.setItem("userEmail", email);
+                    axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
                     window.location.href = "/home";
                 }
             }
