@@ -15,17 +15,15 @@ import {useNavigate} from "react-router-dom";
 function Sidebar() {
     const [dateTime, setDateTime] = useState("");
     const [menu, setMenu] = useState(
-        localStorage.getItem("menu") ? localStorage.getItem("menu") : "home"
+        sessionStorage.getItem("menu") ? sessionStorage.getItem("menu") : "home"
     );
     const [role, setRole] = useState(sessionStorage.getItem("role"));
     const navigate = useNavigate();
 
-    const sidebarRef = useRef(null);
+    const buttonClass = "flex flex-col items-center justify-center rounded-md mb-2 p-2 hover:bg-green-300";
 
-    const buttonClass = "w-full shadow-xl h-10 justify-center items-center flex rounded-md hover:bg-blue-200";
-
-    const normalLink = `${buttonClass} mb-2`;
-    const activeLink = `${buttonClass} mb-2 bg-green-300`;
+    const normalLink = `${buttonClass}`;
+    const activeLink = `${buttonClass} bg-green-300`;
 
     useEffect(() => {
         const updateDateTime = () => {
@@ -61,7 +59,6 @@ function Sidebar() {
                 setMenu("home");
                 navigate("/home");
                 break;
-
             case "home":
                 setMenu("home");
                 navigate("/home");
@@ -106,19 +103,19 @@ function Sidebar() {
         }
     };
     return (
-        <div className="items-center">
+        <div className="">
             <button value={"logo"} onClick={(e) => handleMenuClick(e)}
-                    className="w-full h-fit center flex items-center justify-center">
-                <img className="w-3/5" src={techShopLogo} alt="logo"/>
+                    className="">
+                <img className="" src={techShopLogo} alt="logo"/>
             </button>
 
-            <div className="w-full h-full pt-14 bg-white rounded-md">
+            <div className="">
                 <button
                     onClick={(e) => handleMenuClick(e)}
                     value={"home"}
                     className={(menu === "home") ? activeLink : normalLink}
                 >
-                    <BiSolidHome className="inline-block"/>
+                    <BiSolidHome className=""/>
                     <span className="pl-1">Trang chính</span>
                 </button>
                 <button
@@ -126,7 +123,7 @@ function Sidebar() {
                     value={"orders"}
                     className={(menu === "orders") ? activeLink : normalLink}
                 >
-                    <BiSolidTruck className="inline-block"/>
+                    <BiSolidTruck className=""/>
                     <span className="pl-1">Đơn hàng</span>
                 </button>
                 <button
@@ -134,15 +131,15 @@ function Sidebar() {
                     value={"products"}
                     className={(menu === "products") ? activeLink : normalLink}
                 >
-                    <BsFillBoxSeamFill className="inline-block"/>
+                    <BsFillBoxSeamFill className=""/>
                     <span className="pl-1">Sản phẩm</span>
                 </button>
                 <button
                     onClick={(e) => handleMenuClick(e)}
-                    value={"customers"}
+                    value={""}
                     className={(menu === "customers") ? activeLink : normalLink}
                 >
-                    <BiSolidUser className="inline-block"/>
+                    <BiSolidUser className=""/>
                     <span className="pl-1">Khách hàng</span>
                 </button>
                 <button
@@ -150,7 +147,7 @@ function Sidebar() {
                     value={"discounts"}
                     className={(menu === "discounts") ? activeLink : normalLink}
                 >
-                    <BiSolidDiscount className="inline-block"/>
+                    <BiSolidDiscount className=""/>
                     <span className="pl-1">Mã giảm giá</span>
                 </button>
                 {
@@ -160,7 +157,7 @@ function Sidebar() {
                         value={"staffs"}
                         className={(menu === "staffs") ? activeLink : normalLink}
                     >
-                        <FaUsers className="inline-block"/>
+                        <FaUsers className=""/>
                         <span className="pl-1">Nhân viên</span>
                     </button>
                 }
@@ -169,7 +166,7 @@ function Sidebar() {
                     value={"review"}
                     className={(menu === "review") ? activeLink : normalLink}
                 >
-                    <BsFillCalendar2RangeFill className="inline-block"/>
+                    <BsFillCalendar2RangeFill className=""/>
                     <a href="" className="pl-1">
                         Đánh giá
                     </a>
@@ -181,20 +178,20 @@ function Sidebar() {
                         value={"statistics"}
                         className={(menu === "statistics") ? activeLink : normalLink}
                     >
-                        <SiGoogleanalytics className="inline-block"/>
+                        <SiGoogleanalytics className=""/>
                         <span className="pl-1">Thống kê</span>
                     </button>
                 }
                 <button
                     value={"logout"}
                     onClick={(e) => handleMenuClick(e)}
-                    className="logout w-full shadow-xl h-10 justify-center items-center flex rounded-md mt-16 hover:bg-red-300"
+                    className="items-center justify-center flex flex-col rounded-md "
                 >
-                    <BiLogOutCircle className="inline-block"/>
-                    <span className="pl-1">Đăng xuất</span>
+                    <BiLogOutCircle className=""/>
+                    <span className="">Đăng xuất</span>
                 </button>
 
-                <div className="date-time h-28 w-full justify-center items-center flex">
+                <div className="hidden md:block">
                     {dateTime}
                 </div>
             </div>

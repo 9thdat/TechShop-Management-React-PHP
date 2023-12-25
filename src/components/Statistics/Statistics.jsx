@@ -31,7 +31,7 @@ export default function Statistics() {
 
 
     useEffect(() => {
-        localStorage.setItem("menu", "statistics");
+        sessionStorage.setItem("menu", "statistics");
     }, []);
 
     useEffect(() => {

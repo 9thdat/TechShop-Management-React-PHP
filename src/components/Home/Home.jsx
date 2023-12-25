@@ -26,7 +26,7 @@ export default function Home() {
 
 
     useEffect(() => {
-        localStorage.setItem("menu", "home");
+        sessionStorage.setItem("menu", "home");
     }, []);
 
     useEffect(() => {
@@ -147,80 +147,89 @@ export default function Home() {
     }
 
     return (
-        <div className={"home grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 grid-rows-6 w-full h-full py-5"}>
+        <div className={"home grid grid-cols-2 lg:grid-cols-4 grid-rows-6 w-full h-full py-5"}>
             <div
-                className="col-span-1 md:col-span-2 lg:col-span-4 row-start-1 row-end-2 flex flex-col md:flex-row lg:flex-row items-center justify-evenly">
+                className="col-start-1 col-end-3 row-start-1 row-end-3 flex text-center text-sm">
                 <div
-                    className="pending-order flex flex-col items-center justify-center rounded-3xl bg-amber-100 p-5"
+                    className="col-start-1 col-end-3row-start-1 row-end-3"
                 >
-                    <span className="font-semibold text-lg">ĐƠN HÀNG CHỜ XỬ LÝ</span>
-                    <div className="revenue-month-value text-xl"> {ordersProcessing} </div>
+                    <div
+                        className="bg-red-300 border rounded-2xl p-2"
+                    >
+                        <span className="">ĐƠN HÀNG CHỜ XỬ LÝ</span>
+                        <div className=""> {ordersProcessing} </div>
+                    </div>
+                    <div
+                        className="bg-green-400 border rounded-2xl p-2"
+                    >
+                        <span className="">
+                            ĐƠN HÀNG HOÀN THÀNH HÔM NAY
+                        </span>
+                        <div className="">
+                            {ordersTodayCompleted}
+                        </div>
+                    </div>
                 </div>
                 <div
-                    className="successed-order-today flex flex-col items-center justify-center rounded-3xl bg-green-100 p-5"
+                    className="col-start-1 col-end-3 row-start-2 row-end-3"
                 >
-                <span className="font-semibold text-lg text-center">
-                  ĐƠN HÀNG HOÀN THÀNH HÔM NAY
-                </span>
-                    <div className="revenue-month-value text-xl">{ordersTodayCompleted}</div>
+                    <div
+                        className="bg-blue-300 border rounded-2xl p-2"
+                    >
+                        <span className="">DOANH THU HÔM NAY</span>
+                        <div className="">{revenueToday}</div>
+                    </div>
+                    <div
+                        className="bg-yellow-200 border rounded-2xl p-2"
+                    >
+                        <span className="">DOANH THU THÁNG NÀY</span>
+                        <div className="">{revenueMonth}</div>
+                    </div>
                 </div>
-                <div
-                    className="revenue-today flex flex-col items-center justify-center rounded-3xl bg-blue-100 p-5"
-                >
-                    <span className="font-semibold text-lg">DOANH THU HÔM NAY</span>
-                    <div className="revenue-month-value text-xl">{revenueToday}</div>
-                </div>
-                <div
-                    className="revenue-month flex flex-col items-center justify-center rounded-3xl bg-red-100 p-5"
-                >
-                    <span className="font-semibold text-lg">DOANH THU THÁNG NÀY</span>
-                    <div className="revenue-month-value text-xl">{revenueMonth}</div>
-                </div>
-
             </div>
 
             {chartData && chartData.labels && (
-                <div className="col-span-1 md:col-span-2 lg:col-span-3 row-start-2 row-end-7 mx-8 p-5">
-                    <span className="font-semibold text-lg">BIỂU ĐỒ DOANH THU THÁNG NÀY</span>
+                <div className="col-start-1 col-end-3 row-start-3 row-end-5 text-center">
+                    <span className="">BIỂU ĐỒ DOANH THU THÁNG NÀY</span>
                     <LineChart chartData={chartData}/>
                 </div>
             )}
 
-            <div className="col-span-1 md:col-span-1 lg:col-span-1 row-start-2 row-end-7 pt-5">
-                <span className="font-semibold text-lg text-center">TOP KHÁCH HÀNG</span>
-                <div className="top-5-customers-list">
+            <div className="col-start-1 col-end-3 row-start-5 row-end-7 text-center">
+                <span className="">TOP KHÁCH HÀNG</span>
+                <div className="">
                     <table
-                        className="w-full text-sm text-left rtl:text-right text-gray-500"
+                        className=""
                     >
-                        <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                        <thead className="">
                         <tr>
-                            <th scope="col" className="text-center py-3">
+                            <th scope="col" className="">
                                 STT
                             </th>
-                            <th scope="col" className="text-center">
+                            <th scope="col" className="">
                                 Ảnh
                             </th>
-                            <th scope="col" className="text-center">
+                            <th scope="col" className="">
                                 Tên khách hàng
                             </th>
-                            <th scope="col" className="text-center">
+                            <th scope="col" className="">
                                 Số điện thoại
                             </th>
                         </tr>
                         </thead>
-                        <tbody className="text-gray-700">
+                        <tbody className="">
                         {TopCustomer && TopCustomer.length > 0 && TopCustomer.map((item, index) => (
-                            <tr key={index} className={"border border-black"}>
-                                <td className="text-center p-3">{index + 1}</td>
-                                <td className="text-center items-center justify-center">
+                            <tr key={index} className={""}>
+                                <td className="">{index + 1}</td>
+                                <td className="">
                                     <img
-                                        className="w-10 h-10 rounded-full"
+                                        className="w-14"
                                         src={item.avatar ? `data:image/jpeg;base64, ${item.image}` : defaultAvatar}
                                         alt=""
                                     />
                                 </td>
-                                <td className="text-center">{item.name}</td>
-                                <td className="text-center">{item.phone}</td>
+                                <td className="">{item.name}</td>
+                                <td className="">{item.phone}</td>
                             </tr>
                         ))}
                         </tbody>

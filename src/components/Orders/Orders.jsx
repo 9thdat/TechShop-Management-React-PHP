@@ -19,7 +19,7 @@ export default function Orders() {
     });
 
     useEffect(() => {
-        localStorage.setItem("menu", "orders");
+        sessionStorage.setItem("menu", "orders");
     }, []);
 
     useEffect(() => {
@@ -163,10 +163,10 @@ export default function Orders() {
 
 
     return (
-        <div className="relative min-h-[90vh] overflow-scroll shadow-md sm:rounded-lg">
-            <div className="search top-0 right-0 flex items-center justify-end sticky h-[10vh] p-4 backdrop-blur-sm">
+        <div className="">
+            <div className="top-0 right-0 backdrop-blur-sm grid grid-cols-6 grid-rows-2">
                 <button
-                    className="px-2 py-1 text-white bg-green-500 rounded-md"
+                    className="col-start-1 col-end-2 row-start-1 row-end-2 border border-green-500 rounded-md bg-green-500 text-white"
                     onClick={handleOpenAddOrder}
                 >
                     Thêm
@@ -174,13 +174,13 @@ export default function Orders() {
                 <input
                     type="text"
                     id="searchValue"
-                    className="px-2 py-1 ml-2 rounded-md border border-black w-20 sm:w-60 md:w-80 lg:w-[66%]"
+                    className="col-start-2 col-end-7 row-start-1 row-end-2 border border-blue-300 rounded-md"
                     placeholder="Tìm kiếm đơn hàng"
                     value={search.searchValue}
                     onChange={(e) => handleOnChangeSearchType(e)}
                 />
                 <select
-                    className="px-2 py-1 ml-2 rounded-md border border-black w-20 sm:w-24 md:w-28 lg:w-32"
+                    className="col-start-1 col-end-3 row-start-2 row-end-3 border border-blue-300 rounded-md"
                     id="sortValue"
                     onChange={(e) => handleOnChangeSearchType(e)}
                 >
@@ -189,7 +189,7 @@ export default function Orders() {
                     <option value="phone">Số điện thoại</option>
                 </select>
                 <select
-                    className="px-2 py-1 ml-2 rounded-md border border-black w-24 sm:w-32 md:w-40 lg:w-48"
+                    className="col-start-3 col-end-5 row-start-2 row-end-3 border border-blue-300 rounded-md"
                     id="statusValue"
                     onChange={(e) => handleOnChangeSearchType(e)}
                 >
@@ -200,13 +200,14 @@ export default function Orders() {
                     <option value="Cancelled">Đã hủy</option>
                 </select>
 
-                <button className={"px-2 py-1 ml-2 text-white bg-blue-500 rounded-md"}
-                        onClick={handleOnSearch}
+                <button
+                    className="col-start-5 col-end-7 row-start-2 row-end-3 border border-blue-300 rounded-md bg-blue-400 text-white"
+                    onClick={handleOnSearch}
                 >
                     Tìm kiếm
                 </button>
             </div>
-            <div className="overflow-x-auto overflow-y-auto h-[78vh]">
+            <div className="overflow-x-auto overflow-y-auto h-screen">
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500">
                     <tbody className="text-xs text-gray-700 uppercase bg-gray-50">
                     <tr>

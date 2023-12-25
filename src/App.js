@@ -68,7 +68,7 @@ function App() {
                         isLogin ? (
                             <div className="management grid grid-cols-7 grid-rows-7">
                                 <div
-                                    className="sidebar w-full h-screen col-start-1 col-end-2 row-start-1 row-end-7">
+                                    className="sidebar w-full h-screen col-start-1 col-end-2 row-start-1 row-end-7 z-0">
                                     <Sidebar/>
                                 </div>
                                 <div

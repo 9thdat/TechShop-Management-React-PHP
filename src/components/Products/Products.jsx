@@ -65,7 +65,7 @@ export default function Products() {
     }
 
     useEffect(() => {
-        localStorage.setItem("menu", "products");
+        sessionStorage.setItem("menu", "products");
     }, []);
 
     useEffect(() => {

@@ -26,11 +26,11 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
         setOrderProducts((prevOrderProducts) => {
             const orderProducts = [...prevOrderProducts];
             orderProducts[currentOrderProduct - 1] = {
-                productId: orderProduct.productId,
-                color: orderProduct.color,
-                quantity: orderProduct.quantity,
-                price: orderProduct.price,
-                totalPrice: orderProduct.totalPrice,
+                productId: orderProduct.productId || "",
+                color: orderProduct.color || "",
+                quantity: orderProduct.quantity || 0,
+                price: orderProduct.price || 0,
+                totalPrice: orderProduct.totalPrice || 0,
             };
             return orderProducts;
         });
@@ -334,163 +334,158 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
     }
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm text-xl">
-            <div className="bg-white p-4 rounded">
-                <div className="title flex justify-between px-1">
-                    <div className="text-3xl">Chi tiết sản phẩm của đơn hàng</div>
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm">
+            <div className="bg-white p-3 rounded-md">
+                <div className="flex justify-between">
+                    <div className="">Chi tiết sản phẩm của đơn hàng</div>
                     <button onClick={onClose}>X</button>
                 </div>
+                <div className="grid grid-cols-2">
+                    <div>
+                        <label htmlFor={"stt"}>Sản phẩm thứ </label>
+                        <select
+                            className={`border border-black rounded-md text-center`}
+                            id="stt"
+                            onChange={(e) => handleDisplayOrderProduct(e)}
+                            defaultValue={""}
+                            value={currentOrderProduct}
+                        >
+                            <option value={""}></option>
+                            {
+                                orderProductsLength !== null &&
+                                Array.from(Array(orderProductsLength + 1).keys())
+                                    .filter(stt => stt !== 0) // Lọc bỏ giá trị 0
+                                    .map((stt, index) => (
+                                        <option
+                                            key={index}
+                                            value={stt}
+                                        >
+                                            {stt}
+                                        </option>
+                                    ))
+                            }
 
-                <div className="content">
-                    <form className="form overflow-auto">
-                        <table className="col-span-2">
-                            <thead>
-                            <tr>
-                                <td>
-                                    <label htmlFor={"stt"}>Sản phẩm thứ </label>
-                                    <select
-                                        className="form-control border border-black rounded-md disabled:bg-slate-200 mb-2 mr-2"
-                                        id="stt"
-                                        onChange={(e) => handleDisplayOrderProduct(e)}
-                                        defaultValue={""}
-                                        value={currentOrderProduct}
-                                    >
-                                        <option value={""}></option>
-                                        {
-                                            orderProductsLength !== null &&
-                                            Array.from(Array(orderProductsLength + 1).keys())
-                                                .filter(stt => stt !== 0) // Lọc bỏ giá trị 0
-                                                .map((stt, index) => (
-                                                    <option
-                                                        key={index}
-                                                        value={stt}
-                                                    >
-                                                        {stt}
-                                                    </option>
-                                                ))
-                                        }
-
-                                    </select>
-                                </td>
-                                <td>
-                                    <button
-                                        type="button"
-                                        className="btn btn-primary border border-green-500 bg-amber-400 rounded-md p-2"
-                                        onClick={handleOnAddOrderProduct}
-                                        disabled={action === "edit"}
-                                    >
-                                        Thêm một sản phẩm
-                                    </button>
-                                </td>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td>
-                                    <label htmlFor="productId">Mã sản phẩm</label>
-                                    <input
-                                        type="text"
-                                        className="form-control border border-black rounded-md disabled:bg-slate-200 mb-2 mr-2"
-                                        id="productId"
-                                        onChange={(e) => handleOnChange(e)}
-                                        onBlur={setProductsData}
-                                        value={orderProduct.productId}
-                                        disabled={currentOrderProduct === "" || action === "edit"}
-                                    />
-                                    {!isValid.productId && (
-                                        <h5 className="text-red-500 text-xs">"Mã sản phẩm không tồn tại"</h5>
-                                    )}
-                                </td>
-                                <td>
-                                    <label htmlFor="color">Màu sắc</label>
-                                    <select
-                                        className="form-control border border-black rounded-md disabled:bg-slate-200 mb-2 mr-2"
-                                        id="color"
-                                        onChange={(e) => handleOnChange(e)}
-                                        value={orderProduct.color}
-                                        disabled={currentOrderProduct === "" || action === "edit"}
-                                    >
-                                        <option value={""}></option>
-                                        {
-                                            productQuantity &&
-                                            productQuantity.map((product, index) => (
-                                                <option
-                                                    key={index}
-                                                    value={product.color}
-                                                >
-                                                    {product.color}
-                                                </option>
-                                            ))
-                                        }
-                                    </select>
-                                    {!isValid.color && (
-                                        <h5 className="text-red-500 text-xs">"Màu sắc không hợp lệ"</h5>
-                                    )}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <label htmlFor="quantity">Số lượng</label>
-                                    <input
-                                        type="text"
-                                        className="form-control border border-black rounded-md disabled:bg-slate-200 mb-2"
-                                        id="quantity"
-                                        onChange={(e) => handleOnChange(e)}
-                                        value={orderProduct.quantity || ""}
-                                        disabled={currentOrderProduct === "" || action === "edit"}
-                                    />
-                                    <span
-                                        className="text-red-500 text-xs"
-                                    >
-                                        Còn lại: {totalProductQuantity}
-                                    </span>
-                                    {!isValid.quantity && (
-                                        <h5 className="text-red-500 text-xs">"Số lượng không hợp lệ"</h5>
-                                    )}
-                                </td>
-                                <td>
-                                    <label htmlFor="price">Giá tiền</label>
-                                    <input
-                                        type="text"
-                                        className="form-control border border-black rounded-md disabled:bg-slate-200 mb-2"
-                                        id="price"
-                                        value={orderProduct.price || ""}
-                                        disabled={true}
-                                    />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <label htmlFor="totalPrice">Tổng tiền</label>
-                                    <input
-                                        type="text"
-                                        className="form-control border border-black rounded-md disabled:bg-slate-200 mb-2"
-                                        id="totalPrice"
-                                        value={orderProduct.totalPrice || ""}
-                                        disabled={true}
-                                    />
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                        <div className="form-group flex justify-between">
+                        </select>
+                    </div>
+                    {
+                        (action === "add") &&
+                        <div>
                             <button
                                 type="button"
-                                className="btn btn-primary border border-green-500 bg-red-400 rounded-md p-2"
-                                onClick={handleOnDeleteProduct}
+                                className="px-2 py-1 text-white bg-green-400 rounded-md"
+                                onClick={handleOnAddOrderProduct}
                                 disabled={action === "edit"}
                             >
-                                Xóa sản phẩm
-                            </button>
-                            <button
-                                type="button"
-                                className="btn btn-primary border border-green-500 bg-green-500 rounded-md p-2"
-                                onClick={handleOnSave}
-                            >
-                                Lưu
+                                Thêm một sản phẩm
                             </button>
                         </div>
-                    </form>
+                    }
+                    <div>
+                        <label htmlFor="productId">Mã sản phẩm</label>
+                        <input
+                            type="text"
+                            className={`border border-black rounded-md text-center block`}
+                            id="productId"
+                            onChange={(e) => handleOnChange(e)}
+                            onBlur={setProductsData}
+                            value={orderProduct.productId}
+                            disabled={currentOrderProduct === "" || action === "edit"}
+                        />
+                        {!isValid.productId && (
+                            <h5 className="text-red-500 text-xs">"Mã sản phẩm không tồn tại"</h5>
+                        )}
+                    </div>
+                    <div>
+                        <label htmlFor="color">Màu sắc</label>
+                        <select
+                            className={`border border-black rounded-md text-center block`}
+                            id="color"
+                            onChange={(e) => handleOnChange(e)}
+                            value={orderProduct.color}
+                            disabled={currentOrderProduct === "" || action === "edit"}
+                        >
+                            <option value={""}></option>
+                            {
+                                productQuantity &&
+                                productQuantity.map((product, index) => (
+                                    <option
+                                        key={index}
+                                        value={product.color}
+                                    >
+                                        {product.color}
+                                    </option>
+                                ))
+                            }
+                        </select>
+                        {!isValid.color && (
+                            <h5 className="text-red-500 text-xs">"Màu sắc không hợp lệ"</h5>
+                        )}
+                    </div>
+                    <div>
+                        <label htmlFor="quantity">Số lượng</label>
+                        <input
+                            type="text"
+                            className={`border border-black rounded-md text-center block`}
+                            id="quantity"
+                            onChange={(e) => handleOnChange(e)}
+                            value={orderProduct.quantity || ""}
+                            disabled={currentOrderProduct === "" || action === "edit"}
+                        />
+                        <span
+                            className="text-red-500 text-xs"
+                        >
+                                        Còn lại: {totalProductQuantity}
+                                    </span>
+                        {!isValid.quantity && (
+                            <h5 className="text-red-500 text-xs">"Số lượng không hợp lệ"</h5>
+                        )}
+                    </div>
+                    <div>
+                        <label htmlFor="price">Giá tiền</label>
+                        <input
+                            type="text"
+                            className={`border border-black rounded-md text-center block`}
+                            id="price"
+                            value={orderProduct.price || ""}
+                            disabled={true}
+                        />
+                    </div>
+                    <div className={"col-span-2"}>
+                        <label htmlFor="totalPrice">Tổng tiền</label>
+                        <input
+                            type="text"
+                            className={`border border-black rounded-md text-center block`}
+                            id="totalPrice"
+                            value={orderProduct.totalPrice || ""}
+                            disabled={true}
+                        />
+                    </div>
+                    {
+                        (action === "add") &&
+                        (
+                            <>
+                                <div className="">
+                                    <button
+                                        type="button"
+                                        className="px-2 py-1 text-white bg-red-400 rounded-md"
+                                        onClick={handleOnDeleteProduct}
+                                        disabled={action === "edit"}
+                                    >
+                                        Xóa sản phẩm
+                                    </button>
+                                </div>
+                                <div className={"justify-end flex"}>
+                                    <button
+                                        type="button"
+                                        className="px-2 py-1 text-white bg-blue-500 rounded-md"
+                                        onClick={handleOnSave}
+                                    >
+                                        Lưu
+                                    </button>
+                                </div>
+                            </>
+                        )
+                    }
                 </div>
             </div>
         </div>

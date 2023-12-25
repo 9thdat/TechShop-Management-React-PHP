@@ -20,7 +20,7 @@ export default function Staffs() {
     });
 
     useEffect(() => {
-        localStorage.setItem("menu", "staffs");
+        sessionStorage.setItem("menu", "staffs");
     }, []);
 
     useEffect(() => {

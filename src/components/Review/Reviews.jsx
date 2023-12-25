@@ -11,7 +11,7 @@ export default function Reviews() {
     const [originalReviews, setOriginalReviews] = useState({});
 
     useEffect(() => {
-        localStorage.setItem("menu", "review");
+        sessionStorage.setItem("menu", "review");
     }, []);
 
     useEffect(() => {
