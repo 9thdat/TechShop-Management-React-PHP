@@ -148,107 +148,88 @@ export default function ProductImage({visible, onClose, data, action, onSave}) {
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm text-xl">
-            <div className="bg-white p-4 rounded ">
-                <div className="title flex justify-between px-1">
-                    <div className="text-3xl">Thông tin hình ảnh</div>
+            <div className="bg-white p-3 rounded-md">
+                <div className="flex justify-between">
+                    <div className="">Thông tin hình ảnh</div>
                     <button onClick={() => {
                         onClose();
                     }}>X
                     </button>
                 </div>
-                <div className="content">
-                    <form className="form overflow-auto">
-                        <table className="col-span-3">
-                            <thead>
-                            <tr>
-                                <td>
-                                    <label htmlFor={"stt"}>Hình ảnh thứ </label>
-                                    <select
-                                        className="form-control border border-black rounded-md disabled:bg-slate-200 mb-2 mr-2"
-                                        id="stt"
-                                        onChange={(e) => handleDisplayImage(e)}
-                                        defaultValue={""}
-                                        value={current}
-                                    >
-                                        <option value={""}></option>
-                                        {
-                                            length !== null &&
-                                            Array.from(Array(length + 1).keys())
-                                                .filter(stt => stt !== 0) // Lọc bỏ giá trị 0
-                                                .map((stt, index) => (
-                                                    <option
-                                                        key={index}
-                                                        value={stt}
-                                                    >
-                                                        {stt}
-                                                    </option>
-                                                ))
-                                        }
-                                    </select>
-                                </td>
-                                <td>
-                                    <button
-                                        type="button"
-                                        className="btn btn-primary border border-green-500 bg-amber-400 rounded-md p-2"
-                                        onClick={handleAddProductImage}
-                                    >
-                                        Thêm một hình ảnh
-                                    </button>
-                                </td>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td>
-                                    <div className="form-group flex justify-between mb-4 ">
-                                        <label className="mr-2" htmlFor="ordinal">Thứ tự</label>
-                                        <input type="text"
-                                               className="form-control border border-black rounded-md"
-                                               id="ordinal"
-                                               onChange={(e) => handleOnChange(e)}
-                                               value={productImage.ordinal}
-                                               disabled={current === 0}
-                                        />
-                                    </div>
-                                </td>
-                                <td>
-                                    <div className="form-group flex justify-between mb-4 ">
-                                        <label className="mr-2" htmlFor="image">Hình ảnh</label>
-                                        {
-                                            productImage.image &&
-                                            <img className={"w-32 h-32"}
-                                                 src={`data:image/jpeg;base64, ${productImage.image}`}
-                                                 alt={productImage.color}/>
-                                        }
-                                    </div>
-                                </td>
-                                <td>
-                                    <div className="form-group flex justify-between mb-4 ">
-                                        <input
-                                            type="file"
-                                            className="form-control" id="image"
-                                            onChange={(e) => handleUploadImage(e)}
-                                        />
-                                    </div>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </form>
-                </div>
-                <div className="footer flex justify-between">
+                <div className="grid grid-cols-2 gap-2">
+                    <div>
+                        <label htmlFor={"stt"}>Hình ảnh thứ </label>
+                        <select
+                            className={`border border-black rounded-md text-center`}
+                            id="stt"
+                            onChange={(e) => handleDisplayImage(e)}
+                            defaultValue={""}
+                            value={current}
+                        >
+                            <option value={""}></option>
+                            {
+                                length !== null &&
+                                Array.from(Array(length + 1).keys())
+                                    .filter(stt => stt !== 0) // Lọc bỏ giá trị 0
+                                    .map((stt, index) => (
+                                        <option
+                                            key={index}
+                                            value={stt}
+                                        >
+                                            {stt}
+                                        </option>
+                                    ))
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        <button
+                            type="button"
+                            className="px-2 py-1 text-black bg-yellow-300 rounded-md"
+                            onClick={handleAddProductImage}
+                        >
+                            Thêm một hình ảnh
+                        </button>
+                    </div>
+                    <div className="">
+                        <label className="" htmlFor="ordinal">Thứ tự</label>
+                        <input type="text"
+                               className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                               id="ordinal"
+                               onChange={(e) => handleOnChange(e)}
+                               value={productImage.ordinal}
+                               disabled={current === 0}
+                        />
+                    </div>
+                    <div className="col-span-2">
+                        <label className="" htmlFor="image">Hình ảnh</label>
+                        {
+                            productImage.image &&
+                            <img className={"w-32 h-32"}
+                                 src={`data:image/jpeg;base64, ${productImage.image}`}
+                                 alt={productImage.color}/>
+                        }
+                    </div>
+                    <div className="col-span-2">
+                        <input
+                            type="file"
+                            className="form-control" id="image"
+                            onChange={(e) => handleUploadImage(e)}
+                        />
+                    </div>
                     {
                         (current !== 0 && !productImage.new) &&
                         <button
                             type="button"
-                            className="btn btn-primary border border-green-500 bg-red-400 rounded-md p-2"
+                            className="px-2 py-1 text-white bg-red-400 rounded-md"
                             onClick={handleOnDeleteImage}
                         >
                             Xóa hình ảnh
                         </button>
                     }
-                    <button className="btn btn-primary border border-green-500 bg-green-400 rounded-md p-2"
-                            onClick={handleOnSave}>Lưu
+                    <button
+                        className="px-2 py-1 text-white bg-green-400 rounded-md"
+                        onClick={handleOnSave}>Lưu
                     </button>
                 </div>
             </div>

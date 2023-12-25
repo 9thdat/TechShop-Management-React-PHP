@@ -22,7 +22,7 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
                 )
             );
         } else {
-            setProductQuantityData(data);
+            setProductQuantityData([]);
         }
     }, [data]);
 
@@ -79,7 +79,7 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
             ...prevData,
             {
                 id: "",
-                productId: data[0].productId,
+                productId: "",
                 color: "",
                 quantity: 0,
                 quantityValid: true,
@@ -184,43 +184,48 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
 
     return (
         <div
-            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm text-xl">
-            <div className="bg-white p-4 rounded ">
-                <div className="title flex justify-between px-1">
-                    <div className="text-3xl">Chi tiết số lượng sản phẩm</div>
+            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm"
+        >
+            <div className="bg-white p-3 rounded-md">
+                <div className="flex justify-between">
+                    <div className="">Chi tiết số lượng sản phẩm</div>
                     <button onClick={() => {
                         onClose();
                     }}>X
                     </button>
                 </div>
-
-                <div className="content">
-                    <form className="form overflow-auto">
-                        <table className="col-span-3">
-                            <thead>
-                            <tr>
-                                <th>Màu sắc</th>
-                                <th>Số lượng</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {productQuantityData.map((product, index) => (
+                <div className="overflow-x-auto overflow-y-auto">
+                    <table className="w-full text-sm text-left rtl:text-right text-gray-500">
+                        <thead>
+                        <tr>
+                            <th scope="col" className="text-center">
+                                Màu sắc
+                            </th>
+                            <th scope="col" className="text-center">
+                                Số lượng
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {
+                            productQuantityData.map((product, index) => (
                                 (product.isDeleted === false || product.isDeleted === undefined) && (
-                                    <tr key={index}>
-                                        <td>
+                                    <tr key={index} className={""}>
+                                        <td colSpan={1}>
+
                                             <input
                                                 type="text"
-                                                className="form-control border border-black rounded-md disabled:bg-slate-200 mb-2 mr-2"
+                                                className={`border border-black rounded-md text-center block disabled:bg-gray-300 mx-1`}
                                                 id="color"
                                                 onChange={(e) => handleOnChange(e, index)}
                                                 value={product.color}
                                             />
                                         </td>
 
-                                        <td>
+                                        <td colSpan={1}>
                                             <input
                                                 type="text"
-                                                className="form-control border border-black rounded-md disabled:bg-slate-200 mb-2 mr-2"
+                                                className={`border border-black rounded-md text-center block disabled:bg-gray-300 mx-1`}
                                                 id="quantity"
                                                 onChange={(e) => handleOnChange(e, index)}
                                                 value={product.quantity}
@@ -234,17 +239,19 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
                                                 }
                                             </span>
                                         </td>
-                                        <td>
+                                        <td colSpan={1}>
                                             <button
                                                 type="button"
-                                                className="btn btn-primary border border-green-500 bg-amber-200 rounded-md p-1 text-xl"
+                                                className="px-2 py-1 text-black bg-yellow-200 rounded-md text-sm mx-1"
                                                 onClick={(e) => handleOpenDetailImage(e, index)}
                                             >
-                                                Chi tiết hình ảnh
+                                                Ảnh
                                             </button>
+                                        </td>
+                                        <td colSpan={1}>
                                             <button
                                                 type="button"
-                                                className="btn btn-danger border border-red-400 bg-red-500 rounded-md p-1 text-xl"
+                                                className="px-2 py-1 text-black bg-red-400 rounded-md"
                                                 onClick={(e) => handleOnDeleteProductQuantity(e, index)}
                                             >
                                                 Xóa
@@ -253,28 +260,26 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
                                     </tr>
                                 )
                             ))
-                            }
-                            </tbody>
-                        </table>
+                        }
+                        </tbody>
+                    </table>
 
-
-                        <div className="form-group flex justify-between">
-                            <button
-                                type="button"
-                                className="btn btn-danger border border-red-500 bg-blue-300 rounded-md p-2 mr-2"
-                                onClick={handleOnAddProductQuantity}
-                            >
-                                Thêm số lượng sản phẩm
-                            </button>
-                            <button
-                                type="button"
-                                className="btn btn-primary border border-green-500 bg-green-500 rounded-md p-2"
-                                onClick={handleOnSave}
-                            >
-                                Lưu
-                            </button>
-                        </div>
-                    </form>
+                    <div className="flex justify-between mt-2">
+                        <button
+                            type="button"
+                            className="px-2 py-1 text-black border border-black text-sm bg-blue-200 rounded-md"
+                            onClick={handleOnAddProductQuantity}
+                        >
+                            Thêm số lượng sản phẩm
+                        </button>
+                        <button
+                            type="button"
+                            className="px-2 py-1 text-black border border-black text-sm bg-green-400 rounded-md"
+                            onClick={handleOnSave}
+                        >
+                            Lưu
+                        </button>
+                    </div>
                 </div>
             </div>
             {

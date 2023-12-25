@@ -473,14 +473,14 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                     }}>X
                     </button>
                 </div>
-                <div className="grid grid-cols-2">
+                <div className="grid grid-cols-2 gap-2">
                     <div className="">
                         <label className="" htmlFor="id">
                             ID
                         </label>
                         <input
                             type="text"
-                            className={`border border-black rounded-md text-center block`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
                             id="id"
                             onChange={(e) => handleOnChange(e)}
                             value={order.id}
@@ -493,7 +493,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                         </label>
                         <input
                             type="text"
-                            className={`border border-black rounded-md text-center block`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
                             id="customerEmail"
                             onChange={(e) => handleOnChange(e)}
                             onBlur={(e) => handleSearchCustomer(e)}
@@ -507,7 +507,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                         </label>
                         <input
                             type="text"
-                            className={`border border-black rounded-md text-center block`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
                             id="phone"
                             onChange={(e) => handleOnChange(e)}
                             value={order.name}
@@ -520,7 +520,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                         </label>
                         <input
                             type="text"
-                            className={`border border-black rounded-md text-center block`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
                             id="address"
                             onChange={(e) => handleOnChange(e)}
                             value={order.address}
@@ -533,7 +533,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                         </label>
                         <input
                             type="text"
-                            className={`border border-black rounded-md text-center block`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
                             id="phone"
                             onChange={(e) => handleOnChange(e)}
                             value={order.phone}
@@ -546,7 +546,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                         </label>
                         <input
                             type="text"
-                            className={`border border-black rounded-md text-center block`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
                             id="totalPrice"
                             onChange={(e) => handleOnChange(e)}
                             value={order.totalPrice}
@@ -560,7 +560,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                         <select
                             name={"city"}
                             id={"city"}
-                            className={`border border-black rounded-md text-center block`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
                             onChange={(e) => handleOnChange(e)}
                             value={order.city}
                             disabled={action === "edit"}
@@ -583,7 +583,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                         <select
                             name={"district"}
                             id={"district"}
-                            className={`border border-black rounded-md text-center block`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
                             onChange={(e) => handleOnChange(e)}
                             value={order.district}
                             disabled={action === "edit"}
@@ -607,7 +607,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                         <select
                             name={"ward"}
                             id={"ward"}
-                            className={`border border-black rounded-md text-center block`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
                             onChange={(e) => handleOnChange(e)}
                             value={order.ward}
                             disabled={action === "edit"}
@@ -630,7 +630,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                         </label>
                         <input
                             type="date"
-                            className={`border border-black rounded-md text-center block`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
                             id="orderDate"
                             onChange={(e) => handleOnChange(e)}
                             value={order.orderDate}
@@ -643,7 +643,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                         </label>
                         <input
                             type="text"
-                            className={`border border-black rounded-md text-center block`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
                             id="shippingFee"
                             onChange={(e) => handleOnChange(e)}
                             value={order.shippingFee}
@@ -656,7 +656,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                         </label>
                         <input
                             type="text"
-                            className={`border border-black rounded-md text-center block`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
                             id="discountCode"
                             onChange={(e) => handleOnChange(e)}
                             onBlur={(e) => handleDiscount(e)}
@@ -671,7 +671,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                         <select
                             name={"paymentType"}
                             id={"paymentType"}
-                            className={`border border-black rounded-md text-center block`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
                             onChange={(e) => handleOnChange(e)}
                             value={order.paymentType}
                             disabled={action === "edit"}
@@ -688,7 +688,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                         <select
                             name={"deliveryType"}
                             id={"deliveryType"}
-                            className={`border border-black rounded-md text-center block`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
                             onChange={(e) => handleOnChange(e)}
                             value={order.deliveryType}
                             disabled={action === "edit"}
@@ -704,7 +704,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                         <select
                             name={"status"}
                             id={"status"}
-                            className={`border border-black rounded-md text-center block`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
                             onChange={(e) => handleOnChange(e)}
                             value={order.status}
                             disabled={(order.status === "Done") || (order.status === "Cancelled")}
@@ -720,7 +720,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                             Ghi chú
                         </label>
                         <textarea
-                            className={`border border-black rounded-md text-center block`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
                             id="note"
                             onChange={(e) => handleOnChange(e)}
                             value={order.note}
@@ -738,8 +738,9 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                     {
                         (action === "add") &&
                         <div className={"justify-end flex"}>
-                            <button className="px-2 py-1 text-white bg-blue-500 rounded-md"
-                                    onClick={handleOnSaveOrder}
+                            <button
+                                className="px-2 py-1 text-white bg-blue-500 rounded-md"
+                                onClick={handleOnSaveOrder}
                             >
                                 Lưu
                             </button>

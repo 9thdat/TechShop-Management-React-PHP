@@ -147,20 +147,20 @@ export default function Home() {
     }
 
     return (
-        <div className={"home grid grid-cols-2 lg:grid-cols-4 grid-rows-6 w-full h-full py-5"}>
+        <div className={"home grid grid-cols-2 lg:grid-cols-4 grid-rows-6 w-full h-full"}>
             <div
-                className="col-start-1 col-end-3 row-start-1 row-end-3 flex text-center text-sm">
+                className="col-start-1 row-start-1 col-span-2 flex flex-row items-center justify-center text-center text-sm">
                 <div
-                    className="col-start-1 col-end-3row-start-1 row-end-3"
+                    className=""
                 >
                     <div
-                        className="bg-red-300 border rounded-2xl p-2"
+                        className="bg-red-300 border rounded-xl py-2"
                     >
                         <span className="">ĐƠN HÀNG CHỜ XỬ LÝ</span>
                         <div className=""> {ordersProcessing} </div>
                     </div>
                     <div
-                        className="bg-green-400 border rounded-2xl p-2"
+                        className="bg-green-400 border rounded-xl py-2"
                     >
                         <span className="">
                             ĐƠN HÀNG HOÀN THÀNH HÔM NAY
@@ -171,16 +171,16 @@ export default function Home() {
                     </div>
                 </div>
                 <div
-                    className="col-start-1 col-end-3 row-start-2 row-end-3"
+                    className=""
                 >
                     <div
-                        className="bg-blue-300 border rounded-2xl p-2"
+                        className="bg-blue-300 border rounded-xl py-2"
                     >
                         <span className="">DOANH THU HÔM NAY</span>
                         <div className="">{revenueToday}</div>
                     </div>
                     <div
-                        className="bg-yellow-200 border rounded-2xl p-2"
+                        className="bg-yellow-200 border rounded-xl py-2"
                     >
                         <span className="">DOANH THU THÁNG NÀY</span>
                         <div className="">{revenueMonth}</div>
@@ -189,13 +189,13 @@ export default function Home() {
             </div>
 
             {chartData && chartData.labels && (
-                <div className="col-start-1 col-end-3 row-start-3 row-end-5 text-center">
+                <div className="col-start-1 col-span-3 row-start-2 row-span-3 text-center">
                     <span className="">BIỂU ĐỒ DOANH THU THÁNG NÀY</span>
                     <LineChart chartData={chartData}/>
                 </div>
             )}
 
-            <div className="col-start-1 col-end-3 row-start-5 row-end-7 text-center">
+            <div className="col-start-1 col-span-2 row-start-4 row-span-2 text-center m-auto">
                 <span className="">TOP KHÁCH HÀNG</span>
                 <div className="">
                     <table

@@ -340,7 +340,7 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
                     <div className="">Chi tiết sản phẩm của đơn hàng</div>
                     <button onClick={onClose}>X</button>
                 </div>
-                <div className="grid grid-cols-2">
+                <div className="grid grid-cols-2 gap-2">
                     <div>
                         <label htmlFor={"stt"}>Sản phẩm thứ </label>
                         <select
@@ -367,24 +367,23 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
 
                         </select>
                     </div>
-                    {
-                        (action === "add") &&
-                        <div>
+                    <div>
+                        {
+                            (action === "add") &&
                             <button
                                 type="button"
                                 className="px-2 py-1 text-white bg-green-400 rounded-md"
                                 onClick={handleOnAddOrderProduct}
-                                disabled={action === "edit"}
                             >
                                 Thêm một sản phẩm
                             </button>
-                        </div>
-                    }
+                        }
+                    </div>
                     <div>
                         <label htmlFor="productId">Mã sản phẩm</label>
                         <input
                             type="text"
-                            className={`border border-black rounded-md text-center block`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
                             id="productId"
                             onChange={(e) => handleOnChange(e)}
                             onBlur={setProductsData}
@@ -398,7 +397,7 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
                     <div>
                         <label htmlFor="color">Màu sắc</label>
                         <select
-                            className={`border border-black rounded-md text-center block`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
                             id="color"
                             onChange={(e) => handleOnChange(e)}
                             value={orderProduct.color}
@@ -425,7 +424,7 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
                         <label htmlFor="quantity">Số lượng</label>
                         <input
                             type="text"
-                            className={`border border-black rounded-md text-center block`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
                             id="quantity"
                             onChange={(e) => handleOnChange(e)}
                             value={orderProduct.quantity || ""}
@@ -444,7 +443,7 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
                         <label htmlFor="price">Giá tiền</label>
                         <input
                             type="text"
-                            className={`border border-black rounded-md text-center block`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
                             id="price"
                             value={orderProduct.price || ""}
                             disabled={true}
@@ -454,14 +453,14 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
                         <label htmlFor="totalPrice">Tổng tiền</label>
                         <input
                             type="text"
-                            className={`border border-black rounded-md text-center block`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
                             id="totalPrice"
                             value={orderProduct.totalPrice || ""}
                             disabled={true}
                         />
                     </div>
                     {
-                        (action === "add") &&
+                        (action === "add" && currentOrderProduct !== "") &&
                         (
                             <>
                                 <div className="">
@@ -469,7 +468,6 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
                                         type="button"
                                         className="px-2 py-1 text-white bg-red-400 rounded-md"
                                         onClick={handleOnDeleteProduct}
-                                        disabled={action === "edit"}
                                     >
                                         Xóa sản phẩm
                                     </button>

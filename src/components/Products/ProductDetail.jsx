@@ -297,7 +297,7 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                 alert("Thêm sản phẩm thất bại! " + falseUpdate.join(", ").toString());
             } else {
                 alert("Thêm sản phẩm thành công!");
-                onReload();
+                onReload(productData.id, "add");
                 onClose();
             }
         } else if (actionType === "edit") {
@@ -512,7 +512,7 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                 alert("Sửa sản phẩm thất bại! " + falseUpdate.join(", ").toString());
             } else {
                 alert("Sửa sản phẩm thành công!");
-                onReload(productData.id);
+                onReload(productData.id, "edit");
                 onClose();
             }
         }
@@ -534,10 +534,6 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
         setProductQuantity(productQuantityData);
         setProductImage(productImageData);
     }
-
-    useEffect(() => {
-        console.log(productImage);
-    }, [productImage]);
 
     const onCloseQuantity = () => {
         setProductQuantityVisible(false);
@@ -660,310 +656,242 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
 
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm text-xl">
-            <div className="bg-white p-4 rounded ">
-                <div className="title flex justify-between px-1">
-                    <div className="text-3xl">Chi tiết sản phẩm</div>
+        <div
+            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm"
+        >
+            <div className="bg-white p-3 rounded-md">
+                <div className="flex justify-between">
+                    <div className="">Chi tiết sản phẩm</div>
                     <button onClick={onClose}>X</button>
                 </div>
-                <div className="content">
-                    <table className="col-span-3">
-                        <tbody>
-                        <tr>
-                            <td>
-                                <div className="form-group flex justify-between mb-4 ">
-                                    <label className="mr-2" htmlFor="id">ID</label>
-                                    <input type="text"
-                                           className="form-control border border-black rounded-md disabled:bg-slate-200"
-                                           id="id"
-                                           onChange={(e) => handleOnChange(e)}
-                                           disabled
-                                           value={productData.id}/>
-                                </div>
-                            </td>
-                            <td>
-                                <div className="form-group flex justify-between mb-4">
-                                    <label className="mr-2" htmlFor="name">Tên sản phẩm</label>
-                                    <input type="text"
-                                           className="form-control border border-black rounded-md"
-                                           id="name"
-                                           onChange={(e) => handleOnChange(e)}
-                                           value={productData.name}/>
-                                </div>
-                            </td>
-                            <td>
-                                <div className="form-group flex justify-between  mb-4">
-                                    <label className="mr-2" htmlFor="price">Giá sản phẩm</label>
-                                    <input type="text"
-                                           className="form-control border border-black rounded-md"
-                                           id="price"
-                                           onChange={(e) => handleOnChange(e)}
-                                           value={productData.price}/>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div className="form-group flex justify-between mb-4">
-                                    <label className="mr-2" htmlFor="PreDiscount">Giá trước khi giảm giá</label>
-                                    <input type="text"
-                                           className="form-control border border-black rounded-md"
-                                           id="PreDiscount"
-                                           onChange={(e) => handleOnChange(e)}
-                                           value={productData.preDiscount}/>
-                                </div>
-                            </td>
-                            <td>
-                                <div className="form-group flex justify-between mb-4">
-                                    <label className="mr-2" htmlFor="discountPercent">Phần trăm giảm giá</label>
-                                    <input type="text"
-                                           className="form-control border border-black rounded-md"
-                                           id="discountPercent"
-                                           onChange={(e) => handleOnChange(e)}
-                                           value={productData.discountPercent}/>
-                                </div>
-                            </td>
-                            <td>
-                                <div className="form-group flex justify-between mb-4">
-                                    <label className="mr-2" htmlFor="brand">Thương hiệu</label>
-                                    <input type="text"
-                                           className="form-control border border-black rounded-md"
-                                           id="brand"
-                                           onChange={(e) => handleOnChange(e)}
-                                           value={productData.brand}/>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div className="form-group flex justify-between mb-4">
-                                    <label className="mr-2" htmlFor="category">Danh mục</label>
-                                    <select
-                                        className="form-control border border-black rounded-md"
-                                        id="category"
-                                        onChange={(e) => handleOnChange(e)}
-                                        value={productData.category}
-                                    >
-                                        {
-                                            category.map((item) => (
-                                                <option key={item.id} value={item.id}>
-                                                    {categoryNames[item.id] || ""}
-                                                </option>
-                                            ))
-                                        }
-                                    </select>
-                                </div>
-                            </td>
-
-                            <td>
-                                <div className="form-group flex justify-between mb-4">
-                                    <label className="mr-2" htmlFor="description">Mô tả</label>
-                                    <textarea
-                                        className="form-control border border-black rounded-md"
-                                        id="description"
-                                        onChange={(e) => handleOnChange(e)}
-                                        value={productData.description}/>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div className="form-group flex justify-between mb-4">
-                                    <label className="mr-2" htmlFor="image">Hình ảnh</label>
-                                    {
-                                        productData.image &&
-                                        <img className={"w-32 h-32"}
-                                             src={`data:image/jpeg;base64, ${productData.image}`}
-                                             alt={productData.name}/>
-                                    }
-                                </div>
-                            </td>
-                            <td>
-                                <div className="form-group flex justify-end mb-4">
-                                    <input
-                                        type="file"
-                                        className="form-control" id="image"
-                                        onChange={(e) => handleUploadImage(e)}
-                                    />
-                                </div>
-                            </td>
-                            <td>
-                                <div className="form-group flex justify-between mb-4">
+                <div className="grid grid-cols-2 gap-2">
+                    <div className="">
+                        <label className="" htmlFor="id">ID</label>
+                        <input type="text"
+                               className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                               id="id"
+                               onChange={(e) => handleOnChange(e)}
+                               disabled
+                               value={productData.id}/>
+                    </div>
+                    <div className="">
+                        <label className="" htmlFor="name">Tên sản phẩm</label>
+                        <input type="text"
+                               className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                               id="name"
+                               onChange={(e) => handleOnChange(e)}
+                               value={productData.name}/>
+                    </div>
+                    <div className="">
+                        <label className="" htmlFor="price">Giá sản phẩm</label>
+                        <input type="text"
+                               className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                               id="price"
+                               onChange={(e) => handleOnChange(e)}
+                               value={productData.price}/>
+                    </div>
+                    <div className="">
+                        <label className="" htmlFor="PreDiscount">Giá trước khi giảm giá</label>
+                        <input type="text"
+                               className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                               id="PreDiscount"
+                               onChange={(e) => handleOnChange(e)}
+                               value={productData.preDiscount}/>
+                    </div>
+                    <div className="">
+                        <label className="" htmlFor="discountPercent">Phần trăm giảm giá</label>
+                        <input type="text"
+                               className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                               id="discountPercent"
+                               onChange={(e) => handleOnChange(e)}
+                               value={productData.discountPercent}/>
+                    </div>
+                    <div className="">
+                        <label className="" htmlFor="brand">Thương hiệu</label>
+                        <input type="text"
+                               className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                               id="brand"
+                               onChange={(e) => handleOnChange(e)}
+                               value={productData.brand}/>
+                    </div>
+                    <div className="">
+                        <label className="" htmlFor="category">Danh mục</label>
+                        <select
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                            id="category"
+                            onChange={(e) => handleOnChange(e)}
+                            value={productData.category}
+                        >
+                            {
+                                category.map((item) => (
+                                    <option key={item.id} value={item.id}>
+                                        {categoryNames[item.id] || ""}
+                                    </option>
+                                ))
+                            }
+                        </select>
+                    </div>
+                    <div className="">
+                        <label className="" htmlFor="description">Mô tả</label>
+                        <textarea
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                            id="description"
+                            onChange={(e) => handleOnChange(e)}
+                            value={productData.description}/>
+                    </div>
+                    <div className="col-span-2">
+                        <label className="" htmlFor="image">Hình ảnh</label>
+                        {
+                            productData.image &&
+                            <img className={"w-32 h-32"}
+                                 src={`data:image/jpeg;base64, ${productData.image}`}
+                                 alt={productData.name}/>
+                        }
+                    </div>
+                    <div className="">
+                        <input
+                            type="file"
+                            className="form-control"
+                            id="image"
+                            onChange={(e) => handleUploadImage(e)}
+                        />
+                    </div>
+                    <div className="">
+                        <button
+                            className="px-2 py-1 text-white bg-red-400 rounded-md"
+                            onClick={(e) => handleOnDeleteImage(e)}
+                        >
+                            Xoá hình ảnh
+                        </button>
+                    </div>
+                    {
+                        (productQuantity.length <= 0) ? (
+                                <div className={""}>
                                     <button
-                                        className="border border-black p-3 rounded-lg bg-red-500"
-                                        onClick={(e) => handleOnDeleteImage(e)}
+                                        className="px-2 py-1 text-black border border-black text-sm bg-blue-200 rounded-md"
+                                        onClick={onOpenNewQuantity}
                                     >
-                                        Xoá hình ảnh
+                                        Thêm số lượng sản phẩm
                                     </button>
                                 </div>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                    <table className="col-span-5 flex items-center justify-evenly">
-                        <tbody>
-                        <tr>
-                            {
-                                (productQuantity.length <= 0) ? (
-                                        <td className={""}>
-                                            <div className="">
-                                                <button className="border border-black p-3 rounded-lg bg-blue-200 text-xs"
-                                                        onClick={onOpenNewQuantity}
-                                                >
-                                                    Thêm số lượng sản phẩm
-                                                </button>
-                                            </div>
-                                        </td>
-                                    )
-                                    :
-                                    (
-                                        <td>
-                                            <div className="ml-6 flex flex-col items-center">
-                                                <div className="">
-                                                    <button
-                                                        className="border border-black p-3 rounded-lg bg-yellow-100 text-xs"
-                                                        onClick={onOpenEditQuantity}
-                                                    >
-                                                        Sửa số lượng sản phẩm
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    )
-                            }
+                            )
+                            :
+                            (
+                                <div className="">
+                                    <button
+                                        className="px-2 py-1 text-black border border-black text-sm bg-yellow-100 rounded-md"
+                                        onClick={onOpenEditQuantity}
+                                    >
+                                        Sửa số lượng sản phẩm
+                                    </button>
+                                </div>
+                            )
+                    }
 
-                            {
-                                (Object.keys(productPhone).length === 0) ?
-                                    (
-                                        <td>
-                                            <div className="">
-                                                <button
-                                                    className="border border-black p-3 rounded-lg bg-blue-200 text-xs"
-                                                    onClick={onOpenNewPhone}
-                                                >
-                                                    Thêm thông số điện thoại
-                                                </button>
-                                            </div>
-                                        </td>
-                                    )
-                                    :
-                                    (
-                                        <td>
-                                            <div className="">
-                                                <div className="mt-5">
-                                                    <button
-                                                        className="border border-black p-3 rounded-lg bg-yellow-100 text-xs"
-                                                        onClick={onOpenEditPhone}
-                                                    >
-                                                        Sửa thông số điện thoại
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    )
-                            }
-                            {
-                                (Object.keys(productAdapter).length === 0) ?
-                                    (
-                                        <td>
-                                            <div className="">
-                                                <button
-                                                    className="border border-black p-3 rounded-lg bg-blue-200 text-xs"
-                                                    onClick={onOpenNewAdapter}
-                                                >
-                                                    Thêm thông số sạc
-                                                </button>
-                                            </div>
-                                        </td>
-                                    )
-                                    :
-                                    (
-                                        <td>
-                                            <div className="">
-                                                <div className="mt-5">
-                                                    <button
-                                                        className="border border-black p-3 rounded-lg bg-yellow-100 text-xs"
-                                                        onClick={openEditAdapter}
-                                                    >
-                                                        Sửa thông số sạc
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    )
-                            }
+                    {
+                        (Object.keys(productPhone).length === 0) ?
+                            (
+                                <div className="">
+                                    <button
+                                        className="px-2 py-1 text-black border border-black text-sm bg-blue-200 rounded-md"
+                                        onClick={onOpenNewPhone}
+                                    >
+                                        Thêm thông số điện thoại
+                                    </button>
+                                </div>
+                            )
+                            :
+                            (
+                                <div className="">
+                                    <button
+                                        className="px-2 py-1 text-black border border-black text-sm bg-yellow-100 rounded-md"
+                                        onClick={onOpenEditPhone}
+                                    >
+                                        Sửa thông số điện thoại
+                                    </button>
+                                </div>
+                            )
+                    }
+                    {
+                        (Object.keys(productAdapter).length === 0) ?
+                            (
+                                <div className="">
+                                    <button
+                                        className="px-2 py-1 text-black border border-black text-sm bg-blue-200 rounded-md"
+                                        onClick={onOpenNewAdapter}
+                                    >
+                                        Thêm thông số sạc
+                                    </button>
+                                </div>
+                            )
+                            :
+                            (
+                                <div className="">
+                                    <button
+                                        className="px-2 py-1 text-black border border-black text-sm bg-yellow-100 rounded-md"
+                                        onClick={openEditAdapter}
+                                    >
+                                        Sửa thông số sạc
+                                    </button>
+                                </div>
+                            )
+                    }
 
-                            {
-                                (Object.keys(productCable).length === 0) ?
-                                    (
-                                        <td>
-                                            <div className="">
-                                                <button
-                                                    className="border border-black p-3 rounded-lg bg-blue-200 text-xs"
-                                                    onClick={onOpenNewCable}
-                                                >
-                                                    Thêm thông số cáp
-                                                </button>
-                                            </div>
-                                        </td>
-                                    )
-                                    :
-                                    (
-                                        <td>
-                                            <div className="">
-                                                <div className="mt-5">
-                                                    <button
-                                                        className="border border-black p-3 rounded-lg bg-yellow-100 text-xs"
-                                                        onClick={onOpenEditCable}
-                                                    >
-                                                        Sửa thông số cáp
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    )
-                            }
-                            {
-                                (Object.keys(productBackupCharger).length === 0) ?
-                                    (
-                                        <td>
-                                            <div className="">
-                                                <button
-                                                    className="border border-black p-3 rounded-lg bg-blue-200 text-xs"
-                                                    onClick={onOpenNewBackupCharger}
-                                                >
-                                                    Thêm thông số sạc dự phòng
-                                                </button>
-                                            </div>
-                                        </td>
-                                    )
-                                    :
-                                    (
-                                        <td>
-                                            <div className="">
-                                                <div className="mt-5">
-                                                    <button
-                                                        className="border border-black p-3 rounded-lg bg-yellow-100 text-xs"
-                                                        onClick={openEditBackupCharger}
-                                                    >
-                                                        Sửa thông số sạc dự phòng
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    )
-                            }
-                        </tr>
-                        </tbody>
-                    </table>
+                    {
+                        (Object.keys(productCable).length === 0) ?
+                            (
+                                <div className="">
+                                    <button
+                                        className="px-2 py-1 text-black border border-black text-sm bg-blue-200 rounded-md"
+                                        onClick={onOpenNewCable}
+                                    >
+                                        Thêm thông số cáp
+                                    </button>
+                                </div>
+                            )
+                            :
+                            (
+                                <div className="">
+                                    <button
+                                        className="px-2 py-1 text-black border border-black text-sm bg-yellow-100 rounded-md"
+                                        onClick={onOpenEditCable}
+                                    >
+                                        Sửa thông số cáp
+                                    </button>
+                                </div>
+                            )
+                    }
+                    {
+                        (Object.keys(productBackupCharger).length === 0) ?
+                            (
+                                <div className="col-span-2">
+                                    <button
+                                        className="px-2 py-1 text-black border border-black text-sm bg-blue-200 rounded-md"
+                                        onClick={onOpenNewBackupCharger}
+                                    >
+                                        Thêm thông số sạc dự phòng
+                                    </button>
+                                </div>
+                            )
+                            :
+                            (
+                                <div className="col-span-2">
+                                    <button
+                                        className="px-2 py-1 text-black border border-black text-sm bg-yellow-100 rounded-md"
+                                        onClick={openEditBackupCharger}
+                                    >
+                                        Sửa thông số sạc dự phòng
+                                    </button>
+                                </div>
 
+                            )
+                    }
                     <div className="form-group flex justify-end">
                         <button type="button"
-                                className="btn btn-primary border border-green-500 bg-green-500 rounded-md p-2"
+                                className="px-2 py-1 text-white bg-green-400 rounded-md"
                                 onClick={() => handleOnSave()}>Lưu
                         </button>
                     </div>
-
                 </div>
             </div>
 
