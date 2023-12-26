@@ -63,8 +63,18 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
             }
 
             getLastOrderId();
+
+            setIsValid({
+                email: false,
+                name: false,
+                address: false,
+                phone: false,
+                newEmail: true,
+                newName: true,
+                newAddress: true,
+                newPhone: true,
+            });
         } else {
-            console.log(orderData);
             const getDiscountCode = async () => {
                 const DiscountCode = await fetchDiscountCodeById(orderData.discountId);
                 setOrder((prevOrder) => {
@@ -94,6 +104,17 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                         cityCode: newCity?.code,
                         districtCode: newDistrict?.code,
                     };
+                });
+
+                setIsValid({
+                    email: true,
+                    name: true,
+                    address: true,
+                    phone: true,
+                    newEmail: true,
+                    newName: true,
+                    newAddress: true,
+                    newPhone: true,
                 });
             }
 
@@ -490,33 +511,21 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
 
     const handleValidField = (e) => {
         const {id, value} = e.target;
+
         setIsValid({
             ...isValid,
             [id]: value !== "",
         })
-        if (id === "customerEmail" && isValid.newEmail) {
-            setIsValid((prevIsValid) => ({
-                ...prevIsValid,
-                newEmail: false,
-            }));
-        } else if (id === "name" && isValid.newName) {
-            setIsValid((prevIsValid) => ({
-                ...prevIsValid,
-                newName: false,
-            }));
-        } else if (id === "address" && isValid.newAddress) {
-            setIsValid((prevIsValid) => ({
-                ...prevIsValid,
-                newAddress: false,
-            }));
-        } else if (id === "phone" && isValid.newPhone) {
-            setIsValid((prevIsValid) => ({
-                ...prevIsValid,
-                newPhone: false,
-            }));
-        }
 
-
+        const fields = ["customerEmail", "name", "address", "phone"];
+        fields.forEach(field => {
+            if (id === field && isValid[`new${field.charAt(0).toUpperCase() + field.slice(1)}`]) {
+                setIsValid({
+                    ...isValid,
+                    [`new${field.charAt(0).toUpperCase() + field.slice(1)}`]: false,
+                })
+            }
+        });
     }
 
     if (!visible) return null;
@@ -553,7 +562,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                         </label>
                         <input
                             type="email"
-                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300 ${(isValid.newEmail) ? "" : (isValid.email) ? "" : "border-red-500"}`}
                             id="customerEmail"
                             onChange={(e) => handleOnChange(e)}
                             onBlur={(e) => handleSearchCustomer(e)}
@@ -577,7 +586,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                         </label>
                         <input
                             type="text"
-                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300 ${(isValid.newName) ? "" : (isValid.name) ? "" : "border-red-500"}`}
                             id="name"
                             onChange={(e) => handleOnChange(e)}
                             onBlur={(e) => handleValidField(e)}
@@ -596,7 +605,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                         </label>
                         <input
                             type="text"
-                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300 ${(isValid.newAddress) ? "" : (isValid.address) ? "" : "border-red-500"}`}
                             id="address"
                             onChange={(e) => handleOnChange(e)}
                             onBlur={(e) => handleValidField(e)}
@@ -615,7 +624,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                         </label>
                         <input
                             type="text"
-                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300 ${(isValid.newPhone) ? "" : (isValid.phone) ? "" : "border-red-500"}`}
                             id="phone"
                             onChange={(e) => handleOnChange(e)}
                             onBlur={(e) => handleValidField(e)}
@@ -643,7 +652,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                     </div>
                     <div className="">
                         <label className="" htmlFor="city">
-                            Tỉnh/Thành phố(*)
+                            Tỉnh/Thành phố
                         </label>
                         <select
                             name={"city"}
@@ -666,7 +675,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                     </div>
                     <div className="">
                         <label className="m" htmlFor={"district"}>
-                            Quận/Huyện(*)
+                            Quận/Huyện
                         </label>
                         <select
                             name={"district"}
@@ -690,7 +699,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                     </div>
                     <div className="">
                         <label className="" htmlFor="ward">
-                            Xã/Phường(*)
+                            Xã/Phường
                         </label>
                         <select
                             name={"ward"}
@@ -714,7 +723,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                     </div>
                     <div className="">
                         <label className="" htmlFor="orderDate">
-                            Ngày đặt hàng(*)
+                            Ngày đặt hàng
                         </label>
                         <input
                             type="date"
@@ -754,7 +763,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                     </div>
                     <div className="">
                         <label className="" htmlFor="paymentType">
-                            Hình thức thanh toán(*)
+                            Hình thức thanh toán
                         </label>
                         <select
                             name={"paymentType"}
@@ -771,7 +780,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                     </div>
                     <div className="">
                         <label className="" htmlFor="deleveryType">
-                            Hình thức giao hàng(*)
+                            Hình thức giao hàng
                         </label>
                         <select
                             name={"deliveryType"}
@@ -787,7 +796,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                     </div>
                     <div className="">
                         <label className="" htmlFor="status">
-                            Trạng thái(*)
+                            Trạng thái
                         </label>
                         <select
                             name={"status"}

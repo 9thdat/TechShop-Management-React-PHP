@@ -14,8 +14,20 @@ export default function StaffDetail({visible, onClose, staffData, action, handle
     const [districts, setDistricts] = useState(quan_huyen);
     const [wards, setWards] = useState(xa_phuong);
 
-    const [isValidEmail, setIsValidEmail] = useState(true);
+    const [isNewEmail, setIsNewEmail] = useState(true);
     const [visibleStaffPassword, setVisibleStaffPassword] = useState(false);
+    const [isValid, setIsValid] = useState({
+        email: false,
+        password: false,
+        name: false,
+        phone: false,
+        address: false,
+        newEmail: true,
+        newPassword: true,
+        newName: true,
+        newPhone: true,
+        newAddress: true,
+    });
 
     useEffect(() => { // Set staff data
         if (action === "add") {
@@ -28,18 +40,30 @@ export default function StaffDetail({visible, onClose, staffData, action, handle
                 birthday: new Date().toISOString().split('T')[0],
                 gender: "Nam",
                 status: "active",
-                city: "Tỉnh Lào Cai",
-                district: "Thành phố Lào Cai",
-                ward: "Phường Duyên Hải",
+                ward: "Phường Tân Định",
+                district: "Quận 1",
+                city: "Thành phố Hồ Chí Minh",
                 address: "",
                 role: "staff",
-                cityCode: "10",
-                districtCode: "080",
+                cityCode: 79,
+                districtCode: 760,
             };
 
             setStaff(newStaff);
-        } else if (action === "detail") {
 
+            setIsValid({
+                email: false,
+                password: false,
+                name: false,
+                phone: false,
+                address: false,
+                newEmail: true,
+                newPassword: true,
+                newName: true,
+                newPhone: true,
+                newAddress: true,
+            });
+        } else if (action === "detail") {
             setStaff((prevStaff) => {
                 const newCity = cities.find((tinh) => tinh.name === staffData.city);
                 const newDistrict = districts.find((quan) => quan.parent_code === newCity?.code);
@@ -62,7 +86,21 @@ export default function StaffDetail({visible, onClose, staffData, action, handle
                     districtCode: newDistrict?.code,
                 };
             });
+
+            setIsValid({
+                email: true,
+                password: true,
+                name: true,
+                phone: true,
+                address: true,
+                newEmail: true,
+                newPassword: true,
+                newName: true,
+                newPhone: true,
+                newAddress: true,
+            });
         }
+        setIsNewEmail(true);
     }, [staffData, action]);
 
 
@@ -100,18 +138,38 @@ export default function StaffDetail({visible, onClose, staffData, action, handle
         }
     }
 
+    const isValidEmail = (email) => {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    };
+
     const handleValidEmail = async (e) => {
+        const value = e.target.value;
+        const isValid = isValidEmail(value);
+        setIsValid((prevIsValid) => ({
+            ...prevIsValid,
+            newEmail: false,
+            email: isValid,
+        }));
+        if (!isValid) {
+            return;
+        }
         try {
             const res = await axios.get(`User/Staffs/Valid/email=${e.target.value}`);
-            setIsValidEmail(true);
+            if (res.status === 200) {
+                setIsNewEmail(true);
+            }
         } catch (e) {
-            alert("Email đã tồn tại")
-            setIsValidEmail(false);
+            console.log(e);
+            setIsNewEmail(false);
         }
     }
 
     const handleOnSave = (e) => {
         e.preventDefault();
+        if (!isValid.email || !isValid.password || !isValid.name || !isValid.phone || !isValid.address || !isNewEmail) {
+            alert("Vui lòng nhập đúng thông tin!");
+            return;
+        }
 
         if (action === "add") {
             handleAddStaff(staff);
@@ -148,6 +206,25 @@ export default function StaffDetail({visible, onClose, staffData, action, handle
         }));
     }
 
+    const handleValidField = (e) => {
+        const {id, value} = e.target;
+
+        setIsValid({
+            ...isValid,
+            [id]: value !== "",
+        })
+
+        const fields = ["email", "password", "name", "address", "phone"];
+        fields.forEach(field => {
+            if (id === field && isValid[`new${field.charAt(0).toUpperCase() + field.slice(1)}`]) {
+                setIsValid({
+                    ...isValid,
+                    [`new${field.charAt(0).toUpperCase() + field.slice(1)}`]: false,
+                })
+            }
+        });
+    };
+
     if (!visible) return null;
 
 
@@ -167,25 +244,60 @@ export default function StaffDetail({visible, onClose, staffData, action, handle
                         </label>
                         <input
                             type="text"
-                            className={`border border-black rounded-md text-center block disabled:bg-gray-300 ${isValidEmail ? "" : "border-red-500"}`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300 ${(isValid.newEmail) ? "" : (isValid.email) ? ((!isNewEmail) ? "border-red-500" : "") : "border-red-500"}`}
                             id="email"
                             onChange={(e) => handleOnChange(e)}
                             onBlur={(e) => handleValidEmail(e)}
                             value={staff.email}
                             disabled={action === "detail"}
                         />
+                        {(!isNewEmail) && (
+                            <h5 className="text-red-300 text-xs">"Email đã tồn tại"</h5>
+                        )}
+                        {
+                            (!isValid.email && !isValid.newEmail) && (
+                                <h5 className="text-red-300 text-xs">"Email không hợp lệ"</h5>
+                            )
+                        }
                     </div>
+                    {
+                        action === "add" &&
+                        <div className="">
+                            <label className="" htmlFor="password">
+                                Mật khẩu(*)
+                            </label>
+                            <input
+                                type="password"
+                                className={`border border-black rounded-md text-center block disabled:bg-gray-300 ${isValid.password ? "" : "border-red-500"}`}
+                                id="password"
+                                onChange={(e) => handleOnChange(e)}
+                                onBlur={(e) => handleValidField(e)}
+                                value={staff.password}
+                            />
+                            {
+                                (!isValid.password && !isValid.newPassword) && (
+                                    <h5 className="text-red-300 text-xs">"Mật khẩu không hợp lệ"</h5>
+                                )
+                            }
+                        </div>
+                    }
                     <div className="">
                         <label className="" htmlFor="name">
                             Tên(*)
                         </label>
                         <input
                             type="text"
-                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300 ${isValid.name ? "" : "border-red-500"}`}
                             id="name"
                             onChange={(e) => handleOnChange(e)}
+                            onBlur={(e) => handleValidField(e)}
                             value={staff.name}
                         />
+                        {
+                            (!isValid.name && !isValid.newName) && (
+                                <h5 className="text-red-300 text-xs">"Tên không hợp lệ"</h5>
+                            )
+                        }
                     </div>
                     <div className="">
                         <label className="" htmlFor="phone">
@@ -193,26 +305,17 @@ export default function StaffDetail({visible, onClose, staffData, action, handle
                         </label>
                         <input
                             type="text"
-                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300 ${isValid.phone ? "" : "border-red-500"}`}
                             id="phone"
                             onChange={(e) => handleOnChange(e)}
+                            onBlur={(e) => handleValidField(e)}
                             value={staff.phone}
                         />
-                    </div>
-                    <div className="">
-                        <label className="" htmlFor="gender">
-                            Giới tính(*)
-                        </label>
-                        <select
-                            name={"gender"}
-                            id={"gender"}
-                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
-                            onChange={(e) => handleOnChange(e)}
-                            defaultValue={staff.gender}
-                        >
-                            <option value={"Nam"}>Nam</option>
-                            <option value={"Nữ"}>Nữ</option>
-                        </select>
+                        {
+                            (!isValid.phone && !isValid.newPhone) && (
+                                <h5 className="text-red-300 text-xs">"Số điện thoại không hợp lệ"</h5>
+                            )
+                        }
                     </div>
                     <div className="">
                         <label className="" htmlFor="birthday">
@@ -227,20 +330,23 @@ export default function StaffDetail({visible, onClose, staffData, action, handle
                         />
                     </div>
                     <div className="">
-                        <label className="" htmlFor=" address">
-                            Địa chỉ(*)
+                        <label className="" htmlFor="gender">
+                            Giới tính
                         </label>
-                        <input
-                            type="text"
+                        <select
+                            name={"gender"}
+                            id={"gender"}
                             className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
-                            id="address"
                             onChange={(e) => handleOnChange(e)}
-                            value={staff.address}
-                        />
+                            defaultValue={staff.gender}
+                        >
+                            <option value={"Nam"}>Nam</option>
+                            <option value={"Nữ"}>Nữ</option>
+                        </select>
                     </div>
                     <div className="">
                         <label className="" htmlFor="status">
-                            Tình trạng(*)
+                            Tình trạng
                         </label>
                         <select
                             name={"status"}
@@ -254,8 +360,26 @@ export default function StaffDetail({visible, onClose, staffData, action, handle
                         </select>
                     </div>
                     <div className="">
+                        <label className="" htmlFor=" address">
+                            Địa chỉ(*)
+                        </label>
+                        <input
+                            type="text"
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                            id="address"
+                            onChange={(e) => handleOnChange(e)}
+                            onBlur={(e) => handleValidField(e)}
+                            value={staff.address}
+                        />
+                        {
+                            (!isValid.address && !isValid.newAddress) && (
+                                <h5 className="text-red-300 text-xs">"Địa chỉ không hợp lệ"</h5>
+                            )
+                        }
+                    </div>
+                    <div className="">
                         <label className="" htmlFor="city">
-                            Tỉnh/Thành phố(*)
+                            Tỉnh/Thành phố
                         </label>
                         <select
                             name={"city"}
@@ -283,7 +407,7 @@ export default function StaffDetail({visible, onClose, staffData, action, handle
                     </div>
                     <div className="">
                         <label className="m" htmlFor={"district"}>
-                            Quận/Huyện(*)
+                            Quận/Huyện
                         </label>
                         <select
                             name={"district"}
@@ -313,7 +437,7 @@ export default function StaffDetail({visible, onClose, staffData, action, handle
                     </div>
                     <div className="">
                         <label className="" htmlFor="ward">
-                            Xã/Phường(*)
+                            Xã/Phường
                         </label>
                         <select
                             name={"ward"}

@@ -5,7 +5,6 @@ import ProductImage from "./ProductImage";
 export default function ProductQuantity({visible, onClose, data, action, onSave}) {
     const [productQuantityData, setProductQuantityData] = useState([]);
     const [productQuantity, setProductQuantity] = useState([]);
-    const [isValid, setIsValid] = useState(true);
 
     const [visibleProductImage, setVisibleProductImage] = useState(false);
     const [originalProductImage, setOriginalProductImage] = useState([]);
@@ -17,7 +16,10 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
             setProductQuantityData(
                 data.map((item) => ({
                         ...item,
-                        quantityValid: true,
+                        quantityValid: false,
+                        colorValid: false,
+                        newQuantity: true,
+                        newColor: true,
                     })
                 )
             );
@@ -42,36 +44,6 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
                 i === index ? {...item, [id]: value} : item
             )
         );
-
-        if (id === "quantity") {
-            if (value === "") {
-                setProductQuantityData((prevData) =>
-                    prevData.map((item, i) =>
-                        i === index ?
-                            {
-                                ...item,
-                                quantityValid: false,
-                            }
-                            :
-                            item
-                    )
-                );
-                setIsValid(false);
-            } else {
-                setProductQuantityData((prevData) =>
-                    prevData.map((item, i) =>
-                        i === index ?
-                            {
-                                ...item,
-                                quantityValid: true,
-                            }
-                            :
-                            item
-                    )
-                );
-                setIsValid(true);
-            }
-        }
     };
 
     const handleOnAddProductQuantity = () => {
@@ -82,30 +54,20 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
                 productId: "",
                 color: "",
                 quantity: 0,
-                quantityValid: true,
+                quantityValid: false,
+                colorValid: false,
+                newQuantity: true,
+                newColor: true,
             },
         ]);
     }
 
     const handleOnSave = () => {
-        if (!isValid) {
+        if (!productQuantityData.every((item) => item.colorValid && item.quantityValid)) {
             alert("Vui lòng nhập đầy đủ thông tin");
         } else {
             onSave(productQuantityData, originalProductImage);
             onClose();
-        }
-    };
-
-    const fetchProductQuantity = async (productId) => {
-        if (productId === "") {
-            return [];
-        }
-        try {
-            const response = await axios.get(`/ProductQuantity/ProductId=${productId}`);
-            return response.data;
-        } catch (err) {
-            console.error(err);
-            return [];
         }
     };
 
@@ -178,6 +140,40 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
         );
     }
 
+    const handleValidField = (e, index) => {
+        const {id, value} = e.target;
+
+        if (id === "color") {
+            setProductQuantityData((prevData) =>
+                prevData.map((item, i) =>
+                    i === index ?
+                        {
+                            ...item,
+                            colorValid: value !== "",
+                            newColor: false,
+                        }
+                        :
+                        item
+                )
+            );
+        }
+
+        if (id === "quantity") {
+            setProductQuantityData((prevData) =>
+                prevData.map((item, i) =>
+                    i === index ?
+                        {
+                            ...item,
+                            quantityValid: value !== "",
+                            newQuantity: false,
+                        }
+                        :
+                        item
+                )
+            );
+        }
+    };
+
     if (!visible) {
         return null;
     }
@@ -212,14 +208,22 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
                                 (product.isDeleted === false || product.isDeleted === undefined) && (
                                     <tr key={index} className={""}>
                                         <td colSpan={1}>
-
                                             <input
                                                 type="text"
                                                 className={`border border-black rounded-md text-center block disabled:bg-gray-300 mx-1`}
                                                 id="color"
+                                                onBlur={(e) => handleValidField(e, index)}
                                                 onChange={(e) => handleOnChange(e, index)}
                                                 value={product.color}
                                             />
+                                            <span>
+                                                {
+                                                    (!product.colorValid && !product.newColor) ? (
+                                                        <h5 className="text-red-500 text-xs">Vui lòng nhập đầy đủ thông
+                                                            tin</h5>
+                                                    ) : null
+                                                }
+                                            </span>
                                         </td>
 
                                         <td colSpan={1}>
@@ -227,12 +231,13 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
                                                 type="text"
                                                 className={`border border-black rounded-md text-center block disabled:bg-gray-300 mx-1`}
                                                 id="quantity"
+                                                onBlur={(e) => handleValidField(e, index)}
                                                 onChange={(e) => handleOnChange(e, index)}
                                                 value={product.quantity}
                                             />
                                             <span>
                                                 {
-                                                    !product.quantityValid ? (
+                                                    (!product.quantityValid && !product.newQuantity) ? (
                                                         <h5 className="text-red-500 text-xs">Vui lòng nhập đầy đủ thông
                                                             tin</h5>
                                                     ) : null

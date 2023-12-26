@@ -7,11 +7,42 @@ const quan_huyen = require("../../Models/Address/quan-huyen.json");
 const xa_phuong = require("../../Models/Address/xa-phuong.json");
 
 export default function CustomerDetail({visible, onClose, customerData, action, addCustomer}) {
-    const [customer, setCustomer] = useState(customerData);
+    const defaultCustomer = {
+        email: "",
+        name: "",
+        password: "",
+        phone: "",
+        gender: "Nam",
+        birthday: new Date().toISOString().split('T')[0],
+        address: "",
+        ward: "Phường Tân Định",
+        district: "Quận 1",
+        city: "Thành phố Hồ Chí Minh",
+        image: "",
+        status: "active",
+        cityCode: 79,
+        districtCode: 760,
+    };
+    const [customer, setCustomer] = useState({...defaultCustomer, ...customerData});
 
     const [cities, setCities] = useState(tinh_tp);
     const [districts, setDistricts] = useState(quan_huyen);
     const [wards, setWards] = useState(xa_phuong);
+
+    const [isValid, setIsValid] = useState({
+        email: false,
+        password: false,
+        name: false,
+        address: false,
+        phone: false,
+        newEmail: true,
+        newPassword: true,
+        newName: true,
+        newAddress: true,
+        newPhone: true,
+    });
+
+    const [isCustomerExist, setIsCustomerExist] = useState(false);
 
     useEffect(() => { // Set customer data
         if (action === "add") {
@@ -31,6 +62,19 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
                 cityCode: 79,
                 districtCode: 760,
             });
+
+            setIsValid({
+                email: false,
+                password: false,
+                name: false,
+                address: false,
+                phone: false,
+                newEmail: true,
+                newPassword: true,
+                newName: true,
+                newAddress: true,
+                newPhone: true,
+            });
         } else {
             const newCity = cities.find((tinh) => tinh.name === customerData.city);
             const newDistrict = districts.find((quan) => quan.parent_code === newCity?.code);
@@ -41,6 +85,19 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
                     districtCode: newDistrict?.code,
                 }
             );
+
+            setIsValid({
+                email: true,
+                password: true,
+                name: true,
+                address: true,
+                phone: true,
+                newEmail: true,
+                newPassword: true,
+                newName: true,
+                newAddress: true,
+                newPhone: true,
+            });
         }
     }, [customerData]);
 
@@ -89,20 +146,37 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
         }
     };
 
+    const isValidEmail = (email) => {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    };
+
     const handleValidEmail = async (e) => {
+        const value = e.target.value;
+        const isValid = isValidEmail(value);
+        setIsValid((prevIsValid) => ({
+            ...prevIsValid,
+            newEmail: false,
+            email: isValid,
+        }));
+        if (!isValid) {
+            return;
+        }
         try {
             const res = await axios.get(`/Customer/${e.target.value}`);
-
             if (res.status === 200) {
-                alert("Email đã tồn tại!");
+                setIsCustomerExist(true);
             }
         } catch (e) {
-
+            setIsCustomerExist(false);
         }
     }
 
     const handleAddCustomer = async (e) => {
         e.preventDefault();
+        if (!isValid.email || !isValid.password || !isValid.name || !isValid.address || !isValid.phone || isCustomerExist) {
+            alert("Vui lòng nhập đúng thông tin!");
+            return;
+        }
 
         if (customer.image !== "") {
             customer.image = customer.image.split(',')[1];
@@ -112,6 +186,27 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
 
         addCustomer(customer);
     }
+
+    const handleValidField = (e) => {
+        const {id, value} = e.target;
+        console.log(id, value);
+
+        setIsValid({
+            ...isValid,
+            [id]: value !== "",
+        })
+
+        const fields = ["email", "password", "name", "address", "phone"];
+        fields.forEach(field => {
+            if (id === field && isValid[`new${field.charAt(0).toUpperCase() + field.slice(1)}`]) {
+                setIsValid({
+                    ...isValid,
+                    [`new${field.charAt(0).toUpperCase() + field.slice(1)}`]: false,
+                })
+            }
+        });
+    };
+
 
     if (!visible) return null;
 
@@ -131,13 +226,22 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
                         </label>
                         <input
                             type="text"
-                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300 ${(isValid.newEmail) ? "" : (isValid.email) ? ((isCustomerExist) ? "border-red-500" : "") : "border-red-500"}`}
                             id="email"
                             onChange={(e) => handleOnChange(e)}
                             onBlur={(e) => handleValidEmail(e)}
                             value={customer.email}
                             disabled={action === "detail"}
                         />
+                        {
+                            (isCustomerExist) && (
+                                <h5 className="text-red-300 text-xs">"Email đã tồn tại"</h5>
+                            )}
+                        {
+                            (!isValid.email && !isValid.newEmail) && (
+                                <h5 className="text-red-300 text-xs">"Email không hợp lệ"</h5>
+                            )
+                        }
                     </div>
                     <div className="">
                         <label className="" htmlFor="password">
@@ -145,13 +249,18 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
                         </label>
                         <input
                             type="password"
-                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300 ${(isValid.newPassword) ? "" : (isValid.password) ? "" : "border-red-500"}`}
                             id="password"
                             onChange={(e) => handleOnChange(e)}
+                            onBlur={(e) => handleValidField(e)}
                             value={customer.password}
-                            required={true}
                             disabled={action === "detail"}
                         />
+                        {
+                            (!isValid.password && !isValid.newPassword) && (
+                                <h5 className="text-red-300 text-xs">"Mật khẩu không hợp lệ"</h5>
+                            )
+                        }
                     </div>
                     <div className="">
                         <label className="" htmlFor="name">
@@ -159,13 +268,18 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
                         </label>
                         <input
                             type="text"
-                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300 ${(isValid.newName) ? "" : (isValid.name) ? "" : "border-red-500"}`}
                             id="name"
                             onChange={(e) => handleOnChange(e)}
+                            onBlur={(e) => handleValidField(e)}
                             value={customer.name}
-                            required={true}
                             disabled={action === "detail"}
                         />
+                        {
+                            (!isValid.name && !isValid.newName) && (
+                                <h5 className="text-red-300 text-xs">"Tên không hợp lệ"</h5>
+                            )
+                        }
                     </div>
                     <div className="">
                         <label className="" htmlFor="phone">
@@ -173,17 +287,22 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
                         </label>
                         <input
                             type="text"
-                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300 ${(isValid.newPhone) ? "" : (isValid.phone) ? "" : "border-red-500"}`}
                             id="phone"
                             onChange={(e) => handleOnChange(e)}
+                            onBlur={(e) => handleValidField(e)}
                             value={customer.phone}
-                            required={true}
                             disabled={action === "detail"}
                         />
+                        {
+                            (!isValid.phone && !isValid.newPhone) && (
+                                <h5 className="text-red-300 text-xs">"Số điện thoại không hợp lệ"</h5>
+                            )
+                        }
                     </div>
                     <div className="">
                         <label className="" htmlFor="gender">
-                            Giới tính(*)
+                            Giới tính
                         </label>
                         <select
                             name={"gender"}
@@ -216,17 +335,22 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
                         </label>
                         <input
                             type="text"
-                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300 ${(isValid.newAddress) ? "" : (isValid.address) ? "" : "border-red-500"}`}
                             id="address"
                             onChange={(e) => handleOnChange(e)}
                             value={customer.address}
-                            required={true}
+                            onBlur={(e) => handleValidField(e)}
                             disabled={action === "detail"}
                         />
+                        {
+                            (!isValid.address && !isValid.newAddress) && (
+                                <h5 className="text-red-300 text-xs">"Địa chỉ không hợp lệ"</h5>
+                            )
+                        }
                     </div>
                     <div className="">
                         <label className="" htmlFor="address">
-                            Tình trạng(*)
+                            Tình trạng
                         </label>
                         <select
                             name={"status"}
@@ -242,7 +366,7 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
                     </div>
                     <div className="">
                         <label className="" htmlFor="city">
-                            Tỉnh/Thành phố(*)
+                            Tỉnh/Thành phố
                         </label>
                         <select
                             name={"city"}
@@ -265,7 +389,7 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
                     </div>
                     <div className="">
                         <label className="m" htmlFor={"district"}>
-                            Quận/Huyện(*)
+                            Quận/Huyện
                         </label>
                         <select
                             name={"district"}
@@ -288,7 +412,7 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
                     </div>
                     <div className="">
                         <label className="" htmlFor="ward">
-                            Xã/Phường(*)
+                            Xã/Phường
                         </label>
                         <select
                             name={"ward"}

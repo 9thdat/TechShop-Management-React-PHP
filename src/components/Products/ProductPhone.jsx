@@ -3,11 +3,33 @@ import axios from "../../api/axios";
 import ConfirmDeleteProductParameter from "./ConfirmDeleteProductParameter";
 
 export default function ProductPhone({visible, onClose, data, action, onSave, onReload}) {
-    const [productPhoneData, setProductPhoneData] = useState({});
+    const [productPhoneData, setProductPhoneData] = useState({
+        ...data,
+        screen: data.screen || '',
+        operatingSystem: data.operatingSystem || '',
+        backCamera: data.backCamera || '',
+        frontCamera: data.frontCamera || '',
+        chip: data.chip || '',
+        ram: data.ram || '',
+        rom: data.rom || '',
+        sim: data.sim || '',
+        batteryCharger: data.batteryCharger || '',
+    });
     const [visibleConfirmDelete, setVisibleConfirmDelete] = useState(false);
 
     useEffect(() => {
-        setProductPhoneData(data);
+        setProductPhoneData({
+            ...data,
+            screen: data.screen || '',
+            operatingSystem: data.operatingSystem || '',
+            backCamera: data.backCamera || '',
+            frontCamera: data.frontCamera || '',
+            chip: data.chip || '',
+            ram: data.ram || '',
+            rom: data.rom || '',
+            sim: data.sim || '',
+            batteryCharger: data.batteryCharger || '',
+        });
     }, [data]);
 
     const handleOnChange = (e, index) => {

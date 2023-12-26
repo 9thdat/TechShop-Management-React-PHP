@@ -35,6 +35,19 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
 
     const [actionOnProductParameter, setActionOnProductParameter] = useState(""); // Action of ProductParameter
 
+    const [isValid, setIsValid] = useState({
+        name: false,
+        price: false,
+        preDiscount: false,
+        discountPercent: false,
+        brand: false,
+        newName: true,
+        newPrice: true,
+        newPreDiscount: true,
+        newDiscountPercent: true,
+        newBrand: true,
+    });
+
     useEffect(() => {
         setProductData(product);
 
@@ -62,6 +75,15 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                 await fetchProductCable(productData.id).then((res) => {
                     setProductCable(res);
                 });
+
+                setIsValid({
+                    ...isValid,
+                    newName: true,
+                    newPrice: true,
+                    newPreDiscount: true,
+                    newDiscountPercent: true,
+                    newBrand: true,
+                });
             }
 
             fetchProductInfo();
@@ -71,6 +93,15 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
             setProductBackupCharger({});
             setProductPhone({});
             setProductCable({});
+
+            setIsValid({
+                ...isValid,
+                newName: false,
+                newPrice: false,
+                newPreDiscount: false,
+                newDiscountPercent: false,
+                newBrand: false,
+            });
         }
     }, [product]);
 
@@ -178,6 +209,10 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
     }
 
     const handleOnSave = async () => {
+        if (!isValid.name || !isValid.price || !isValid.preDiscount || !isValid.discountPercent || !isValid.brand) {
+            alert("Vui lòng nhập đầy đủ thông tin!");
+            return;
+        }
         if (actionType === "add") {
             let falseUpdate = [];
             try {
@@ -539,11 +574,6 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
     }
 
     const onOpenNewPhone = () => {
-        setProductPhone(
-            {
-                new: true,
-            }
-        )
         setActionOnProductParameter("add");
         setProductPhoneVisible(true);
     }
@@ -558,11 +588,6 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
     }
 
     const onOpenNewCable = () => {
-        setProductCable(
-            {
-                new: true,
-            }
-        )
         setActionOnProductParameter("add");
         setProductCableVisible(true);
     }
@@ -585,11 +610,6 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
     }
 
     const onOpenNewBackupCharger = () => {
-        setProductBackupCharger(
-            {
-                new: true,
-            }
-        )
         setActionOnProductParameter("add");
         setProductBackupChargerVisible(true);
     }
@@ -649,6 +669,25 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
         });
     }
 
+    const handleValidField = (e) => {
+        const {id, value} = e.target;
+
+        setIsValid({
+            ...isValid,
+            [id]: value !== "",
+        })
+
+        const fields = ["name", "price", "preDiscount", "discountPercent", "brand"];
+        fields.forEach(field => {
+            if (id === field && isValid[`new${field.charAt(0).toUpperCase() + field.slice(1)}`]) {
+                setIsValid({
+                    ...isValid,
+                    [`new${field.charAt(0).toUpperCase() + field.slice(1)}`]: false,
+                })
+            }
+        });
+    }
+
     if (!visible) {
         return null;
     }
@@ -674,44 +713,74 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                                value={productData.id}/>
                     </div>
                     <div className="">
-                        <label className="" htmlFor="name">Tên sản phẩm</label>
+                        <label className="" htmlFor="name">Tên sản phẩm(*)</label>
                         <input type="text"
-                               className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                               className={`border border-black rounded-md text-center block disabled:bg-gray-300 ${(isValid.newName) ? "" : (isValid.name) ? "" : "border-red-500"}`}
                                id="name"
                                onChange={(e) => handleOnChange(e)}
+                               onBlur={(e) => handleValidField(e)}
                                value={productData.name}/>
+                        {
+                            (!isValid.name && !isValid.newName) && (
+                                <h5 className="text-red-300 text-xs">"Tên sản phẩm không hợp lệ"</h5>
+                            )
+                        }
                     </div>
                     <div className="">
-                        <label className="" htmlFor="price">Giá sản phẩm</label>
+                        <label className="" htmlFor="price">Giá sản phẩm(*)</label>
                         <input type="text"
-                               className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                               className={`border border-black rounded-md text-center block disabled:bg-gray-300 ${(isValid.newPrice) ? "" : (isValid.price) ? "" : "border-red-500"}`}
                                id="price"
                                onChange={(e) => handleOnChange(e)}
+                               onBlur={(e) => handleValidField(e)}
                                value={productData.price}/>
+                        {
+                            (!isValid.price && !isValid.newPrice) && (
+                                <h5 className="text-red-300 text-xs">"Giá sản phẩm không hợp lệ"</h5>
+                            )
+                        }
                     </div>
                     <div className="">
-                        <label className="" htmlFor="PreDiscount">Giá trước khi giảm giá</label>
+                        <label className="" htmlFor="PreDiscount">Giá trước khi giảm giá(*)</label>
                         <input type="text"
-                               className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                               className={`border border-black rounded-md text-center block disabled:bg-gray-300 ${(isValid.newPreDiscount) ? "" : (isValid.preDiscount) ? "" : "border-red-500"}`}
                                id="PreDiscount"
                                onChange={(e) => handleOnChange(e)}
+                               onBlur={(e) => handleValidField(e)}
                                value={productData.preDiscount}/>
+                        {
+                            (!isValid.preDiscount && !isValid.newPreDiscount) && (
+                                <h5 className="text-red-300 text-xs">"Giá trước khi giảm giá không hợp lệ"</h5>
+                            )
+                        }
                     </div>
                     <div className="">
-                        <label className="" htmlFor="discountPercent">Phần trăm giảm giá</label>
+                        <label className="" htmlFor="discountPercent">Phần trăm giảm giá(*)</label>
                         <input type="text"
-                               className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                               className={`border border-black rounded-md text-center block disabled:bg-gray-300 ${(isValid.newDiscountPercent) ? "" : (isValid.discountPercent) ? "" : "border-red-500"}`}
                                id="discountPercent"
                                onChange={(e) => handleOnChange(e)}
+                               onBlur={(e) => handleValidField(e)}
                                value={productData.discountPercent}/>
+                        {
+                            (!isValid.discountPercent && !isValid.newDiscountPercent) && (
+                                <h5 className="text-red-300 text-xs">"Phần trăm giảm giá không hợp lệ"</h5>
+                            )
+                        }
                     </div>
                     <div className="">
-                        <label className="" htmlFor="brand">Thương hiệu</label>
+                        <label className="" htmlFor="brand">Thương hiệu(*)</label>
                         <input type="text"
-                               className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                               className={`border border-black rounded-md text-center block disabled:bg-gray-300 ${(isValid.newBrand) ? "" : (isValid.brand) ? "" : "border-red-500"}`}
                                id="brand"
                                onChange={(e) => handleOnChange(e)}
+                               onBlur={(e) => handleValidField(e)}
                                value={productData.brand}/>
+                        {
+                            (!isValid.brand && !isValid.newBrand) && (
+                                <h5 className="text-red-300 text-xs">"Thương hiệu không hợp lệ"</h5>
+                            )
+                        }
                     </div>
                     <div className="">
                         <label className="" htmlFor="category">Danh mục</label>

@@ -77,6 +77,7 @@ export default function Discounts() {
             ...discount,
             id: lastId + 1,
             startDate: new Date().toISOString().split('T')[0],
+            endDate: new Date().toISOString().split('T')[0],
             status: "active",
             type: "percent",
             minApply: 0,
@@ -95,7 +96,15 @@ export default function Discounts() {
             const response = await axios.post("/Discount", discount);
             if (response.status === 201) {
                 alert("Thêm mã giảm giá thành công");
-                const isExpired = discount.endDate < new Date().toISOString().split('T')[0];
+                const currentDate = new Date();
+                // Chuyển đổi sang múi giờ GMT+7
+                const gmtPlus7Date = new Date(currentDate.getTime() + (7 * 60 * 60 * 1000));
+
+                // Lấy ngày dưới định dạng ISO (YYYY-MM-DD)
+                const isoDate = gmtPlus7Date.toISOString().split('T')[0];
+
+                // Kiểm tra nếu ngày hết hạn của discount đã qua
+                const isExpired = discount.endDate <= isoDate;
                 if (discount.status !== "inactive") {
                     if (isExpired) {
                         discount.status = "expired";
@@ -119,7 +128,15 @@ export default function Discounts() {
             const response = await axios.put("Discount", discount);
             if (response.status === 204) {
                 alert("Sửa mã giảm giá thành công");
-                const isExpired = discount.endDate < new Date().toISOString().split('T')[0];
+                const currentDate = new Date();
+                // Chuyển đổi sang múi giờ GMT+7
+                const gmtPlus7Date = new Date(currentDate.getTime() + (7 * 60 * 60 * 1000));
+
+                // Lấy ngày dưới định dạng ISO (YYYY-MM-DD)
+                const isoDate = gmtPlus7Date.toISOString().split('T')[0];
+
+                // Kiểm tra nếu ngày hết hạn của discount đã qua
+                const isExpired = discount.endDate <= isoDate;
                 if (discount.status !== "inactive") {
                     if (isExpired) {
                         discount.status = "expired";
