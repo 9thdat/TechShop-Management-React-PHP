@@ -40,111 +40,89 @@ export default function ReviewDetail({visible, onClose, data, onSave}) {
     }
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm text-xl">
-            <div className="bg-white p-4 rounded ">
-                <div className="title flex justify-between px-1">
-                    <div className="text-3xl">Thông tin đánh giá</div>
+        <div
+            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm"
+        >
+            <div className="bg-white p-3 rounded-md">
+                <div className="flex justify-between">
+                    <div className="text-2xl">Thông tin đánh giá</div>
                     <button onClick={() => {
                         onClose();
                     }}>X
                     </button>
                 </div>
-
-                <div className="content">
-                    <form className="form overflow-auto">
-                        <table className="col-span-3">
-                            <tr>
-                                <td>
-                                    <div className="form-group flex justify-between mb-4 ">
-                                        <label className="mr-2" htmlFor="id">ID</label>
-                                        <input type="text"
-                                               className="form-control border border-black rounded-md"
-                                               id="id"
-                                               onChange={(e) => handleOnChange(e)}
-                                               value={review.id}
-                                               disabled={true}
-                                        />
-                                    </div>
-                                </td>
-                                <td>
-                                    <div className="form-group flex justify-between mb-4 ">
-                                        <label className="mr-2" htmlFor="productId">ID sản phẩm</label>
-                                        <input type="text"
-                                               className="form-control border border-black rounded-md"
-                                               id="productId"
-                                               onChange={(e) => handleOnChange(e)}
-                                               value={review.productId}
-                                               disabled={true}
-                                        />
-                                    </div>
-                                </td>
-                                <td>
-                                    <div className="form-group flex justify-between mb-4 ">
-                                        <label className="mr-2" htmlFor="customerEmail">Email khách hàng</label>
-                                        <input type="text"
-                                               className="form-control border border-black rounded-md"
-                                               id="customerEmail"
-                                               onChange={(e) => handleOnChange(e)}
-                                               value={review.customerEmail}
-                                               disabled={true}
-                                        />
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div className="form-group flex justify-between mb-4 ">
-                                        <label className="mr-2" htmlFor="rating">Đánh giá</label>
-                                        <input type="text"
-                                               className="form-control border border-black rounded-md"
-                                               id="rating"
-                                               onChange={(e) => handleOnChange(e)}
-                                               value={review.rating}
-                                               disabled={true}
-                                        />
-                                    </div>
-                                </td>
-                                <td>
-                                    <div className="form-group flex justify-between mb-4 ">
-                                        <label className="mr-2" htmlFor="content">Nội dung</label>
-                                        <input type="text"
-                                               className="form-control border border-black rounded-md"
-                                               id="content"
-                                               onChange={(e) => handleOnChange(e)}
-                                               value={review.content}
-                                               disabled={true}
-                                        />
-                                    </div>
-                                </td>
-                                <td>
-                                    <div className="form-group flex justify-between mb-4 ">
-                                        <label className="mr-2" htmlFor="adminReply">Admin phản hồi</label>
-                                        <input type="text"
-                                               className="form-control border border-black rounded-md"
-                                               id="adminReply"
-                                               onChange={(e) => handleOnChange(e)}
-                                               value={review.adminReply}
-                                               disabled={adminReply}
-                                        />
-                                    </div>
-                                </td>
-                            </tr>
-
-                        </table>
-                    </form>
-                </div>
-
-                <div className="form-group flex justify-end">
-                    {
-                        !(data.adminReply) &&
-                        <button
-                            type="button"
-                            className="btn btn-primary border border-green-500 bg-green-500 rounded-md p-2"
-                            onClick={handleOnSave}
-                        >
-                            Lưu
-                        </button>
-                    }
+                <div className="grid grid-cols-2 gap-5">
+                    <div className="">
+                        <label className="" htmlFor="id">ID</label>
+                        <input type="text"
+                               className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                               id="id"
+                               onChange={(e) => handleOnChange(e)}
+                               value={review.id}
+                               disabled={true}
+                        />
+                    </div>
+                    <div className="">
+                        <label className="" htmlFor="productId">ID sản phẩm</label>
+                        <input type="text"
+                               className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                               id="productId"
+                               onChange={(e) => handleOnChange(e)}
+                               value={review.productId}
+                               disabled={true}
+                        />
+                    </div>
+                    <div className="">
+                        <label className="" htmlFor="customerEmail">Email khách hàng</label>
+                        <input type="text"
+                               className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                               id="customerEmail"
+                               onChange={(e) => handleOnChange(e)}
+                               value={review.customerEmail}
+                               disabled={true}
+                        />
+                    </div>
+                    <div className="">
+                        <label className="" htmlFor="rating">Đánh giá</label>
+                        <input type="text"
+                               className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                               id="rating"
+                               onChange={(e) => handleOnChange(e)}
+                               value={review.rating}
+                               disabled={true}
+                        />
+                    </div>
+                    <div className="col-span-2">
+                        <label className="" htmlFor="content">Nội dung</label>
+                        <input type="text"
+                               className={`border border-black rounded-md text-center block disabled:bg-gray-300 w-full`}
+                               id="content"
+                               onChange={(e) => handleOnChange(e)}
+                               value={review.content}
+                               disabled={true}
+                        />
+                    </div>
+                    <div className="col-span-2">
+                        <label className="" htmlFor="adminReply">Admin phản hồi</label>
+                        <input type="text"
+                               className={`border border-black rounded-md text-center block disabled:bg-gray-300 w-full`}
+                               id="adminReply"
+                               onChange={(e) => handleOnChange(e)}
+                               value={review.adminReply}
+                               disabled={adminReply}
+                        />
+                    </div>
+                    <div className="flex justify-end col-span-2">
+                        {
+                            !(data.adminReply) &&
+                            <button
+                                className="px-2 py-1 text-white bg-blue-500 rounded-md"
+                                onClick={handleOnSave}
+                            >
+                                Lưu
+                            </button>
+                        }
+                    </div>
                 </div>
             </div>
         </div>

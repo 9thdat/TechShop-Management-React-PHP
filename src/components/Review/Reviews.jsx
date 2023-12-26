@@ -111,18 +111,18 @@ export default function Reviews() {
     }
 
     return (
-        <div className="relative min-h-[90vh] overflow-scroll shadow-md sm:rounded-lg">
-            <div className="search top-0 right-0 flex items-center justify-end sticky h-[10vh] p-4 backdrop-blur-sm">
+        <div className="">
+            <div className="top-0 right-0 backdrop-blur-sm grid grid-cols-6 grid-rows-2">
                 <input
                     type="text"
                     id="searchValue"
-                    className="px-2 py-1 ml-2 rounded-md border border-black w-[60%]"
+                    className="col-start-1 col-end-7 row-start-1 row-end-2 border border-blue-300 rounded-md"
                     placeholder="Tìm kiếm đánh giá"
                     value={search.searchValue}
                     onChange={(e) => handleOnChangeSearchType(e)}
                 />
                 <select
-                    className="px-2 py-1 ml-2 rounded-md border border-black w-[10%]"
+                    className="col-start-1 col-end-3 row-start-2 row-end-3 border border-blue-300 rounded-md"
                     id="sortValue"
                     onChange={(e) => handleOnChangeSearchType(e)}
                 >
@@ -130,7 +130,7 @@ export default function Reviews() {
                     <option value="CustomerEmail">Email khách hàng</option>
                 </select>
                 <select
-                    className="px-2 py-1 ml-2 rounded-md border border-black w-[12%]"
+                    className="col-start-3 col-end-5 row-start-2 row-end-3 border border-blue-300 rounded-md"
                     id="statusValue"
                     onChange={(e) => handleOnChangeSearchType(e)}
                 >
@@ -139,8 +139,9 @@ export default function Reviews() {
                     <option value="noReplied">Chưa phản hồi</option>
                 </select>
 
-                <button className={"px-2 py-1 ml-2 text-white bg-blue-500 rounded-md"}
-                        onClick={handleOnSearch}
+                <button
+                    className="col-start-5 col-end-7 row-start-2 row-end-3 border border-blue-300 rounded-md bg-blue-400 text-white"
+                    onClick={handleOnSearch}
                 >
                     Tìm kiếm
                 </button>

@@ -38,6 +38,17 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
     const [cities, setCities] = useState(tinh_tp);
     const [districts, setDistricts] = useState(quan_huyen);
     const [wards, setWards] = useState(xa_phuong);
+    const [isNewCustomer, setIsNewCustomer] = useState(false);
+    const [isValid, setIsValid] = useState({
+        email: false,
+        name: false,
+        address: false,
+        phone: false,
+        newEmail: true,
+        newName: true,
+        newAddress: true,
+        newPhone: true,
+    });
 
     useEffect(() => {
         if (action === "add") {
@@ -329,34 +340,48 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
     )
 
     const handleOnSaveOrder = useCallback(() => {
-            if (action === "add") {
-                handleAddOrder(order, orderProducts);
+            if (isValid.email === true && isValid.name === true && isValid.address === true && isValid.phone === true) {
+                if (action === "add") {
+                    handleAddOrder(order, orderProducts);
+                } else {
+                    handleEditOrder(order);
+                }
             } else {
-                handleEditOrder(order);
+                alert("Vui lòng nhập đầy đủ thông tin");
             }
         }
     )
 
     const handleSearchCustomer = useCallback(async (e) => {
-            if (order.customerEmail === "") return;
+            const {value} = e.target;
+            const isValid = isValidEmail(value);
+            setIsValid((prevIsValid) => ({
+                ...prevIsValid,
+                newEmail: false,
+                email: isValid,
+            }));
+            if (isValid === false) return;
             try {
                 const response = await fetchCustomerData(order.customerEmail);
-                const newCity = cities.find((tinh) => tinh.name === response.city);
-                const newDistrict = districts.find((quan) => quan.parent_code === newCity?.code);
-                const newWard = wards.find((xa) => xa.parent_code === newDistrict?.code);
-                setOrder((prevOrder) => ({
-                    ...prevOrder,
-                    name: response.name,
-                    address: response.address,
-                    phone: response.phone,
-                    city: response.city,
-                    district: response.district,
-                    ward: response.ward,
-                    cityCode: newCity?.code,
-                    districtCode: newDistrict?.code,
-                }));
+                if (response.status === 200) {
+                    const newCity = cities.find((tinh) => tinh.name === response.data.city);
+                    const newDistrict = districts.find((quan) => quan.parent_code === newCity?.code);
+                    const newWard = wards.find((xa) => xa.parent_code === newDistrict?.code);
+                    setOrder((prevOrder) => ({
+                        ...prevOrder,
+                        name: response.data.name,
+                        address: response.data.address,
+                        phone: response.data.phone,
+                        city: response.data.city,
+                        district: response.data.district,
+                        ward: response.data.ward,
+                        cityCode: newCity?.code,
+                        districtCode: newDistrict?.code,
+                    }));
+                }
             } catch (e) {
                 console.log(e);
+                setIsNewCustomer(true);
             }
         }
     )
@@ -364,7 +389,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
     const fetchCustomerData = async (email) => {
         try {
             const response = await axios.get(`/Customer/${email}`);
-            return response.data;
+            return response;
         } catch (e) {
             console.log(e);
         }
@@ -459,6 +484,41 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
         }
     }
 
+    const isValidEmail = (email) => {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    };
+
+    const handleValidField = (e) => {
+        const {id, value} = e.target;
+        setIsValid({
+            ...isValid,
+            [id]: value !== "",
+        })
+        if (id === "customerEmail" && isValid.newEmail) {
+            setIsValid((prevIsValid) => ({
+                ...prevIsValid,
+                newEmail: false,
+            }));
+        } else if (id === "name" && isValid.newName) {
+            setIsValid((prevIsValid) => ({
+                ...prevIsValid,
+                newName: false,
+            }));
+        } else if (id === "address" && isValid.newAddress) {
+            setIsValid((prevIsValid) => ({
+                ...prevIsValid,
+                newAddress: false,
+            }));
+        } else if (id === "phone" && isValid.newPhone) {
+            setIsValid((prevIsValid) => ({
+                ...prevIsValid,
+                newPhone: false,
+            }));
+        }
+
+
+    }
+
     if (!visible) return null;
     return (
         <div
@@ -466,14 +526,14 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
         >
             <div className="bg-white p-3 rounded-md">
                 <div className="flex justify-between">
-                    <div className="">Thông tin đơn hàng</div>
+                    <div className="text-2xl">Thông tin đơn hàng</div>
                     <button onClick={() => {
                         onClose();
                         setOrderProductChanged(false);
                     }}>X
                     </button>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-7">
                     <div className="">
                         <label className="" htmlFor="id">
                             ID
@@ -492,14 +552,24 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                             Email khách hàng(*)
                         </label>
                         <input
-                            type="text"
+                            type="email"
                             className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
                             id="customerEmail"
                             onChange={(e) => handleOnChange(e)}
                             onBlur={(e) => handleSearchCustomer(e)}
                             value={order.customerEmail}
                             disabled={action === "edit"}
+                            required={true}
                         />
+                        {
+                            (isNewCustomer) && (
+                                <h5 className="text-green-300 text-xs">"Khách hàng mới"</h5>
+                            )}
+                        {
+                            (!isValid.email && !isValid.newEmail) && (
+                                <h5 className="text-red-300 text-xs">"Email không hợp lệ"</h5>
+                            )
+                        }
                     </div>
                     <div className="">
                         <label className="" htmlFor="name">
@@ -508,11 +578,17 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                         <input
                             type="text"
                             className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
-                            id="phone"
+                            id="name"
                             onChange={(e) => handleOnChange(e)}
+                            onBlur={(e) => handleValidField(e)}
                             value={order.name}
                             disabled={action === "edit"}
                         />
+                        {
+                            (!isValid.name && !isValid.newName) && (
+                                <h5 className="text-red-300 text-xs">"Tên không hợp lệ"</h5>
+                            )
+                        }
                     </div>
                     <div className="">
                         <label className="" htmlFor="address">
@@ -523,9 +599,15 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                             className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
                             id="address"
                             onChange={(e) => handleOnChange(e)}
+                            onBlur={(e) => handleValidField(e)}
                             value={order.address}
                             disabled={action === "edit"}
                         />
+                        {
+                            (!isValid.address && !isValid.newPhone) && (
+                                <h5 className="text-red-300 text-xs">"Địa chỉ không hợp lệ"</h5>
+                            )
+                        }
                     </div>
                     <div className={""}>
                         <label className="" htmlFor="phone">
@@ -536,13 +618,19 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                             className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
                             id="phone"
                             onChange={(e) => handleOnChange(e)}
+                            onBlur={(e) => handleValidField(e)}
                             value={order.phone}
                             disabled={action === "edit"}
                         />
+                        {
+                            (!isValid.phone && !isValid.newPhone) && (
+                                <h5 className="text-red-300 text-xs">"Số điện thoại không hợp lệ"</h5>
+                            )
+                        }
                     </div>
                     <div className={""}>
                         <label className="" htmlFor="totalPrice">
-                            Tổng tiền(*)
+                            Tổng tiền
                         </label>
                         <input
                             type="text"
@@ -735,17 +823,17 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                             Chi tiết sản phẩm
                         </button>
                     </div>
-                    {
-                        (action === "add") &&
-                        <div className={"justify-end flex"}>
+                    <div className={"flex justify-end "}>
+                        {
+                            (action === "add") &&
                             <button
                                 className="px-2 py-1 text-white bg-blue-500 rounded-md"
                                 onClick={handleOnSaveOrder}
                             >
                                 Lưu
                             </button>
-                        </div>
-                    }
+                        }
+                    </div>
                 </div>
             </div>
 

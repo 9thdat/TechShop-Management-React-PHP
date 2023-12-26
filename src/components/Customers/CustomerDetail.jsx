@@ -121,10 +121,10 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
         >
             <div className="bg-white p-3 rounded-md">
                 <div className="flex justify-between">
-                    <div className="">Thông tin khách hàng</div>
+                    <div className="text-2xl">Thông tin khách hàng</div>
                     <button onClick={onClose}>X</button>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-5">
                     <div className="">
                         <label className="" htmlFor="id">
                             Email(*)

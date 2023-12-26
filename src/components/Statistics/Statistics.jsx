@@ -142,55 +142,62 @@ export default function Statistics() {
     }
 
     return (
-        <div className="relative h-[90vh] grid grid-cols-4 grid-rows-6 overflow-scroll shadow-md sm:rounded-lg">
+        <div className="">
             <div
-                className=" top-0 right-0 sticky h-[10vh] p-4 backdrop-blur-sm col-start-1 col-end-5 row-start-1 row-end-2 ">
-                <label className="mr-2">Loại biểu đồ:</label>
-                <select
-                    className="px-2 py-1 ml-2 rounded-md border border-black w-[10%]"
-                    id="sortValue"
-                    value={chartType}
-                    onChange={(e) => setChartType(e.target.value)}
-                >
-                    <option value="MonthRevenue">Doanh thu theo tháng</option>
-                    <option value="ProductSold">Số lượng sản phẩm bán ra</option>
-                </select>
-                <label className="ml-4 mr-2">Từ:</label>
-                <input
-                    className="px-2 py-1 ml-2 rounded-md border border-black w-[15%]"
-                    type="month"
-                    id="fromDate"
-                    value={format(new Date(fromDate), 'yyyy-MM', {locale: vi})}
-                    onChange={(e) => setFromDate(parseISO(`${e.target.value}-01T00:00:00.000Z`))}
-                />
-
-                <label className="ml-4 mr-2">Đến:</label>
-                <input
-                    className="px-2 py-1 ml-2 rounded-md border border-black w-[15%]"
-                    type="month"
-                    id="toDate"
-                    value={format(new Date(toDate), 'yyyy-MM', {locale: vi})}
-                    onChange={(e) => setToDate(parseISO(`${e.target.value}-01T00:00:00.000Z`))}
-                />
-
-                <label className="ml-4 mr-2">Mã sản phẩm:</label>
-                <input
-                    className="px-2 py-1 ml-2 rounded-md border border-black w-[15%]"
-                    type="text"
-                    id="productId"
-                    value={productId}
-                    onChange={(e) => setProductId(e.target.value)}
-                />
+                className="top-0 right-0 backdrop-blur-sm grid grid-rows-7 gap-2"
+            >
+                <div className="row-start-1 row-end-2">
+                    <label className="pr-2" htmlFor={"sortValue"}>Loại biểu đồ:</label>
+                    <select
+                        className="border border-blue-300 rounded-md"
+                        id="sortValue"
+                        value={chartType}
+                        onChange={(e) => setChartType(e.target.value)}
+                    >
+                        <option value="MonthRevenue">Doanh thu theo tháng</option>
+                        <option value="ProductSold">Số lượng sản phẩm bán ra</option>
+                    </select>
+                </div>
+                <div className="row-start-2 row-end-3">
+                    <label className="pr-2" htmlFor={"productId"}>Mã sản phẩm:</label>
+                    <input
+                        className="border border-blue-300 rounded-md"
+                        type="text"
+                        id="productId"
+                        value={productId}
+                        onChange={(e) => setProductId(e.target.value)}
+                    />
+                </div>
+                <div className={"row-start-3 row-end-4"}>
+                    <label className="pr-2" htmlFor={"fromDate"}>Từ:</label>
+                    <input
+                        className="border border-blue-300 rounded-md"
+                        type="month"
+                        id="fromDate"
+                        value={format(new Date(fromDate), 'yyyy-MM', {locale: vi})}
+                        onChange={(e) => setFromDate(parseISO(`${e.target.value}-01T00:00:00.000Z`))}
+                    />
+                </div>
+                <div className={"row-start-4 row-end-5"}>
+                    <label className="pr-2" htmlFor={"toDate"}>Đến:</label>
+                    <input
+                        className="border border-blue-300 rounded-md"
+                        type="month"
+                        id="toDate"
+                        value={format(new Date(toDate), 'yyyy-MM', {locale: vi})}
+                        onChange={(e) => setToDate(parseISO(`${e.target.value}-01T00:00:00.000Z`))}
+                    />
+                </div>
                 <button
-                    className="px-2 py-1 ml-4 rounded-md border border-black"
+                    className="border border-blue-300 rounded-md bg-blue-400 text-white"
                     onClick={() => handleAnalyze()}
                 >
                     Thống kê
                 </button>
             </div>
-            <div className="col-start-1 col-end-5 row-start-2 row-end-7 h-[80vh]">
-                <div className="flex flex-col items-center p-5">
-                    <span className="font-semibold text-lg">{chartTitle}</span>
+            <div className="h-screen">
+                <div className="flex flex-col items-center p-2">
+                    <span className="font-semibold text-xl">{chartTitle}</span>
                     {
                         chartData && chartData.labels &&
                         <Line data={chartData}/>

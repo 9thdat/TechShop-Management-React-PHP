@@ -660,10 +660,10 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
         >
             <div className="bg-white p-3 rounded-md">
                 <div className="flex justify-between">
-                    <div className="">Chi tiết sản phẩm</div>
+                    <div className="text-2xl">Chi tiết sản phẩm</div>
                     <button onClick={onClose}>X</button>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-5">
                     <div className="">
                         <label className="" htmlFor="id">ID</label>
                         <input type="text"

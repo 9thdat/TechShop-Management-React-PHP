@@ -184,7 +184,7 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
 
     return (
         <div
-            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm"
+            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm text-3xl"
         >
             <div className="bg-white p-3 rounded-md">
                 <div className="flex justify-between">

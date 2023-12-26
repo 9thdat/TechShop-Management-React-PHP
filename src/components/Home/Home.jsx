@@ -81,7 +81,7 @@ export default function Home() {
     }, [revenueEachDayThisMonth]);
 
     useEffect(() => {
-        fetchTop9Customers().then((res) => {
+        fetchTop5Customers().then((res) => {
             setTopCustomer(res);
         });
     }, []);
@@ -136,9 +136,9 @@ export default function Home() {
         }
     }
 
-    const fetchTop9Customers = async () => {
+    const fetchTop5Customers = async () => {
         try {
-            const res = await axios.get("/Order/Top9Customers");
+            const res = await axios.get("/Customer/Top5Customers");
             return res.data;
         } catch (err) {
             console.log(err);

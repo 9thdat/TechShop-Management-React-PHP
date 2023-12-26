@@ -167,9 +167,9 @@ function Sidebar() {
                     className={(menu === "review") ? activeLink : normalLink}
                 >
                     <BsFillCalendar2RangeFill className=""/>
-                    <a href="" className="pl-1">
+                    <span href="" className="pl-1">
                         Đánh giá
-                    </a>
+                    </span>
                 </button>
                 {
                     role === "admin" &&

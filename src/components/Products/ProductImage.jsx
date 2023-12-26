@@ -147,7 +147,8 @@ export default function ProductImage({visible, onClose, data, action, onSave}) {
     if (!visible) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm text-xl">
+        <div
+            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm text-xl">
             <div className="bg-white p-3 rounded-md">
                 <div className="flex justify-between">
                     <div className="">Thông tin hình ảnh</div>

@@ -272,6 +272,7 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
     const handleOnAddOrderProduct = async () => {
         const lastId = await fetchLastId();
         setOrderProductsLength((prevState) => prevState + 1);
+        setCurrentOrderProduct((prevState) => prevState + 1);
         setOrderProducts((prevState) => [
             ...prevState,
             {
@@ -303,16 +304,15 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
                 setOrderProductsLength((prevState) => prevState - 1);
 
                 if (indexToDelete === orderProductsLength - 1) {
-                    setCurrentOrderProduct((prevState) => prevState - 1);
+                    setCurrentOrderProduct("");
 
                     setOrderProduct({
-                            productId: orderProducts[indexToDelete - 1]?.productId || "",
-                            color: orderProducts[indexToDelete - 1]?.color || "",
-                            quantity: orderProducts[indexToDelete - 1]?.quantity || "",
-                            price: orderProducts[indexToDelete - 1]?.price || "",
-                            totalPrice: orderProducts[indexToDelete - 1]?.totalPrice || "",
-                        }
-                    );
+                        productId: orderProducts[indexToDelete - 1]?.productId || "",
+                        color: orderProducts[indexToDelete - 1]?.color || "",
+                        quantity: orderProducts[indexToDelete - 1]?.quantity || "",
+                        price: orderProducts[indexToDelete - 1]?.price || "",
+                        totalPrice: orderProducts[indexToDelete - 1]?.totalPrice || "",
+                    });
                 } else {
                     setCurrentOrderProduct((prevState) => prevState);
 

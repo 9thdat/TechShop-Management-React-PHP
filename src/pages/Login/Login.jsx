@@ -49,8 +49,8 @@ export default function LoginPage() {
     };
 
     return (
-        <section className="bg-white">
-            <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+        <section className="bg-white h-screen w-screen">
+            <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto">
                 <img
                     className="w-40 h-40 mr-2 flex items-center"
                     src={techShopLogo}
