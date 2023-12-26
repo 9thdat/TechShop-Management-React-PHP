@@ -147,17 +147,17 @@ export default function Home() {
     }
 
     return (
-        <div className={"home grid grid-cols-2 lg:grid-cols-4 grid-rows-6 w-full h-full"}>
+        <div className={"home grid grid-cols-1 lg:grid-cols-4 grid-rows-6 w-full h-full"}>
             <div
-                className="col-start-1 row-start-1 col-span-2 flex flex-row items-center justify-center text-center text-sm">
+                className="col-start-1 row-start-1 col-span-2 flex flex-row items-center justify-center text-center text-sm px-4">
                 <div
-                    className=""
+                    className="inline-block text-xs"
                 >
                     <div
                         className="bg-red-300 border rounded-xl py-2"
                     >
                         <span className="">ĐƠN HÀNG CHỜ XỬ LÝ</span>
-                        <div className=""> {ordersProcessing} </div>
+                        <div className="pl-1 inline-block"> {ordersProcessing} </div>
                     </div>
                     <div
                         className="bg-green-400 border rounded-xl py-2"
@@ -165,31 +165,31 @@ export default function Home() {
                         <span className="">
                             ĐƠN HÀNG HOÀN THÀNH HÔM NAY
                         </span>
-                        <div className="">
+                        <div className="pl-1 inline-block">
                             {ordersTodayCompleted}
                         </div>
                     </div>
                 </div>
                 <div
-                    className=""
+                    className="inline-block text-xs"
                 >
                     <div
                         className="bg-blue-300 border rounded-xl py-2"
                     >
                         <span className="">DOANH THU HÔM NAY</span>
-                        <div className="">{revenueToday}</div>
+                        <div className="inline-block pl-1">{revenueToday}</div>
                     </div>
                     <div
                         className="bg-yellow-200 border rounded-xl py-2"
                     >
                         <span className="">DOANH THU THÁNG NÀY</span>
-                        <div className="">{revenueMonth}</div>
+                        <div className="inline-block pl-1">{revenueMonth}</div>
                     </div>
                 </div>
             </div>
 
             {chartData && chartData.labels && (
-                <div className="col-start-1 col-span-3 row-start-2 row-span-3 text-center">
+                <div className="col-start-1 row-start-2 row-span-3 text-center">
                     <span className="">BIỂU ĐỒ DOANH THU THÁNG NÀY</span>
                     <LineChart chartData={chartData}/>
                 </div>

@@ -169,7 +169,7 @@ export default function Orders() {
                     className="col-start-1 col-end-3 row-start-1 row-end-2 border border-green-500 rounded-md bg-green-500 text-white"
                     onClick={handleOpenAddOrder}
                 >
-                    Thêm đơn hàng
+                    Thêm mới
                 </button>
                 <input
                     type="text"

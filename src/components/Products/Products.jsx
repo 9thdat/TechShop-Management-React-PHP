@@ -261,7 +261,7 @@ export default function Products() {
                     className="col-start-1 col-end-3 row-start-1 row-end-2 border border-green-500 rounded-md bg-green-500 text-white"
                     onClick={AddProduct}
                 >
-                    Thêm sản phẩm
+                    Thêm mới
                 </button>
                 <input
                     type="text"
