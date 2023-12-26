@@ -526,7 +526,6 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
     const onOpenEditQuantity = () => {
         setActionOnProductParameter("edit");
         setProductQuantity(productQuantity);
-        console.log(productQuantity);
         setProductQuantityVisible(true);
     }
 

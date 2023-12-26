@@ -95,6 +95,14 @@ export default function Discounts() {
             const response = await axios.post("/Discount", discount);
             if (response.status === 201) {
                 alert("Thêm mã giảm giá thành công");
+                const isExpired = discount.endDate < new Date().toISOString().split('T')[0];
+                if (discount.status !== "inactive") {
+                    if (isExpired) {
+                        discount.status = "expired";
+                    } else {
+                        discount.status = "active"
+                    }
+                }
                 setDiscounts([...discounts, discount]);
                 setOriginalDiscounts([...originalDiscounts, discount]);
                 setVisibleDiscountDetail(false);
@@ -111,6 +119,14 @@ export default function Discounts() {
             const response = await axios.put("Discount", discount);
             if (response.status === 204) {
                 alert("Sửa mã giảm giá thành công");
+                const isExpired = discount.endDate < new Date().toISOString().split('T')[0];
+                if (discount.status !== "inactive") {
+                    if (isExpired) {
+                        discount.status = "expired";
+                    } else {
+                        discount.status = "active"
+                    }
+                }
                 const newDiscounts = discounts.map((item) => {
                     if (item.id === discount.id) {
                         return discount;
@@ -145,25 +161,25 @@ export default function Discounts() {
     }
 
     return (
-        <div className="relative h-[90vh] overflow-scroll shadow-md sm:rounded-lg">
-            <div className="top-0 right-0 sticky h-[10vh] p-4 backdrop-blur-sm">
+        <div className="">
+            <div className="top-0 right-0 backdrop-blur-sm grid grid-cols-6 grid-rows-2">
                 <button
-                    className="px-2 py-1 text-white bg-green-500 rounded-md"
+                    className="col-start-1 col-span-2 row-start-1 row-end-2 border border-green-500 rounded-md bg-green-500 text-white"
                     onClick={handleOpenAddDiscount}
                 >
-                    Thêm
+                    Thêm mới
                 </button>
 
                 <input
                     type="text"
                     id="searchValue"
-                    className="px-2 py-1 ml-2 rounded-md border border-black w-[60%]"
+                    className="col-start-3 col-end-7 row-start-1 row-end-2 border border-blue-300 rounded-md"
                     placeholder="Tìm kiếm mã giảm giá"
                     value={search.searchValue}
                     onChange={(e) => handleOnChangeSearchType(e)}
                 />
                 <select
-                    className="px-2 py-1 ml-2 rounded-md border border-black w-[10%]"
+                    className="col-start-1 col-end-3 row-start-2 row-end-3 border border-blue-300 rounded-md"
                     id="sortValue"
                     onChange={(e) => handleOnChangeSearchType(e)}
                 >
@@ -171,7 +187,7 @@ export default function Discounts() {
                     <option value="value">Trị giá</option>
                 </select>
                 <select
-                    className="px-2 py-1 ml-2 rounded-md border border-black w-[12%]"
+                    className="col-start-3 col-end-5 row-start-2 row-end-3 border border-blue-300 rounded-md"
                     id="statusValue"
                     onChange={(e) => handleOnChangeSearchType(e)}
                 >
@@ -181,8 +197,9 @@ export default function Discounts() {
                     <option value="expired">Đã hết hạn</option>
                 </select>
 
-                <button className={"px-2 py-1 ml-2 text-white bg-blue-500 rounded-md"}
-                        onClick={handleOnSearch}
+                <button
+                    className="col-start-5 col-end-7 row-start-2 row-end-3 border border-blue-300 rounded-md bg-blue-400 text-white"
+                    onClick={handleOnSearch}
                 >
                     Tìm kiếm
                 </button>
@@ -280,10 +297,10 @@ export default function Discounts() {
                                         className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap"
                                     >
                                         <button
-                                            className="px-2 py-1 text-white bg-blue-500 rounded-md"
+                                            className="px-2 py-1 text-white bg-blue-400 rounded-md"
                                             onClick={() => handleOpenEditDiscount(discount)}
                                         >
-                                            Sửa
+                                            Chi tiết
                                         </button>
                                     </td>
                                 </tr>

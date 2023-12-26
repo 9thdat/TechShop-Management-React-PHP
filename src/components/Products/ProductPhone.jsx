@@ -58,135 +58,111 @@ export default function ProductPhone({visible, onClose, data, action, onSave, on
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm text-xl">
-            <div className="bg-white p-4 rounded ">
-                <div className="title flex justify-between px-1">
-                    <div className="text-3xl">Thông số điện thoại</div>
+            <div className="bg-white p-3 rounded-md">
+                <div className="flex justify-between">
+                    <div className="">Thông số điện thoại</div>
                     <button onClick={() => {
                         onClose();
                     }}>X
                     </button>
                 </div>
+                <div className="grid grid-cols-1 gap-2">
+                    <div className="">
+                        <label className="" htmlFor="screen">Màn hình</label>
+                        <input type="text"
+                               className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                               id="screen"
+                               onChange={(e) => handleOnChange(e)}
+                               value={productPhoneData.screen}/>
+                    </div>
+                    <div className="">
+                        <label className="" htmlFor="operatingSystem">Hệ điều hành</label>
+                        <input type="text"
+                               className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                               id="operatingSystem"
+                               onChange={(e) => handleOnChange(e)}
+                               value={productPhoneData.operatingSystem}/>
+                    </div>
+                    <div className="">
+                        <label className="" htmlFor="backCamera">Camera sau</label>
+                        <input type="text"
+                               className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                               id="backCamera"
+                               onChange={(e) => handleOnChange(e)}
+                               value={productPhoneData.backCamera}/>
+                    </div>
+                    <div className="">
+                        <label className="" htmlFor="backCamera">Camera trước</label>
+                        <input type="text"
+                               className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                               id="frontCamera"
+                               onChange={(e) => handleOnChange(e)}
+                               value={productPhoneData.frontCamera}/>
+                    </div>
+                    <div className="">
+                        <label className="" htmlFor="chip">Chip</label>
+                        <input type="text"
+                               className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
 
-                <div className="content">
-                    <form className="form overflow-auto">
-                        <table className="col-span-3">
-                            <tr>
-                                <td>
-                                    <div className="form-group flex justify-between mb-4 ">
-                                        <label className="mr-2" htmlFor="screen">Màn hình</label>
-                                        <input type="text"
-                                               className="form-control border border-black rounded-md"
-                                               id="screen"
-                                               onChange={(e) => handleOnChange(e)}
-                                               value={productPhoneData.screen}/>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div className="form-group flex justify-between mb-4 ">
-                                        <label className="mr-2" htmlFor="operatingSystem">Hệ điều hành</label>
-                                        <input type="text"
-                                               className="form-control border border-black rounded-md"
-                                               id="operatingSystem"
-                                               onChange={(e) => handleOnChange(e)}
-                                               value={productPhoneData.operatingSystem}/>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div className="form-group flex justify-between mb-4 ">
-                                        <label className="mr-2" htmlFor="backCamera">Camera sau</label>
-                                        <input type="text"
-                                               className="form-control border border-black rounded-md"
-                                               id="backCamera"
-                                               onChange={(e) => handleOnChange(e)}
-                                               value={productPhoneData.backCamera}/>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div className="form-group flex justify-between mb-4 ">
-                                        <label className="mr-2" htmlFor="backCamera">Camera trước</label>
-                                        <input type="text"
-                                               className="form-control border border-black rounded-md"
-                                               id="frontCamera"
-                                               onChange={(e) => handleOnChange(e)}
-                                               value={productPhoneData.frontCamera}/>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div className="form-group flex justify-between mb-4 ">
-                                        <label className="mr-2" htmlFor="chip">Chip</label>
-                                        <input type="text"
-                                               className="form-control border border-black rounded-md"
-                                               id="chip"
-                                               onChange={(e) => handleOnChange(e)}
-                                               value={productPhoneData.chip}/>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div className="form-group flex justify-between mb-4 ">
-                                        <label className="mr-2" htmlFor="ram">Ram</label>
-                                        <input type="text"
-                                               className="form-control border border-black rounded-md"
-                                               id="ram"
-                                               onChange={(e) => handleOnChange(e)}
-                                               value={productPhoneData.ram}/>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div className="form-group flex justify-between mb-4 ">
-                                        <label className="mr-2" htmlFor="rom">Rom</label>
-                                        <input type="text"
-                                               className="form-control border border-black rounded-md"
-                                               id="rom"
-                                               onChange={(e) => handleOnChange(e)}
-                                               value={productPhoneData.rom}/>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div className="form-group flex justify-between mb-4 ">
-                                        <label className="mr-2" htmlFor="sim">Sim</label>
-                                        <input type="text"
-                                               className="form-control border border-black rounded-md"
-                                               id="sim"
-                                               onChange={(e) => handleOnChange(e)}
-                                               value={productPhoneData.sim}/>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div className="form-group flex justify-between mb-4 ">
-                                        <label className="mr-2" htmlFor="batteryCharger">Sạc pin</label>
-                                        <input type="text"
-                                               className="form-control border border-black rounded-md"
-                                               id="batteryCharger"
-                                               onChange={(e) => handleOnChange(e)}
-                                               value={productPhoneData.batteryCharger}/>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                        <div className="form-group flex justify-end">
-                            {
-                                !productPhoneData.new &&
-                                <button
-                                    type="button"
-                                    className="btn btn-danger border border-red-500 bg-red-300 rounded-md p-2 mr-2"
-                                    onClick={handleOpenDelete}
-                                >
-                                    Xoá thông số điện thoại
-                                </button>
-                            }
+                               id="chip"
+                               onChange={(e) => handleOnChange(e)}
+                               value={productPhoneData.chip}/>
+                    </div>
+                    <div className="">
+                        <label className="" htmlFor="ram">Ram</label>
+                        <input type="text"
+                               className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+
+                               id="ram"
+                               onChange={(e) => handleOnChange(e)}
+                               value={productPhoneData.ram}/>
+                    </div>
+                    <div className="">
+                        <label className="" htmlFor="rom">Rom</label>
+                        <input type="text"
+                               className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+
+                               id="rom"
+                               onChange={(e) => handleOnChange(e)}
+                               value={productPhoneData.rom}/>
+                    </div>
+                    <div className="">
+                        <label className="" htmlFor="sim">Sim</label>
+                        <input type="text"
+                               className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+
+                               id="sim"
+                               onChange={(e) => handleOnChange(e)}
+                               value={productPhoneData.sim}/>
+                    </div>
+                    <div className="">
+                        <label className="" htmlFor="batteryCharger">Sạc pin</label>
+                        <input type="text"
+                               className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+
+                               id="batteryCharger"
+                               onChange={(e) => handleOnChange(e)}
+                               value={productPhoneData.batteryCharger}/>
+                    </div>
+                    <div className="">
+                        {
+                            !productPhoneData.new &&
                             <button
-                                type="button"
-                                className="btn btn-primary border border-green-500 bg-green-500 rounded-md p-2"
-                                onClick={() => handleOnSave()}
+                                className="px-2 py-1 text-black border border-black text-sm bg-red-300 rounded-md"
+                                onClick={handleOpenDelete}
                             >
-                                Lưu
+                                Xoá thông số điện thoại
                             </button>
-                        </div>
-                    </form>
+                        }
+                    </div>
+                    <div className="">
+                        <button
+                            className="px-2 py-1 text-black border border-black text-sm bg-green-400 rounded-md"
+                            onClick={() => handleOnSave()}
+                        >
+                            Lưu
+                        </button>
+                    </div>
                 </div>
             </div>
             {

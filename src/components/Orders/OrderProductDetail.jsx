@@ -430,14 +430,16 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
                             value={orderProduct.quantity || ""}
                             disabled={currentOrderProduct === "" || action === "edit"}
                         />
-                        <span
-                            className="text-red-500 text-xs"
-                        >
-                                        Còn lại: {totalProductQuantity}
-                                    </span>
-                        {!isValid.quantity && (
-                            <h5 className="text-red-500 text-xs">"Số lượng không hợp lệ"</h5>
+                        {action === "add" && (
+                            <span className="text-red-500 text-xs">
+                                Còn lại: {totalProductQuantity}
+                            </span>
                         )}
+
+                        {!isValid.quantity && (
+                            <h5 className="text-red-500 text-xs">Số lượng không hợp lệ</h5>
+                        )}
+
                     </div>
                     <div>
                         <label htmlFor="price">Giá tiền</label>

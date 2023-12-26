@@ -258,15 +258,15 @@ export default function Products() {
         <div className="">
             <div className="top-0 right-0 backdrop-blur-sm grid grid-cols-6 grid-rows-2">
                 <button
-                    className="col-start-1 col-end-2 row-start-1 row-end-2 border border-green-500 rounded-md bg-green-500 text-white"
+                    className="col-start-1 col-end-3 row-start-1 row-end-2 border border-green-500 rounded-md bg-green-500 text-white"
                     onClick={AddProduct}
                 >
-                    Thêm
+                    Thêm sản phẩm
                 </button>
                 <input
                     type="text"
                     id="searchValue"
-                    className="col-start-2 col-end-7 row-start-1 row-end-2 border border-blue-300 rounded-md"
+                    className="col-start-3 col-end-7 row-start-1 row-end-2 border border-blue-300 rounded-md"
                     placeholder="Tìm kiếm sản phẩm"
                     value={search.searchValue}
                     onChange={(e) => handleOnChangeSearchType(e)}

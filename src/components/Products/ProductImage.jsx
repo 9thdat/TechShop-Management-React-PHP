@@ -213,7 +213,8 @@ export default function ProductImage({visible, onClose, data, action, onSave}) {
                     <div className="col-span-2">
                         <input
                             type="file"
-                            className="form-control" id="image"
+                            className="form-control"
+                            id="image"
                             onChange={(e) => handleUploadImage(e)}
                         />
                     </div>

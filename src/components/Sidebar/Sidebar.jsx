@@ -136,7 +136,7 @@ function Sidebar() {
                 </button>
                 <button
                     onClick={(e) => handleMenuClick(e)}
-                    value={""}
+                    value={"customers"}
                     className={(menu === "customers") ? activeLink : normalLink}
                 >
                     <BiSolidUser className=""/>

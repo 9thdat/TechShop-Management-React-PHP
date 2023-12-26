@@ -6,25 +6,27 @@ export default function ConfirmDeleteProductParameter({visible, onDelete, onAbor
     }
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm text-xl">
-            <div className="bg-white p-4 rounded ">
-                <div className="title flex justify-between px-1">
+        <div
+            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm"
+        >
+            <div className="bg-white p-3 rounded-md">
+                <div className="flex justify-between">
                     <div className="text-3xl">Xác nhận xóa</div>
                 </div>
-                <div className="content">
-                    <div className="form overflow-auto">
-                        <div className="form-group flex justify-between">
+                <div className="grid grid-cols-2 gap-2">
+                    <div className="col-span-2 text-xl">
                                    <span>
                                         Bạn có chắc chắn muốn xóa thông số này?
                                    </span>
-                        </div>
-                        <div className="form-group flex justify-between">
-                            <button className="bg-red-500 text-white px-2 py-1 rounded-md" onClick={onDelete}>Xóa
-                            </button>
-                            <button className="bg-green-500 text-white px-2 py-1 rounded-md"
-                                    onClick={onAbortDelete}>Hủy
-                            </button>
-                        </div>
+                    </div>
+                    <div className="">
+                        <button className="bg-red-500 text-white px-2 py-1 rounded-md" onClick={onDelete}>Xóa
+                        </button>
+                    </div>
+                    <div className="flex justify-end">
+                        <button className="bg-green-500 text-white px-2 py-1 rounded-md"
+                                onClick={onAbortDelete}>Hủy
+                        </button>
                     </div>
                 </div>
             </div>

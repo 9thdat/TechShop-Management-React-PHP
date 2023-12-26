@@ -18,7 +18,7 @@ export default function Customers() {
     });
 
     useEffect(() => {
-        localStorage.setItem("menu", "customers");
+        sessionStorage.setItem("menu", "customers");
     }, []);
 
     useEffect(() => {
@@ -152,23 +152,23 @@ export default function Customers() {
     }
 
     return (
-        <div className="relative h-[90vh] overflow-scroll shadow-md sm:rounded-lg">
-            <div className=" top-0 right-0 sticky h-[10vh] p-4 backdrop-blur-sm">
+        <div className="">
+            <div className="top-0 right-0 backdrop-blur-sm grid grid-cols-6 grid-rows-2">
                 <button
-                    className="px-2 py-1 text-white bg-green-500 rounded-md"
-                    onClick={handleOpenAddCustomer}>Thêm khách hàng
+                    className="col-start-1 col-span-2 row-start-1 row-end-2 border border-green-500 rounded-md bg-green-500 text-white"
+                    onClick={handleOpenAddCustomer}>Thêm mới
                 </button>
 
                 <input
                     type="text"
                     id="searchValue"
-                    className="px-2 py-1 ml-2 rounded-md border border-black w-[60%]"
+                    className="col-start-3 col-end-7 row-start-1 row-end-2 border border-blue-300 rounded-md"
                     placeholder="Tìm kiếm khách hàng"
                     value={search.searchValue}
                     onChange={(e) => handleOnChangeSearchType(e)}
                 />
                 <select
-                    className="px-2 py-1 ml-2 rounded-md border border-black w-[10%]"
+                    className="col-start-1 col-end-3 row-start-2 row-end-3 border border-blue-300 rounded-md"
                     id="sortValue"
                     onChange={(e) => handleOnChangeSearchType(e)}
                 >
@@ -177,7 +177,7 @@ export default function Customers() {
                     <option value="phone">Số điện thoại</option>
                 </select>
                 <select
-                    className="px-2 py-1 ml-2 rounded-md border border-black w-[12%]"
+                    className="col-start-3 col-end-5 row-start-2 row-end-3 border border-blue-300 rounded-md"
                     id="statusValue"
                     onChange={(e) => handleOnChangeSearchType(e)}
                 >
@@ -186,13 +186,14 @@ export default function Customers() {
                     <option value="inactive">Ngừng hoạt động</option>
                 </select>
 
-                <button className={"px-2 py-1 ml-2 text-white bg-blue-500 rounded-md"}
-                        onClick={handleOnSearch}>Tìm kiếm
+                <button
+                    className="col-start-5 col-end-7 row-start-2 row-end-3 border border-blue-300 rounded-md bg-blue-400 text-white"
+                    onClick={handleOnSearch}>Tìm kiếm
                 </button>
             </div>
-            <div className="overflow-x-scroll overflow-y-scroll h-[78vh]">
+            <div className="overflow-x-auto overflow-y-auto h-screen">
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500">
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                    <tbody className="text-xs text-gray-700 uppercase bg-gray-50">
                     <tr>
                         <th scope="col" className="text-center py-3">
                             Email
@@ -219,7 +220,7 @@ export default function Customers() {
                             Hành động
                         </th>
                     </tr>
-                    </thead>
+                    </tbody>
                     <tbody>
                     {
                         customers.map((customer) => (
@@ -248,11 +249,12 @@ export default function Customers() {
                                         {customer.status === "active" ? "Đang hoạt động" : "Ngừng hoạt động"}
                                     </td>
                                     <td className="px-6 py-2 whitespace-nowrap">
-                                        <button className="px-2 py-1 text-white bg-green-500 rounded-md"
-                                                value={customer.email}
-                                                onClick={(e) => handleDetailCustomer(customer)}>Chi tiết
+                                        <button
+                                            className="px-2 py-1 text-white bg-blue-400 rounded-md"
+                                            value={customer.email}
+                                            onClick={(e) => handleDetailCustomer(customer)}>Chi tiết
                                         </button>
-                                        <button className="px-2 py-1 ml-2 text-white bg-red-400 rounded-md"
+                                        <button className="px-2 py-1 ml-2 text-white bg-red-500 rounded-md"
                                                 value={customer.email}
                                                 onClick={(e) => handleChangeStatusCustomer(e)}>Đổi tình trạng
                                         </button>
