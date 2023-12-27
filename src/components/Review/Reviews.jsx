@@ -170,7 +170,7 @@ export default function Reviews() {
                         </th>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody className={"text-xs md:text-base text-center"}>
                     {
                         reviews.map((review) => (
                                 <tr key={review.id}

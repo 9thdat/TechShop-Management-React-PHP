@@ -257,7 +257,7 @@ export default function Discounts() {
                         </th>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody className={"text-xs md:text-base text-center"}>
                     {
                         discounts.map(discount => (
                                 <tr

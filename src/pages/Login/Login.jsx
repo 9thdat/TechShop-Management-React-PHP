@@ -38,7 +38,10 @@ export default function LoginPage() {
             }
 
         } catch (err) {
-            if (err.response.status === 404) {
+            console.log(err);
+            if (err.response === undefined) {
+                alert("Lỗi kết nối đến server");
+            } else if (err.response.status === 404) {
                 alert("Người dùng không tồn tại");
             } else if (err.response.status === 401) {
                 alert("Sai mật khẩu");

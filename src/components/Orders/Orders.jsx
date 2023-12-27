@@ -254,7 +254,7 @@ export default function Orders() {
                         </th>
                     </tr>
                     </tbody>
-                    <tbody className={"text-xs"}>
+                    <tbody className={"text-xs md:text-base text-center"}>
                     {
                         orders.map((order) => (
                                 <tr

@@ -50,8 +50,13 @@ export default function Statistics() {
         const chartTypeText = chartType === "MonthRevenue" ? "Doanh thu" : "Số lượng sản phẩm bán ra";
         setChartTitle("BIỂU ĐỒ " + chartTypeText.toUpperCase() + " TỪ NGÀY " + format(new Date(fromDate), 'dd/MM/yyyy') + " ĐẾN NGÀY " + format(new Date(toDate), 'dd/MM/yyyy'));
         if (chartType === "MonthRevenue") {
-            const revenueData = await fetchRevenue();
-            setRevenue(revenueData);
+            if (productId === "") {
+                const revenueData = await fetchRevenue();
+                setRevenue(revenueData);
+            } else {
+                const revenueData = await fetchRevenueByProduct(productId);
+                setRevenue(revenueData);
+            }
         } else {
             if (productId === "") {
                 const productsSoldData = await fetchProductsSold();
@@ -113,6 +118,20 @@ export default function Statistics() {
         }
     }
 
+    const fetchRevenueByProduct = async (productId) => {
+        const startMonth = fromDate.getMonth() + 1;
+        const startYear = fromDate.getFullYear();
+        const endMonth = toDate.getMonth() + 1;
+        const endYear = toDate.getFullYear();
+        try {
+            const res = await axios.get(`/Order/GetMonthlyRevenueByProduct?startMonth=${startMonth}&startYear=${startYear}&endMonth=${endMonth}&endYear=${endYear}&productId=${productId}`);
+            return res.data;
+        } catch (err) {
+            console.log(err);
+            return [];
+        }
+    }
+
     const fetchProductsSold = async () => {
         const startMonth = fromDate.getMonth() + 1;
         const startYear = fromDate.getFullYear();
@@ -158,8 +177,9 @@ export default function Statistics() {
                         <option value="ProductSold">Số lượng sản phẩm bán ra</option>
                     </select>
                 </div>
-                <div className="row-start-2 row-end-3 lg:col-start-4 lg:col-end-5 lg:row-start-1 lg:row-end-2">
-                    <label className="pr-2" htmlFor={"productId"}>Mã sản phẩm:</label>
+                <div
+                    className="row-start-2 row-end-3 lg:col-start-4 lg:col-end-6 lg:row-start-1 lg:row-end-2 ">
+                    <label className="pr-2 lg:inline-block" htmlFor={"productId"}>Mã sản phẩm:</label>
                     <input
                         className="border border-blue-300 rounded-md"
                         type="text"
@@ -168,7 +188,8 @@ export default function Statistics() {
                         onChange={(e) => setProductId(e.target.value)}
                     />
                 </div>
-                <div className={"row-start-3 row-end-4 lg:col-start-2 lg:col-end-4 lg:row-start-2 lg:row-end-3"}>
+                <div
+                    className={"row-start-3 row-end-4 lg:col-start-2 lg:col-end-4 lg:row-start-2 lg:row-end-3"}>
                     <label className="pr-2" htmlFor={"fromDate"}>Từ:</label>
                     <input
                         className="border border-blue-300 rounded-md"
@@ -195,12 +216,12 @@ export default function Statistics() {
                     Thống kê
                 </button>
             </div>
-            <div className="">
+            <div className="2xl:w-5/6 2xl:m-auto">
                 <div className="flex flex-col items-center p-2">
                     <span className="font-semibold text-xl">{chartTitle}</span>
                     {
                         chartData && chartData.labels &&
-                        <Line data={chartData}/>
+                        <Line className={"w-screen h-screen"} data={chartData}/>
                     }
                 </div>
             </div>

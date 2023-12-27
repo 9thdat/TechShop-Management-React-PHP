@@ -221,7 +221,7 @@ export default function Customers() {
                         </th>
                     </tr>
                     </tbody>
-                    <tbody>
+                    <tbody className={"text-xs md:text-base"}>
                     {
                         customers.map((customer) => (
                                 <tr key={customer.email}
@@ -242,7 +242,8 @@ export default function Customers() {
                                         {customer.birthday}
                                     </td>
                                     <td scope="row"
-                                        className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap">
+                                        className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap overflow-hidden overflow-ellipsis max-w-xs"
+                                    >
                                         {customer.address + ', ' + customer.ward + ', ' + customer.district + ', ' + customer.city}
                                     </td>
                                     <td scope="row" className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap">

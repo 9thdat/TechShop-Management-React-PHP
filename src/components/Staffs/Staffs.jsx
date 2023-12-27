@@ -192,7 +192,7 @@ export default function Staffs() {
                         </th>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody className={"text-xs md:text-base text-center"}>
                     {
                         staffs.map((staff) => (
                                 <tr

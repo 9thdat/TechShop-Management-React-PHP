@@ -324,12 +324,12 @@ export default function Products() {
                         </th>
                     </tr>
                     </tbody>
-                    <tbody className={"text-xs"}>
+                    <tbody className={"text-xs md:text-base"}>
                     {
                         products.map((product) => (
                             <tr
                                 key={product.id}
-                                className="odd:bg-white even:bg-gray-50 border-b dark:border-gray-700"
+                                className="odd:bg-white even:bg-gray-50 border-b dark:border-gray-700 text-center"
                             >
                                 <td
                                     scope="row"
@@ -364,7 +364,7 @@ export default function Products() {
                                 >
                                     {product.quantity}
                                 </td>
-                                <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap flex gap-2">
+                                <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap flex gap-2 justify-center">
                                     <button
                                         className="px-2 py-1 text-white bg-blue-400 rounded-md"
                                         value={product.id}
