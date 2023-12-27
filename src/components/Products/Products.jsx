@@ -256,9 +256,9 @@ export default function Products() {
 
     return (
         <div className="">
-            <div className="top-0 right-0 backdrop-blur-sm grid grid-cols-6 grid-rows-2">
+            <div className="top-0 right-0 backdrop-blur-sm grid grid-cols-6 grid-rows-2 lg:grid-rows-1 lg:text-xl">
                 <button
-                    className="col-start-1 col-end-3 row-start-1 row-end-2 border border-green-500 rounded-md bg-green-500 text-white"
+                    className="col-start-1 col-end-3 lg:col-end-2 row-start-1 row-end-2 border border-green-500 rounded-md bg-green-500 text-white"
                     onClick={AddProduct}
                 >
                     Thêm mới
@@ -266,13 +266,13 @@ export default function Products() {
                 <input
                     type="text"
                     id="searchValue"
-                    className="col-start-3 col-end-7 row-start-1 row-end-2 border border-blue-300 rounded-md"
+                    className="col-start-3 lg:col-start-2 col-end-7 lg:col-end-4 row-start-1 row-end-2 border border-blue-300 rounded-md"
                     placeholder="Tìm kiếm sản phẩm"
                     value={search.searchValue}
                     onChange={(e) => handleOnChangeSearchType(e)}
                 />
                 <select
-                    className="col-start-1 col-end-3 row-start-2 row-end-3 border border-blue-300 rounded-md"
+                    className="col-start-1 col-end-3 lg:col-start-4 lg:col-end-5 row-start-2 lg:row-start-1 row-end-3 lg:row-end-2 border border-blue-300 rounded-md"
                     id="sortValue"
                     onChange={(e) => handleOnChangeSearchType(e)}
                 >
@@ -281,7 +281,7 @@ export default function Products() {
                     <option value="brand">Hãng</option>
                 </select>
                 <select
-                    className="col-start-3 col-end-5 row-start-2 row-end-3 border border-blue-300 rounded-md"
+                    className="col-start-3 col-end-5 lg:col-start-5 lg:col-end-6 row-start-2 row-end-3 lg:row-start-1 lg:row-end-2 border border-blue-300 rounded-md"
                     id="statusValue"
                     onChange={(e) => handleOnChangeSearchType(e)}
                 >
@@ -291,13 +291,13 @@ export default function Products() {
                 </select>
 
                 <button
-                    className="col-start-5 col-end-7 row-start-2 row-end-3 border border-blue-300 rounded-md bg-blue-400 text-white"
+                    className="col-start-5 col-end-7 lg:col-start-6 lg:col-end-7 row-start-2 row-end-3 lg:row-start-1 lg:row-end-2 border border-blue-300 rounded-md bg-blue-400 text-white"
                     onClick={handleOnSearch}
                 >
                     Tìm kiếm
                 </button>
             </div>
-            <div className="overflow-x-auto overflow-y-auto h-screen">
+            <div className="overflow-x-auto overflow-y-auto h-[85vh] lg:h-[87vh]">
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500">
                     <tbody className="text-xs text-gray-700 uppercase bg-gray-50">
                     <tr>

@@ -147,14 +147,14 @@ export default function Home() {
     }
 
     return (
-        <div className={"home md:grid md:grid-cols-4 grid-rows-6 w-full h-full"}>
+        <div className={"home md:grid md:grid-cols-4 grid-rows-6 w-full h-[90vh] overflow-auto"}>
             <div
-                className="col-start-1 row-start-1 md:col-end-5 md:row-end-2 flex flex-row items-center justify-center text-center text-sm px-4">
+                className="col-start-1 row-start-1 md:col-end-5 md:row-end-2 lg:grid lg:grid-cols-4 flex flex-row items-center justify-center text-center text-sm px-4">
                 <div
-                    className="inline-block text-xs w-full lg:w-1/4 lg:m-auto"
+                    className="inline-block text-xs w-full lg:w-full lg:h-full lg:m-auto lg:flex lg:col-start-1 lg:col-end-3 "
                 >
                     <div
-                        className="bg-red-300 border rounded-xl py-2 md:text-base lg:mb-2"
+                        className="bg-red-300 border rounded-xl py-2 md:text-base lg:mb-2 lg:flex lg:flex-col lg:col-start-1 lg:col-end-2 lg:items-center lg:justify-center w-full lg:text-xl "
                     >
                         <span className="">ĐƠN HÀNG CHỜ XỬ LÝ</span>
                         <div className="pl-1 inline-block md:block">
@@ -162,7 +162,7 @@ export default function Home() {
                         </div>
                     </div>
                     <div
-                        className="bg-green-400 border rounded-xl py-2 md:text-base"
+                        className="bg-green-400 border rounded-xl py-2 md:text-base lg:mb-2 lg:flex lg:flex-col lg:col-start-2 lg:col-end-3 lg:items-center lg:justify-center w-full lg:text-xl"
                     >
                         <span className="">
                             ĐƠN HÀNG HOÀN THÀNH HÔM NAY
@@ -173,16 +173,16 @@ export default function Home() {
                     </div>
                 </div>
                 <div
-                    className="inline-block text-xs w-full lg:w-1/4 lg:m-auto"
+                    className="inline-block text-xs w-full lg:w-full lg:h-full lg:m-auto lg:flex lg:col-start-3 lg:col-end-5"
                 >
                     <div
-                        className="bg-blue-300 border rounded-xl py-2 md:text-base lg:mb-2"
+                        className="bg-blue-300 border rounded-xl py-2 md:text-base lg:mb-2 lg:col-start-3 lg:col-end-4 lg:flex lg:flex-col lg:items-center lg:justify-center w-full lg:text-xl"
                     >
                         <span className="">DOANH THU HÔM NAY</span>
                         <div className="inline-block pl-1 md:block">{revenueToday}</div>
                     </div>
                     <div
-                        className="bg-yellow-200 border rounded-xl py-2 md:text-base"
+                        className="bg-yellow-200 border rounded-xl py-2 md:text-base lg:mb-2 lg:col-start-4 lg:col-end-5 lg:flex lg:flex-col lg:items-center lg:justify-center w-full lg:text-xl"
                     >
                         <span className="">DOANH THU THÁNG NÀY</span>
                         <div className="inline-block pl-1 md:block">{revenueMonth}</div>
@@ -192,34 +192,34 @@ export default function Home() {
 
             {chartData && chartData.labels && (
                 <div
-                    className="col-start-1 row-start-2 md:col-end-5 md:row-end-5 lg:col-end-4 lg:row-end-6 text-center text-sm md:text-xl mt-3 md:pt-2">
-                    <span className="">BIỂU ĐỒ DOANH THU THÁNG NÀY</span>
+                    className="col-start-1 row-start-2 md:col-end-6 md:row-end-5 lg:col-end-4 lg:row-end-7 text-center text-sm md:text-xl mt-3 md:pt-2">
+                    <span className="lg:text-xl font-semibold">BIỂU ĐỒ DOANH THU THÁNG NÀY</span>
                     <LineChart chartData={chartData}/>
                 </div>
             )}
 
             <div
-                className="col-start-1 row-start-4 md:row-start-5 md:col-end-5 lg:row-start-2 lg:col-start-4 lg:col-end-6 text-center text-xs md:text-base mt-3">
-                <span className="lg:text-xl font-semibold">TOP KHÁCH HÀNG</span>
+                className="col-start-1 row-start-4 md:row-start-5 md:col-end-5 lg:row-start-2 lg:col-start-4 lg:col-end-6 text-center text-xs md:text-base mt-3 md:pt-2">
+                <span className="lg:text-xl font-semibold ">TOP KHÁCH HÀNG</span>
                 <div className="flex items-center justify-center">
                     <table
-                        className=""
+                        className="w-full text-sm text-left rtl:text-right text-gray-500"
                     >
                         <thead className="">
                         <tr className={""}>
-                            <th scope="col" className="">
+                            <th scope="col" className="text-center">
                                 STT
                             </th>
-                            <th scope="col" className="">
+                            <th scope="col" className="text-center">
                                 Ảnh
                             </th>
-                            <th scope="col" className="">
+                            <th scope="col" className="text-center">
                                 Tên khách hàng
                             </th>
-                            <th scope="col" className="">
+                            <th scope="col" className="text-center">
                                 Số điện thoại
                             </th>
-                            <th scope="col" className="hidden xl:block">
+                            <th scope="col" className="hidden xl:block text-center">
                                 Tổng tiền
                             </th>
                         </tr>
@@ -227,17 +227,17 @@ export default function Home() {
                         <tbody className="">
                         {TopCustomer && TopCustomer.length > 0 && TopCustomer.map((item, index) => (
                             <tr key={index} className={""}>
-                                <td className="pb-3 lg:pb-6">{index + 1}</td>
-                                <td className="">
+                                <td className="pb-3 lg:pb-6 text-center">{index + 1}</td>
+                                <td className="text-center">
                                     <img
                                         className="w-10"
                                         src={item.avatar ? `data:image/jpeg;base64, ${item.image}` : defaultAvatar}
                                         alt=""
                                     />
                                 </td>
-                                <td className="">{item.name}</td>
-                                <td className="">{item.phone}</td>
-                                <td className="hidden xl:block">{item.revenue}</td>
+                                <td className="text-center">{item.name}</td>
+                                <td className="text-center">{item.phone}</td>
+                                <td className="hidden xl:block text-center">{item.revenue}</td>
                             </tr>
                         ))}
                         </tbody>

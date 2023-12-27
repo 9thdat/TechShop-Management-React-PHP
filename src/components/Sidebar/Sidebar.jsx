@@ -103,7 +103,7 @@ function Sidebar() {
         }
     };
     return (
-        <div className="text-xs grid grid-rows-7 h-full">
+        <div className="text-xs md:text-base grid grid-rows-7 h-full">
             <div className="row-start-1 row-end-2 pt-3">
                 <button value={"logo"} onClick={(e) => handleMenuClick(e)}
                         className="">
@@ -193,7 +193,7 @@ function Sidebar() {
                     <span className="">Đăng xuất</span>
                 </button>
 
-                <div className="hidden md:flex md:text-center">
+                <div className="hidden md:flex md:text-center md:justify-center">
                     {dateTime}
                 </div>
             </div>

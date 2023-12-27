@@ -112,17 +112,17 @@ export default function Reviews() {
 
     return (
         <div className="">
-            <div className="top-0 right-0 backdrop-blur-sm grid grid-cols-6 grid-rows-2">
+            <div className="top-0 right-0 backdrop-blur-sm grid grid-cols-6 grid-rows-2 lg:grid-rows-1 lg:text-xl">
                 <input
                     type="text"
                     id="searchValue"
-                    className="col-start-1 col-end-7 row-start-1 row-end-2 border border-blue-300 rounded-md"
+                    className="col-start-3 lg:col-start-1 col-end-7 lg:col-end-4 row-start-1 row-end-2 border border-blue-300 rounded-md"
                     placeholder="Tìm kiếm đánh giá"
                     value={search.searchValue}
                     onChange={(e) => handleOnChangeSearchType(e)}
                 />
                 <select
-                    className="col-start-1 col-end-3 row-start-2 row-end-3 border border-blue-300 rounded-md"
+                    className="col-start-1 col-end-3 lg:col-start-4 lg:col-end-5 row-start-2 lg:row-start-1 row-end-3 lg:row-end-2 border border-blue-300 rounded-md"
                     id="sortValue"
                     onChange={(e) => handleOnChangeSearchType(e)}
                 >
@@ -130,7 +130,7 @@ export default function Reviews() {
                     <option value="CustomerEmail">Email khách hàng</option>
                 </select>
                 <select
-                    className="col-start-3 col-end-5 row-start-2 row-end-3 border border-blue-300 rounded-md"
+                    className="col-start-3 col-end-5 lg:col-start-5 lg:col-end-6 row-start-2 row-end-3 lg:row-start-1 lg:row-end-2 border border-blue-300 rounded-md"
                     id="statusValue"
                     onChange={(e) => handleOnChangeSearchType(e)}
                 >
@@ -140,13 +140,13 @@ export default function Reviews() {
                 </select>
 
                 <button
-                    className="col-start-5 col-end-7 row-start-2 row-end-3 border border-blue-300 rounded-md bg-blue-400 text-white"
+                    className="col-start-5 col-end-7 lg:col-start-6 lg:col-end-7 row-start-2 row-end-3 lg:row-start-1 lg:row-end-2 border border-blue-300 rounded-md bg-blue-400 text-white"
                     onClick={handleOnSearch}
                 >
                     Tìm kiếm
                 </button>
             </div>
-            <div className="overflow-x-scroll overflow-y-scroll h-[78vh]">
+            <div className="overflow-x-auto overflow-y-auto h-[85vh] lg:h-[87vh]">
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500">
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                     <tr>

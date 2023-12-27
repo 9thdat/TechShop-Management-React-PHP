@@ -44,14 +44,14 @@ export default function ReviewDetail({visible, onClose, data, onSave}) {
             className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm text-xs overflow-auto"
         >
             <div className="bg-white p-3 rounded-md">
-                <div className="flex justify-between">
-                    <div className="text-2xl">Thông tin đánh giá</div>
+                <div className="flex justify-between md:text-2xl font-semibold">
+                    <div className="">Thông tin đánh giá</div>
                     <button onClick={() => {
                         onClose();
                     }}>X
                     </button>
                 </div>
-                <div className="grid grid-cols-2 gap-5">
+                <div className="grid grid-cols-2 gap-5 text-xs md:text-xl lg:text-2xl">
                     <div className="">
                         <label className="" htmlFor="id">ID</label>
                         <input type="text"

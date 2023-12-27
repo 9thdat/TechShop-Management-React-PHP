@@ -144,10 +144,10 @@ export default function Statistics() {
     return (
         <div className="">
             <div
-                className="top-0 right-0 backdrop-blur-sm grid grid-rows-7 gap-2"
+                className="top-0 right-0 backdrop-blur-sm grid grid-rows-7 lg:grid-cols-6 gap-2 lg:text-xl"
             >
-                <div className="row-start-1 row-end-2">
-                    <label className="pr-2" htmlFor={"sortValue"}>Loại biểu đồ:</label>
+                <div className="row-start-1 row-end-2 lg:col-start-2 lg:col-end-4">
+                    <label className="pr-2 lg:inline-block" htmlFor={"sortValue"}>Loại biểu đồ:</label>
                     <select
                         className="border border-blue-300 rounded-md"
                         id="sortValue"
@@ -158,7 +158,7 @@ export default function Statistics() {
                         <option value="ProductSold">Số lượng sản phẩm bán ra</option>
                     </select>
                 </div>
-                <div className="row-start-2 row-end-3">
+                <div className="row-start-2 row-end-3 lg:col-start-4 lg:col-end-5 lg:row-start-1 lg:row-end-2">
                     <label className="pr-2" htmlFor={"productId"}>Mã sản phẩm:</label>
                     <input
                         className="border border-blue-300 rounded-md"
@@ -168,7 +168,7 @@ export default function Statistics() {
                         onChange={(e) => setProductId(e.target.value)}
                     />
                 </div>
-                <div className={"row-start-3 row-end-4"}>
+                <div className={"row-start-3 row-end-4 lg:col-start-2 lg:col-end-4 lg:row-start-2 lg:row-end-3"}>
                     <label className="pr-2" htmlFor={"fromDate"}>Từ:</label>
                     <input
                         className="border border-blue-300 rounded-md"
@@ -178,7 +178,7 @@ export default function Statistics() {
                         onChange={(e) => setFromDate(parseISO(`${e.target.value}-01T00:00:00.000Z`))}
                     />
                 </div>
-                <div className={"row-start-4 row-end-5"}>
+                <div className={"row-start-4 row-end-5 lg:col-start-4 lg:col-end-6 lg:row-start-2 lg:row-end-3"}>
                     <label className="pr-2" htmlFor={"toDate"}>Đến:</label>
                     <input
                         className="border border-blue-300 rounded-md"
@@ -189,13 +189,13 @@ export default function Statistics() {
                     />
                 </div>
                 <button
-                    className="border border-blue-300 rounded-md bg-blue-400 text-white"
+                    className="border border-blue-300 rounded-md bg-blue-400 text-white lg:col-start-6 lg:col-end-7 lg:row-start-2 lg:row-end-3 lg:h-fit"
                     onClick={() => handleAnalyze()}
                 >
                     Thống kê
                 </button>
             </div>
-            <div className="h-screen">
+            <div className="">
                 <div className="flex flex-col items-center p-2">
                     <span className="font-semibold text-xl">{chartTitle}</span>
                     {

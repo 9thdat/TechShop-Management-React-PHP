@@ -233,18 +233,18 @@ export default function StaffDetail({visible, onClose, staffData, action, handle
             className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm  text-xs overflow-auto"
         >
             <div className="bg-white p-3 rounded-md">
-                <div className="flex justify-between">
-                    <div className="text-2xl">Thông tin nhân viên</div>
+                <div className="flex justify-between md:text-2xl font-semibold">
+                    <div className="">Thông tin nhân viên</div>
                     <button onClick={onClose}>X</button>
                 </div>
-                <div className="grid grid-cols-2 gap-5">
+                <div className="grid grid-cols-2 gap-5 text-xs md:text-xl lg:text-2xl">
                     <div className="">
                         <label className="" htmlFor="id">
                             Email(*)
                         </label>
                         <input
                             type="text"
-                            className={`border border-black rounded-md text-center block disabled:bg-gray-300 ${(isValid.newEmail) ? "" : (isValid.email) ? ((!isNewEmail) ? "border-red-500" : "") : "border-red-500"}`}
+                            className={`border border-black rounded-md text-center w-full block disabled:bg-gray-300 ${(isValid.newEmail) ? "" : (isValid.email) ? ((!isNewEmail) ? "border-red-500" : "") : "border-red-500"}`}
                             id="email"
                             onChange={(e) => handleOnChange(e)}
                             onBlur={(e) => handleValidEmail(e)}
@@ -268,7 +268,7 @@ export default function StaffDetail({visible, onClose, staffData, action, handle
                             </label>
                             <input
                                 type="password"
-                                className={`border border-black rounded-md text-center block disabled:bg-gray-300 ${isValid.password ? "" : "border-red-500"}`}
+                                className={`border border-black rounded-md text-center block w-full disabled:bg-gray-300 ${(isValid.newPassword) ? "" : (isValid.password) ? "" : "border-red-500"}`}
                                 id="password"
                                 onChange={(e) => handleOnChange(e)}
                                 onBlur={(e) => handleValidField(e)}
@@ -287,7 +287,7 @@ export default function StaffDetail({visible, onClose, staffData, action, handle
                         </label>
                         <input
                             type="text"
-                            className={`border border-black rounded-md text-center block disabled:bg-gray-300 ${isValid.name ? "" : "border-red-500"}`}
+                            className={`border border-black rounded-md text-center block w-full disabled:bg-gray-300 ${(isValid.newName) ? "" : (isValid.name) ? "" : "border-red-500"}`}
                             id="name"
                             onChange={(e) => handleOnChange(e)}
                             onBlur={(e) => handleValidField(e)}
@@ -305,7 +305,7 @@ export default function StaffDetail({visible, onClose, staffData, action, handle
                         </label>
                         <input
                             type="text"
-                            className={`border border-black rounded-md text-center block disabled:bg-gray-300 ${isValid.phone ? "" : "border-red-500"}`}
+                            className={`border border-black rounded-md text-center block w-full disabled:bg-gray-300 ${(isValid.newPhone) ? "" : (isValid.phone) ? "" : "border-red-500"}`}
                             id="phone"
                             onChange={(e) => handleOnChange(e)}
                             onBlur={(e) => handleValidField(e)}
@@ -365,7 +365,7 @@ export default function StaffDetail({visible, onClose, staffData, action, handle
                         </label>
                         <input
                             type="text"
-                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                            className={`border border-black rounded-md text-center block w-full disabled:bg-gray-300 ${(isValid.newAddress) ? "" : (isValid.address) ? "" : "border-red-500"}`}
                             id="address"
                             onChange={(e) => handleOnChange(e)}
                             onBlur={(e) => handleValidField(e)}

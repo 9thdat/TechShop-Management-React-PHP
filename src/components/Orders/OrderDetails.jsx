@@ -546,15 +546,15 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
             className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm"
         >
             <div className="bg-white p-3 rounded-md">
-                <div className="flex justify-between">
-                    <div className="text-2xl">Thông tin đơn hàng</div>
+                <div className="flex justify-between md:text-2xl font-semibold">
+                    <div className="">Thông tin đơn hàng</div>
                     <button onClick={() => {
                         onClose();
                         setOrderProductChanged(false);
                     }}>X
                     </button>
                 </div>
-                <div className="grid grid-cols-2 gap-5 text-xs md:text-xl">
+                <div className="grid grid-cols-2 gap-5 text-xs md:text-xl lg:text-2xl">
                     <div className="">
                         <label className="" htmlFor="id">
                             ID

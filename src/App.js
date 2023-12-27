@@ -68,7 +68,7 @@ function App() {
                         isLogin ? (
                             <div className="management grid grid-cols-7 grid-rows-7">
                                 <div
-                                    className="sidebar w-full h-screen col-start-1 col-end-2 row-start-1 row-end-7 z-0">
+                                    className="sidebar w-full h-screen col-start-1 col-end-2 row-start-1 row-span-6 z-0">
                                     <Sidebar/>
                                 </div>
                                 <div
@@ -76,7 +76,7 @@ function App() {
                                     <Navbar/>
                                 </div>
                                 <div
-                                    className="content w-full h-[90vh] col-start-2 col-end-8 row-start-2 row-end-7">
+                                    className="content w-full h-[90vh] col-start-2 col-end-8 row-start-2 row-span-7">
                                     <Routes>
                                         <Route
                                             path="/login"

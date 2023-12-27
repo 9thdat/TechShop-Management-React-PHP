@@ -59,7 +59,7 @@ export default function ProductAdapter({visible, onClose, onSave, data, action, 
             className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm"
         >
             <div className="bg-white p-4 rounded">
-                <div className="flex justify-between md:text-2xl">
+                <div className="flex justify-between md:text-2xl font-semibold">
                     <div className="">Chi tiết thông số cục sạc</div>
                     <button onClick={() => {
                         onClose();

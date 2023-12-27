@@ -102,11 +102,11 @@ export default function DiscountDetail({
             className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm text-xs overflow-auto"
         >
             <div className="bg-white p-3 rounded-md">
-                <div className="flex justify-between">
-                    <div className="text-2xl">Thông tin mã giảm giá</div>
+                <div className="flex justify-between md:text-2xl font-semibold">
+                    <div className="">Thông tin mã giảm giá</div>
                     <button onClick={onClose}>X</button>
                 </div>
-                <div className="grid grid-cols-2 gap-5">
+                <div className="grid grid-cols-2 gap-5 text-xs md:text-xl lg:text-2xl">
                     <div className="">
                         <label className="" htmlFor="id">
                             ID

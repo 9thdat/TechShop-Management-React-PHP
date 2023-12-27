@@ -183,15 +183,15 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
             className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm text-xl"
         >
             <div className="bg-white p-3 rounded-md">
-                <div className="flex justify-between">
+                <div className="flex justify-between md:text-2xl font-semibold">
                     <div className="">Chi tiết số lượng sản phẩm</div>
                     <button onClick={() => {
                         onClose();
                     }}>X
                     </button>
                 </div>
-                <div className="grid grid-cols-1 gap-2">
-                    <table className="w-full text-sm text-left rtl:text-right md:text-xl">
+                <div className="grid grid-cols-1 gap-2 ">
+                    <table className="w-full text-sm text-left rtl:text-right md:text-xl lg:text-2xl">
                         <thead>
                         <tr>
                             <th scope="col" className="text-center">

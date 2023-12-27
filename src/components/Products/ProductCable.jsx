@@ -56,14 +56,14 @@ export default function ProductCable({visible, onClose, data, action, onSave, on
     return (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm text-xl">
             <div className="bg-white p-3 rounded-md">
-                <div className="flex justify-between">
+                <div className="flex justify-between md:text-2xl font-semibold">
                     <div className="">Chi tiết thông số cáp</div>
                     <button onClick={() => {
                         onClose();
                     }}>X
                     </button>
                 </div>
-                <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:text-xl">
+                <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:text-xl lg:text-2xl">
                     <div>
                         <label htmlFor="tech" className={""}>Công nghệ</label>
                         <input

@@ -160,14 +160,14 @@ export default function ProductImage({visible, onClose, data, action, onSave}) {
         <div
             className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm">
             <div className="bg-white p-3 rounded-md">
-                <div className="flex justify-between">
+                <div className="flex justify-between md:text-2xl font-semibold">
                     <div className="">Thông tin hình ảnh</div>
                     <button onClick={() => {
                         onClose();
                     }}>X
                     </button>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2 text-xl md:text-2xl lg:text-3xl ">
                     <div>
                         <label htmlFor={"stt"}>Hình ảnh thứ </label>
                         <select
