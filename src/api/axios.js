@@ -1,5 +1,5 @@
 import axios from "axios";
 
 export default axios.create({
-    baseURL: "https://localhost:5432/api",
+    baseURL: "http://nthdat09-001-site1.htempurl.com/api",
 });
