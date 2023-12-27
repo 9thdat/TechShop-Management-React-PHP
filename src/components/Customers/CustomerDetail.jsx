@@ -219,7 +219,7 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
                     <div className="text-2xl">Thông tin khách hàng</div>
                     <button onClick={onClose}>X</button>
                 </div>
-                <div className="grid grid-cols-2 gap-5">
+                <div className="grid grid-cols-2 gap-5 text-xs overflow-auto">
                     <div className="">
                         <label className="" htmlFor="id">
                             Email(*)

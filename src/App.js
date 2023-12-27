@@ -72,7 +72,7 @@ function App() {
                                     <Sidebar/>
                                 </div>
                                 <div
-                                    className="navbar w-full h-[10vh] col-start-2 col-end-8 row-start-1 row-end-7 z-0">
+                                    className="navbar w-full h-[10vh] col-start-2 col-end-8 row-start-1 row-end-2 z-0">
                                     <Navbar/>
                                 </div>
                                 <div

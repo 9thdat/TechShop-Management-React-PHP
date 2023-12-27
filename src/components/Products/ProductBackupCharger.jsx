@@ -58,106 +58,106 @@ export default function ProductBackupCharger({visible, onClose, data, action, on
             className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm"
         >
             <div className="bg-white p-3 rounded-md">
-                <div className="flex justify-between">
+                <div className="flex justify-between md:text-3xl">
                     <div className="">Chi tiết thông số pin dự phòng</div>
                     <button onClick={() => {
                         onClose();
                     }}>X
                     </button>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-5 text-xs md:text-xl">
                     <div className=" ">
-                        <label className="mr-2" htmlFor="efficiency">Hiệu suất</label>
+                        <label className="" htmlFor="efficiency">Hiệu suất</label>
                         <input type="text"
-                               className="form-control border border-black rounded-md"
+                               className="form-control border border-black block rounded-md"
                                id="efficiency"
                                onChange={(e) => handleOnChange(e)}
                                value={productBackupCharger.efficiency}/>
                     </div>
                     <div className="">
-                        <label className="mr-2" htmlFor="capacity">Dung lượng</label>
+                        <label className="" htmlFor="capacity">Dung lượng</label>
                         <input type="text"
-                               className="form-control border border-black rounded-md"
+                               className="form-control border border-black block rounded-md"
                                id="capacity"
                                onChange={(e) => handleOnChange(e)}
                                value={productBackupCharger.capacity}/>
                     </div>
                     <div className=" ">
-                        <label className="mr-2" htmlFor="timefullcharge">Thời gian sạc đầy</label>
+                        <label className="" htmlFor="timefullcharge">Thời gian sạc đầy</label>
                         <input type="text"
-                               className="form-control border border-black rounded-md"
+                               className="form-control border border-black block rounded-md"
                                id="timefullcharge"
                                onChange={(e) => handleOnChange(e)}
                                value={productBackupCharger.timefullcharge}/>
                     </div>
                     <div className=" ">
-                        <label className="mr-2" htmlFor="input">Đầu vào</label>
+                        <label className="" htmlFor="input">Đầu vào</label>
                         <input type="text"
-                               className="form-control border border-black rounded-md"
+                               className="form-control border border-black block rounded-md"
                                id="input"
                                onChange={(e) => handleOnChange(e)}
                                value={productBackupCharger.input}/>
                     </div>
                     <div className=" ">
-                        <label className="mr-2" htmlFor="output">Đầu ra</label>
+                        <label className="" htmlFor="output">Đầu ra</label>
                         <input type="text"
-                               className="form-control border border-black rounded-md"
+                               className="form-control border border-black block rounded-md"
                                id="output"
                                onChange={(e) => handleOnChange(e)}
                                value={productBackupCharger.output}/>
                     </div>
                     <div className=" ">
-                        <label className="mr-2" htmlFor="core">Lõi</label>
+                        <label className="" htmlFor="core">Lõi</label>
                         <input type="text"
-                               className="form-control border border-black rounded-md"
+                               className="form-control border border-black block rounded-md"
                                id="core"
                                onChange={(e) => handleOnChange(e)}
                                value={productBackupCharger.core}/>
                     </div>
                     <div className=" ">
-                        <label className="mr-2" htmlFor="tech">Công nghệ</label>
+                        <label className="" htmlFor="tech">Công nghệ</label>
                         <input type="text"
-                               className="form-control border border-black rounded-md"
+                               className="form-control border border-black block rounded-md"
                                id="tech"
                                onChange={(e) => handleOnChange(e)}
                                value={productBackupCharger.tech}/>
                     </div>
                     <div className=" ">
-                        <label className="mr-2" htmlFor="size">Kích thước</label>
+                        <label className="" htmlFor="size">Kích thước</label>
                         <input type="text"
-                               className="form-control border border-black rounded-md"
+                               className="form-control border border-black block rounded-md"
                                id="size"
                                onChange={(e) => handleOnChange(e)}
                                value={productBackupCharger.size}/>
                     </div>
                     <div className=" ">
-                        <label className="mr-2" htmlFor="weight">Trọng lượng</label>
+                        <label className="" htmlFor="weight">Trọng lượng</label>
                         <input type="text"
-                               className="form-control border border-black rounded-md"
+                               className="form-control border border-black block rounded-md"
                                id="weight"
                                onChange={(e) => handleOnChange(e)}
                                value={productBackupCharger.weight}/>
                     </div>
                     <div className=" ">
-                        <label className="mr-2" htmlFor="madein">Nước sản xuất</label>
+                        <label className="" htmlFor="madein">Nước sản xuất</label>
                         <input type="text"
-                               className="form-control border border-black rounded-md"
+                               className="form-control border border-black block rounded-md"
                                id="madein"
                                onChange={(e) => handleOnChange(e)}
                                value={productBackupCharger.madein}/>
                     </div>
                     <div className=" ">
-                        <label className="mr-2" htmlFor="brandof">Nhà phân phối</label>
+                        <label className="" htmlFor="brandof">Nhà phân phối</label>
                         <input type="text"
-                               className="form-control border border-black rounded-md"
+                               className="form-control border border-black block rounded-md"
                                id="brandof"
                                onChange={(e) => handleOnChange(e)}
                                value={productBackupCharger.brandof}/>
                     </div>
                     <div className=" ">
-                        <label className="mr-2" htmlFor="brand">Hãng</label>
+                        <label className="" htmlFor="brand">Hãng</label>
                         <input type="text"
-                               className="form-control border border-black rounded-md"
+                               className="form-control border border-black block rounded-md"
                                id="brand"
                                onChange={(e) => handleOnChange(e)}
                                value={productBackupCharger.brand}/>

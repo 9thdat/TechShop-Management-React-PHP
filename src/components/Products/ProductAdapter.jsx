@@ -58,15 +58,15 @@ export default function ProductAdapter({visible, onClose, onSave, data, action, 
         <div
             className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm"
         >
-            <div className="bg-white p-4 rounded ">
-                <div className="flex justify-between">
+            <div className="bg-white p-4 rounded">
+                <div className="flex justify-between md:text-2xl">
                     <div className="">Chi tiết thông số cục sạc</div>
                     <button onClick={() => {
                         onClose();
                     }}>X
                     </button>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-5 text-xs md:text-xl">
                     <div className="">
                         <label className="mr-2" htmlFor="model">Model</label>
                         <input type="text"
@@ -173,7 +173,7 @@ export default function ProductAdapter({visible, onClose, onSave, data, action, 
                             </button>
                         }
                     </div>
-                    <div className="">
+                    <div className="flex justify-end">
                         <button
                             type="button"
                             className="px-2 py-1 text-black border border-black text-sm bg-green-400 rounded-md"

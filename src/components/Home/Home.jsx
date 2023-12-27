@@ -147,62 +147,66 @@ export default function Home() {
     }
 
     return (
-        <div className={"home grid grid-cols-1 lg:grid-cols-4 grid-rows-6 w-full h-full"}>
+        <div className={"home md:grid md:grid-cols-4 grid-rows-6 w-full h-full"}>
             <div
-                className="col-start-1 row-start-1 col-span-2 flex flex-row items-center justify-center text-center text-sm px-4">
+                className="col-start-1 row-start-1 md:col-end-5 md:row-end-2 flex flex-row items-center justify-center text-center text-sm px-4">
                 <div
-                    className="inline-block text-xs"
+                    className="inline-block text-xs w-full lg:w-1/4 lg:m-auto"
                 >
                     <div
-                        className="bg-red-300 border rounded-xl py-2"
+                        className="bg-red-300 border rounded-xl py-2 md:text-base lg:mb-2"
                     >
                         <span className="">ĐƠN HÀNG CHỜ XỬ LÝ</span>
-                        <div className="pl-1 inline-block"> {ordersProcessing} </div>
+                        <div className="pl-1 inline-block md:block">
+                            {ordersProcessing}
+                        </div>
                     </div>
                     <div
-                        className="bg-green-400 border rounded-xl py-2"
+                        className="bg-green-400 border rounded-xl py-2 md:text-base"
                     >
                         <span className="">
                             ĐƠN HÀNG HOÀN THÀNH HÔM NAY
                         </span>
-                        <div className="pl-1 inline-block">
+                        <div className="pl-1 inline-block md:block">
                             {ordersTodayCompleted}
                         </div>
                     </div>
                 </div>
                 <div
-                    className="inline-block text-xs"
+                    className="inline-block text-xs w-full lg:w-1/4 lg:m-auto"
                 >
                     <div
-                        className="bg-blue-300 border rounded-xl py-2"
+                        className="bg-blue-300 border rounded-xl py-2 md:text-base lg:mb-2"
                     >
                         <span className="">DOANH THU HÔM NAY</span>
-                        <div className="inline-block pl-1">{revenueToday}</div>
+                        <div className="inline-block pl-1 md:block">{revenueToday}</div>
                     </div>
                     <div
-                        className="bg-yellow-200 border rounded-xl py-2"
+                        className="bg-yellow-200 border rounded-xl py-2 md:text-base"
                     >
                         <span className="">DOANH THU THÁNG NÀY</span>
-                        <div className="inline-block pl-1">{revenueMonth}</div>
+                        <div className="inline-block pl-1 md:block">{revenueMonth}</div>
                     </div>
                 </div>
             </div>
 
             {chartData && chartData.labels && (
-                <div className="col-start-1 row-start-2 row-span-3 text-center">
+                <div
+                    className="col-start-1 row-start-2 md:col-end-5 md:row-end-5 lg:col-end-4 lg:row-end-6 text-center text-sm md:text-xl mt-3 md:pt-2">
                     <span className="">BIỂU ĐỒ DOANH THU THÁNG NÀY</span>
                     <LineChart chartData={chartData}/>
                 </div>
             )}
 
-            <div className="col-start-1 col-span-2 row-start-4 row-span-2 text-center m-auto">
-                <span className="">TOP KHÁCH HÀNG</span>
-                <div className="">
+            <div
+                className="col-start-1 row-start-4 md:row-start-5 md:col-end-5 lg:row-start-2 lg:col-start-4 lg:col-end-6 text-center text-xs md:text-base mt-3">
+                <span className="lg:text-xl font-semibold">TOP KHÁCH HÀNG</span>
+                <div className="flex items-center justify-center">
                     <table
                         className=""
                     >
                         <thead className="">
-                        <tr>
+                        <tr className={""}>
                             <th scope="col" className="">
                                 STT
                             </th>
@@ -215,21 +219,25 @@ export default function Home() {
                             <th scope="col" className="">
                                 Số điện thoại
                             </th>
+                            <th scope="col" className="hidden xl:block">
+                                Tổng tiền
+                            </th>
                         </tr>
                         </thead>
                         <tbody className="">
                         {TopCustomer && TopCustomer.length > 0 && TopCustomer.map((item, index) => (
                             <tr key={index} className={""}>
-                                <td className="">{index + 1}</td>
+                                <td className="pb-3 lg:pb-6">{index + 1}</td>
                                 <td className="">
                                     <img
-                                        className="w-14"
+                                        className="w-10"
                                         src={item.avatar ? `data:image/jpeg;base64, ${item.image}` : defaultAvatar}
                                         alt=""
                                     />
                                 </td>
                                 <td className="">{item.name}</td>
                                 <td className="">{item.phone}</td>
+                                <td className="hidden xl:block">{item.revenue}</td>
                             </tr>
                         ))}
                         </tbody>

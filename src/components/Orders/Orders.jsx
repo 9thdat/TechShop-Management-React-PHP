@@ -145,10 +145,24 @@ export default function Orders() {
             const orderResponse = await axios.put(`/Order/ChangeStatus/${orderData.id}`, orderData);
 
             if (orderResponse.status >= 200 && orderResponse.status < 300) {
-                setVisibleOrderDetail(false);
-                setOrder({});
-                const newOrders = orders.map((order) => (order.id === orderData.id ? orderData : order));
-                setOrders(newOrders);
+                if (orderData.status === "Cancelled") {
+                    const orderDetailsResponse = await axios.put(`/OrderDetail/CancelOrder/${orderData.id}`);
+
+                    if (orderDetailsResponse.status >= 200 && orderDetailsResponse.status < 300) {
+                        setVisibleOrderDetail(false);
+                        setOrder({});
+                        const newOrders = orders.map((order) => (order.id === orderData.id ? orderData : order));
+                        setOrders(newOrders);
+                    } else {
+                        alert("Cập nhật đơn hàng thất bại");
+                        return;
+                    }
+                } else {
+                    setVisibleOrderDetail(false);
+                    setOrder({});
+                    const newOrders = orders.map((order) => (order.id === orderData.id ? orderData : order));
+                    setOrders(newOrders);
+                }
             } else {
                 alert("Cập nhật đơn hàng thất bại");
                 return;

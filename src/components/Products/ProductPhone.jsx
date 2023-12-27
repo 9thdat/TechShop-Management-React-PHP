@@ -79,7 +79,9 @@ export default function ProductPhone({visible, onClose, data, action, onSave, on
     }
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm text-xl">
+        <div
+            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm text-xl"
+        >
             <div className="bg-white p-3 rounded-md">
                 <div className="flex justify-between">
                     <div className="">Thông số điện thoại</div>
@@ -88,7 +90,7 @@ export default function ProductPhone({visible, onClose, data, action, onSave, on
                     }}>X
                     </button>
                 </div>
-                <div className="grid grid-cols-1 gap-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     <div className="">
                         <label className="" htmlFor="screen">Màn hình</label>
                         <input type="text"
@@ -157,7 +159,7 @@ export default function ProductPhone({visible, onClose, data, action, onSave, on
                                onChange={(e) => handleOnChange(e)}
                                value={productPhoneData.sim}/>
                     </div>
-                    <div className="">
+                    <div className="col-span-2">
                         <label className="" htmlFor="batteryCharger">Sạc pin</label>
                         <input type="text"
                                className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
@@ -177,7 +179,7 @@ export default function ProductPhone({visible, onClose, data, action, onSave, on
                             </button>
                         }
                     </div>
-                    <div className="">
+                    <div className="md:flex md:justify-end">
                         <button
                             className="px-2 py-1 text-black border border-black text-sm bg-green-400 rounded-md"
                             onClick={() => handleOnSave()}

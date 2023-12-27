@@ -20,7 +20,7 @@ function Sidebar() {
     const [role, setRole] = useState(sessionStorage.getItem("role"));
     const navigate = useNavigate();
 
-    const buttonClass = "flex flex-col items-center justify-center rounded-md mb-2 p-2 hover:bg-green-300";
+    const buttonClass = "flex flex-col items-center justify-center rounded-md mb-2 p-2 hover:bg-green-300 w-full";
 
     const normalLink = `${buttonClass}`;
     const activeLink = `${buttonClass} bg-green-300`;
@@ -103,13 +103,15 @@ function Sidebar() {
         }
     };
     return (
-        <div className="">
-            <button value={"logo"} onClick={(e) => handleMenuClick(e)}
-                    className="">
-                <img className="" src={techShopLogo} alt="logo"/>
-            </button>
+        <div className="text-xs grid grid-rows-7 h-full">
+            <div className="row-start-1 row-end-2 pt-3">
+                <button value={"logo"} onClick={(e) => handleMenuClick(e)}
+                        className="">
+                    <img className="" src={techShopLogo} alt="logo"/>
+                </button>
+            </div>
 
-            <div className="">
+            <div className="row-start-2">
                 <button
                     onClick={(e) => handleMenuClick(e)}
                     value={"home"}
@@ -185,13 +187,13 @@ function Sidebar() {
                 <button
                     value={"logout"}
                     onClick={(e) => handleMenuClick(e)}
-                    className="items-center justify-center flex flex-col rounded-md "
+                    className={`${buttonClass}`}
                 >
                     <BiLogOutCircle className=""/>
                     <span className="">Đăng xuất</span>
                 </button>
 
-                <div className="hidden md:block">
+                <div className="hidden md:flex md:text-center">
                     {dateTime}
                 </div>
             </div>

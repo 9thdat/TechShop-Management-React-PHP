@@ -78,6 +78,11 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
 
                 setIsValid({
                     ...isValid,
+                    name: false,
+                    price: false,
+                    preDiscount: false,
+                    discountPercent: false,
+                    brand: false,
                     newName: true,
                     newPrice: true,
                     newPreDiscount: true,
@@ -96,11 +101,16 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
 
             setIsValid({
                 ...isValid,
-                newName: false,
-                newPrice: false,
-                newPreDiscount: false,
-                newDiscountPercent: false,
-                newBrand: false,
+                name: true,
+                price: true,
+                preDiscount: true,
+                discountPercent: true,
+                brand: true,
+                newName: true,
+                newPrice: true,
+                newPreDiscount: true,
+                newDiscountPercent: true,
+                newBrand: true,
             });
         }
     }, [product]);
@@ -702,11 +712,11 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                     <div className="text-2xl">Chi tiết sản phẩm</div>
                     <button onClick={onClose}>X</button>
                 </div>
-                <div className="grid grid-cols-2 gap-5">
+                <div className="grid grid-cols-2 gap-5 text-xs md:text-base">
                     <div className="">
                         <label className="" htmlFor="id">ID</label>
                         <input type="text"
-                               className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                               className={`border border-black rounded-md text-center block md:w-full disabled:bg-gray-300`}
                                id="id"
                                onChange={(e) => handleOnChange(e)}
                                disabled
@@ -715,7 +725,7 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                     <div className="">
                         <label className="" htmlFor="name">Tên sản phẩm(*)</label>
                         <input type="text"
-                               className={`border border-black rounded-md text-center block disabled:bg-gray-300 ${(isValid.newName) ? "" : (isValid.name) ? "" : "border-red-500"}`}
+                               className={`border border-black rounded-md text-center block md:w-full disabled:bg-gray-300 ${(isValid.newName) ? "" : (isValid.name) ? "" : "border-red-500"}`}
                                id="name"
                                onChange={(e) => handleOnChange(e)}
                                onBlur={(e) => handleValidField(e)}
@@ -729,7 +739,7 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                     <div className="">
                         <label className="" htmlFor="price">Giá sản phẩm(*)</label>
                         <input type="text"
-                               className={`border border-black rounded-md text-center block disabled:bg-gray-300 ${(isValid.newPrice) ? "" : (isValid.price) ? "" : "border-red-500"}`}
+                               className={`border border-black rounded-md text-center block md:w-full disabled:bg-gray-300 ${(isValid.newPrice) ? "" : (isValid.price) ? "" : "border-red-500"}`}
                                id="price"
                                onChange={(e) => handleOnChange(e)}
                                onBlur={(e) => handleValidField(e)}
@@ -743,7 +753,7 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                     <div className="">
                         <label className="" htmlFor="PreDiscount">Giá trước khi giảm giá(*)</label>
                         <input type="text"
-                               className={`border border-black rounded-md text-center block disabled:bg-gray-300 ${(isValid.newPreDiscount) ? "" : (isValid.preDiscount) ? "" : "border-red-500"}`}
+                               className={`border border-black rounded-md text-center block md:w-full disabled:bg-gray-300 ${(isValid.newPreDiscount) ? "" : (isValid.preDiscount) ? "" : "border-red-500"}`}
                                id="PreDiscount"
                                onChange={(e) => handleOnChange(e)}
                                onBlur={(e) => handleValidField(e)}
@@ -757,7 +767,7 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                     <div className="">
                         <label className="" htmlFor="discountPercent">Phần trăm giảm giá(*)</label>
                         <input type="text"
-                               className={`border border-black rounded-md text-center block disabled:bg-gray-300 ${(isValid.newDiscountPercent) ? "" : (isValid.discountPercent) ? "" : "border-red-500"}`}
+                               className={`border border-black rounded-md text-center block md:w-full disabled:bg-gray-300 ${(isValid.newDiscountPercent) ? "" : (isValid.discountPercent) ? "" : "border-red-500"}`}
                                id="discountPercent"
                                onChange={(e) => handleOnChange(e)}
                                onBlur={(e) => handleValidField(e)}
@@ -771,7 +781,7 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                     <div className="">
                         <label className="" htmlFor="brand">Thương hiệu(*)</label>
                         <input type="text"
-                               className={`border border-black rounded-md text-center block disabled:bg-gray-300 ${(isValid.newBrand) ? "" : (isValid.brand) ? "" : "border-red-500"}`}
+                               className={`border border-black rounded-md text-center block md:w-full disabled:bg-gray-300 ${(isValid.newBrand) ? "" : (isValid.brand) ? "" : "border-red-500"}`}
                                id="brand"
                                onChange={(e) => handleOnChange(e)}
                                onBlur={(e) => handleValidField(e)}
@@ -785,7 +795,7 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                     <div className="">
                         <label className="" htmlFor="category">Danh mục</label>
                         <select
-                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                            className={`border border-black rounded-md text-center block md:w-full disabled:bg-gray-300`}
                             id="category"
                             onChange={(e) => handleOnChange(e)}
                             value={productData.category}
@@ -802,7 +812,7 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                     <div className="">
                         <label className="" htmlFor="description">Mô tả</label>
                         <textarea
-                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                            className={`border border-black rounded-md text-center block md:w-full disabled:bg-gray-300`}
                             id="description"
                             onChange={(e) => handleOnChange(e)}
                             value={productData.description}/>

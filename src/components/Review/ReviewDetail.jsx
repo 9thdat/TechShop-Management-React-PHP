@@ -41,7 +41,7 @@ export default function ReviewDetail({visible, onClose, data, onSave}) {
 
     return (
         <div
-            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm"
+            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm text-xs overflow-auto"
         >
             <div className="bg-white p-3 rounded-md">
                 <div className="flex justify-between">

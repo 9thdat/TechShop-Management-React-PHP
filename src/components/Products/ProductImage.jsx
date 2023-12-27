@@ -7,10 +7,8 @@ export default function ProductImage({visible, onClose, data, action, onSave}) {
 
     const [length, setLength] = useState(0);
     const [current, setCurrent] = useState(0);
-    const [isValid, setIsValid] = useState(true);
 
     useEffect(() => {
-        console.log(data);
         if (action === "add") {
             setLength(0);
             setCurrent(0);
@@ -18,7 +16,6 @@ export default function ProductImage({visible, onClose, data, action, onSave}) {
         } else {
             const filteredImages = data.filter(item => !item.isDeleted || false);
 
-            console.log(data);
             setProductImages(filteredImages.map(item => ({
                 id: item.id,
                 productId: item.productId,
@@ -100,7 +97,6 @@ export default function ProductImage({visible, onClose, data, action, onSave}) {
     const handleAddProductImage = () => {
         setLength(length + 1);
         setCurrent(length + 1);
-        console.log(data);
         setProductImage({
             "id": "",
             "productId": data[0].productId,
@@ -137,18 +133,32 @@ export default function ProductImage({visible, onClose, data, action, onSave}) {
         }, 0);
     };
 
+    const validate = () => {
+        let valid = true;
+        productImages.forEach(item => {
+            if (item.ordinal === "" || item.image === "") {
+                valid = false;
+            }
+        });
+        return valid;
+    }
 
     const handleOnSave = () => {
-        onSave(productImages);
-        console.log(productImages);
-        onClose();
+        const isValid = validate();
+        console.log(isValid);
+        if (isValid) {
+            onSave(productImages);
+            onClose();
+        } else {
+            alert("Vui lòng nhập đầy đủ thông tin!");
+        }
     }
 
     if (!visible) return null;
 
     return (
         <div
-            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm text-xl">
+            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm">
             <div className="bg-white p-3 rounded-md">
                 <div className="flex justify-between">
                     <div className="">Thông tin hình ảnh</div>
@@ -186,7 +196,7 @@ export default function ProductImage({visible, onClose, data, action, onSave}) {
                     <div>
                         <button
                             type="button"
-                            className="px-2 py-1 text-black bg-yellow-300 rounded-md"
+                            className="px-2 py-1 text-black bg-yellow-300 rounded-md text-sm"
                             onClick={handleAddProductImage}
                         >
                             Thêm một hình ảnh
@@ -220,7 +230,7 @@ export default function ProductImage({visible, onClose, data, action, onSave}) {
                         />
                     </div>
                     {
-                        (current !== 0 && !productImage.new) &&
+                        (current !== 0) &&
                         <button
                             type="button"
                             className="px-2 py-1 text-white bg-red-400 rounded-md"

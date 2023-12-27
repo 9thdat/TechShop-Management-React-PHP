@@ -12,7 +12,7 @@ export default function StaffPassword({visible, onClose, staffEmail, handleChang
 
     return (
         <div
-            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm text-3xl"
+            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm text-xl"
         >
             <div className="bg-white p-3 rounded-md">
                 <div className="flex justify-between">

@@ -63,7 +63,7 @@ export default function ProductCable({visible, onClose, data, action, onSave, on
                     }}>X
                     </button>
                 </div>
-                <div className="grid grid-cols-1 gap-2">
+                <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:text-xl">
                     <div>
                         <label htmlFor="tech" className={""}>Công nghệ</label>
                         <input
@@ -152,7 +152,7 @@ export default function ProductCable({visible, onClose, data, action, onSave, on
                             onChange={(e, index) => handleOnChange(e)}
                         />
                     </div>
-                    <div>
+                    <div className={"md:col-span-2"}>
                         <label htmlFor="brand" className={""}>Hãng</label>
                         <input
                             type="text"
@@ -174,7 +174,7 @@ export default function ProductCable({visible, onClose, data, action, onSave, on
                             </button>
                         }
                     </div>
-                    <div className="">
+                    <div className="md:flex md:justify-end">
                         <button
                             className="px-2 py-1 text-black border border-black text-sm bg-green-400 rounded-md"
                             onClick={handleOnSave}

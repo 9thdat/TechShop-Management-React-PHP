@@ -125,7 +125,7 @@ export default function Staffs() {
                     className="col-start-1 col-end-3 row-start-1 row-end-2 border border-green-500 rounded-md bg-green-500 text-white"
                     onClick={handleOpenAddCustomer}
                 >
-                    Thêm nhân viên
+                    Thêm mới
                 </button>
 
                 <input

@@ -340,7 +340,7 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
                     <div className="">Chi tiết sản phẩm của đơn hàng</div>
                     <button onClick={onClose}>X</button>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-5 text-xs">
                     <div>
                         <label htmlFor={"stt"}>Sản phẩm thứ </label>
                         <select

@@ -16,8 +16,8 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
             setProductQuantityData(
                 data.map((item) => ({
                         ...item,
-                        quantityValid: false,
-                        colorValid: false,
+                        quantityValid: true,
+                        colorValid: true,
                         newQuantity: true,
                         newColor: true,
                     })
@@ -180,7 +180,7 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
 
     return (
         <div
-            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm text-3xl"
+            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm text-xl"
         >
             <div className="bg-white p-3 rounded-md">
                 <div className="flex justify-between">
@@ -190,8 +190,8 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
                     }}>X
                     </button>
                 </div>
-                <div className="overflow-x-auto overflow-y-auto">
-                    <table className="w-full text-sm text-left rtl:text-right text-gray-500">
+                <div className="grid grid-cols-1 gap-2">
+                    <table className="w-full text-sm text-left rtl:text-right md:text-xl">
                         <thead>
                         <tr>
                             <th scope="col" className="text-center">
@@ -207,10 +207,10 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
                             productQuantityData.map((product, index) => (
                                 (product.isDeleted === false || product.isDeleted === undefined) && (
                                     <tr key={index} className={""}>
-                                        <td colSpan={1}>
+                                        <td colSpan={1} className={""}>
                                             <input
                                                 type="text"
-                                                className={`border border-black rounded-md text-center block disabled:bg-gray-300 mx-1`}
+                                                className={`border border-black rounded-md text-center block w-full disabled:bg-gray-300 mx-1`}
                                                 id="color"
                                                 onBlur={(e) => handleValidField(e, index)}
                                                 onChange={(e) => handleOnChange(e, index)}
@@ -229,7 +229,7 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
                                         <td colSpan={1}>
                                             <input
                                                 type="text"
-                                                className={`border border-black rounded-md text-center block disabled:bg-gray-300 mx-1`}
+                                                className={`border border-black rounded-md text-center block w-full disabled:bg-gray-300 mx-1`}
                                                 id="quantity"
                                                 onBlur={(e) => handleValidField(e, index)}
                                                 onChange={(e) => handleOnChange(e, index)}
@@ -244,10 +244,10 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
                                                 }
                                             </span>
                                         </td>
-                                        <td colSpan={1}>
+                                        <td colSpan={1} className={"flex justify-center"}>
                                             <button
                                                 type="button"
-                                                className="px-2 py-1 text-black bg-yellow-200 rounded-md text-sm mx-1"
+                                                className="px-2 py-1 text-black bg-yellow-200 rounded-md mx-1"
                                                 onClick={(e) => handleOpenDetailImage(e, index)}
                                             >
                                                 Ảnh
@@ -269,7 +269,7 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
                         </tbody>
                     </table>
 
-                    <div className="flex justify-between mt-2">
+                    <div className="w-full flex justify-end mt-2">
                         <button
                             type="button"
                             className="px-2 py-1 text-black border border-black text-sm bg-blue-200 rounded-md"
@@ -279,7 +279,7 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
                         </button>
                         <button
                             type="button"
-                            className="px-2 py-1 text-black border border-black text-sm bg-green-400 rounded-md"
+                            className="px-2 py-1 text-black border border-black text-sm bg-green-400 rounded-md flex"
                             onClick={handleOnSave}
                         >
                             Lưu
