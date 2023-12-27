@@ -73,11 +73,14 @@ export default function Discounts() {
     const handleOpenAddDiscount = async () => {
         setAction("add");
         const lastId = await fetchLastDiscountId();
+        let tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        let isoTomorrow = tomorrow.toISOString().split('T')[0];
         setDiscount({
             ...discount,
             id: lastId + 1,
             startDate: new Date().toISOString().split('T')[0],
-            endDate: new Date().toISOString().split('T')[0],
+            endDate: isoTomorrow,
             status: "active",
             type: "percent",
             minApply: 0,

@@ -17,11 +17,15 @@ export default function DiscountDetail({
         minApply: false,
         maxSpeed: false,
         quantity: false,
+        startDate: false,
+        endDate: false,
         newCode: true,
         newValue: true,
         newMinApply: true,
         newMaxSpeed: true,
         newQuantity: true,
+        newEndDate: true,
+        newStartDate: true,
     });
 
     useEffect(() => {
@@ -33,11 +37,15 @@ export default function DiscountDetail({
                 minApply: true,
                 maxSpeed: true,
                 quantity: true,
+                startDate: false,
+                endDate: false,
                 newCode: true,
                 newValue: true,
                 newMinApply: true,
                 newMaxSpeed: true,
                 newQuantity: true,
+                newEndDate: true,
+                newStartDate: true,
             });
         } else {
             setIsValid({
@@ -46,11 +54,15 @@ export default function DiscountDetail({
                 minApply: false,
                 maxSpeed: false,
                 quantity: false,
+                startDate: false,
+                endDate: false,
                 newCode: true,
                 newValue: true,
                 newMinApply: true,
                 newMaxSpeed: true,
                 newQuantity: true,
+                newEndDate: true,
+                newStartDate: true,
             });
         }
     }, [discountData]);
@@ -95,6 +107,25 @@ export default function DiscountDetail({
             }
         });
     }
+
+    const handleValidDate = (e) => {
+        const {id, value} = e.target;
+
+        if (id === "startDate") {
+            setIsValid({
+                ...isValid,
+                newStartDate: false,
+                startDate: value < discount.endDate,
+            });
+        } else {
+            setIsValid({
+                ...isValid,
+                newEndDate: false,
+                endDate: value > discount.startDate,
+            });
+        }
+    }
+
 
     if (!visible) return null;
     return (
@@ -177,8 +208,13 @@ export default function DiscountDetail({
                             className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
                             id="startDate"
                             onChange={(e) => handleOnChange(e)}
+                            onBlur={(e) => handleValidDate(e)}
                             value={discount.startDate}
                         />
+                        {
+                            !isValid.startDate && !isValid.newStartDate &&
+                            <h5 className="text-red-300 text-xs">"Ngày bắt đầu phải bé hơn ngày kết thúc"</h5>
+                        }
                     </div>
                     <div className="">
                         <label className="" htmlFor="endDate">
@@ -189,8 +225,13 @@ export default function DiscountDetail({
                             className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
                             id="endDate"
                             onChange={(e) => handleOnChange(e)}
+                            onBlur={(e) => handleValidDate(e)}
                             value={discount.endDate}
                         />
+                        {
+                            !isValid.endDate && !isValid.newEndDate &&
+                            <h5 className="text-red-300 text-xs">"Ngày kết thúc phải lớn hơn ngày bắt đầu"</h5>
+                        }
                     </div>
                     <div className="">
                         <label className="" htmlFor="status">
