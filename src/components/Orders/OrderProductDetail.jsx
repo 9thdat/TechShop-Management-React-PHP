@@ -1,5 +1,7 @@
 import React, {useState, useEffect, useMemo, useRef, useCallback} from "react";
-import axios from "../../api/axios";
+import {fetchProductQuantity, fetchTotalProductQuantity} from "../../services/Product/ProductQuantity";
+import {fetchProduct} from "../../services/Product/Product";
+import {getLastId} from "../../services/Order/OrderDetail";
 
 export default function OrderProductDetail({visible, onClose, order, action, onSave, orderDetail}) {
     const [orderProducts, setOrderProducts] = useState([]);
@@ -166,16 +168,6 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
         orderProduct.totalPrice = Number(orderProduct.price) * Number(orderProduct.quantity);
     };
 
-    const fetchOrderDetail = async () => {
-        try {
-            const response = await axios.get(`/OrderDetail/OrderId=${order.id}`);
-            return response.data;
-        } catch (err) {
-            console.error(err);
-            return [];
-        }
-    };
-
     const setProductsData = async () => {
         if (orderProduct.productId === "") {
             return;
@@ -189,51 +181,6 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
         }
     };
 
-    const fetchLastId = async () => {
-        try {
-            const response = await axios.get("/OrderDetail/GetLastId");
-            return response.data;
-        } catch (err) {
-            console.error(err);
-        }
-    };
-
-    const fetchProductQuantity = async (productId) => {
-        if (productId === "") {
-            return [];
-        }
-        try {
-            const response = await axios.get(`/ProductQuantity/ProductId=${productId}`);
-            return response.data;
-        } catch (err) {
-            console.error(err);
-            return [];
-        }
-    };
-
-    const fetchProduct = async (productId) => {
-        try {
-            const response = await axios.get(`/Product/${productId}`);
-            return response.data;
-        } catch (err) {
-            console.error(err);
-            return [];
-        }
-    };
-
-    const fetchTotalProductQuantity = async (productId, color) => {
-        if (productId === "" || color === "") {
-            return 0;
-        }
-
-        try {
-            const response = await axios.get(`/ProductQuantity/TotalQuantity/ProductId=${productId}&ProductColor=${color}`);
-            return response.data;
-        } catch (err) {
-            console.error(err);
-            return 0;
-        }
-    };
 
     const handleDisplayOrderProduct = async (e) => {
         const {value} = e.target;
@@ -270,7 +217,7 @@ export default function OrderProductDetail({visible, onClose, order, action, onS
 
 
     const handleOnAddOrderProduct = async () => {
-        const lastId = await fetchLastId();
+        const lastId = await getLastId();
         setOrderProductsLength((prevState) => prevState + 1);
         setCurrentOrderProduct((prevState) => prevState + 1);
         setOrderProducts((prevState) => [

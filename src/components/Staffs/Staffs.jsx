@@ -1,9 +1,9 @@
 import React, {useState, useEffect, useRef} from "react";
-import axios from "../../api/axios";
 import CustomerDetail from "../Customers/CustomerDetail";
 import CustomerStatus from "../Customers/CustomerStatus";
 import StaffDetail from "./StaffDetail";
 import StaffPassword from "./StaffPassword";
+import {AddStaff, fetchStaffs, UpdateStaff} from "../../services/User/User";
 
 export default function Staffs() {
     const [staffs, setStaffs] = useState([]);
@@ -26,20 +26,11 @@ export default function Staffs() {
     useEffect(() => {
             fetchStaffs().then((staffs) => {
                 setStaffs(staffs);
+                setOriginStaffs(staffs);
             });
         }
         , []);
 
-    const fetchStaffs = async () => {
-        try {
-            const response = await axios.get("/User/Staffs");
-            setOriginStaffs(response.data);
-            return response.data;
-        } catch (e) {
-            console.log(e);
-            return [];
-        }
-    };
 
     const handleOnSearch = () => {
         const searchValue = search.current.searchValue;
@@ -78,7 +69,7 @@ export default function Staffs() {
 
     const handleAddStaff = async (staff) => {
         try {
-            const response = await axios.post("/User/Staffs", staff);
+            const response = await AddStaff(staff);
             if (response.status === 201) {
                 alert("Thêm nhân viên thành công");
                 setVisibleStaffDetail(false);
@@ -102,7 +93,7 @@ export default function Staffs() {
     const handleEditStaff = async (staff) => {
         staff.password = "password"
         try {
-            const response = await axios.put("/User/Staffs/Update", staff);
+            const response = await UpdateStaff(staff);
             if (response.status === 204) {
                 alert("Cập nhật nhân viên thành công");
                 setVisibleStaffDetail(false);

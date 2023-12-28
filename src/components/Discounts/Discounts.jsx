@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useRef} from "react";
-import axios from "../../api/axios";
 import DiscountDetail from "./DiscountDetail";
+import {AddDiscount, fetchDiscounts, fetchLastDiscountId, UpdateDiscount} from "../../services/Discount/Discount";
+
 
 export default function Discounts() {
     const [discounts, setDiscounts] = useState([]);
@@ -22,21 +23,11 @@ export default function Discounts() {
     }, []);
 
     useEffect(() => {
-        fetchDiscounts().then((data) => {
-            setDiscounts(data);
+        fetchDiscounts().then((response) => {
+            setOriginalDiscounts(response.data);
+            setDiscounts(response.data);
         });
     }, []);
-
-    const fetchDiscounts = async () => {
-        try {
-            const response = await axios.get("/Discount");
-            setOriginalDiscounts(response.data);
-            return response.data;
-        } catch (e) {
-            console.error(e.message);
-            return [];
-        }
-    }
 
     const handleOnSearch = () => {
         const searchValue = search.current.searchValue;
@@ -72,7 +63,8 @@ export default function Discounts() {
 
     const handleOpenAddDiscount = async () => {
         setAction("add");
-        const lastId = await fetchLastDiscountId();
+        const response = await fetchLastDiscountId();
+        const lastId = response.data;
         let tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
         let isoTomorrow = tomorrow.toISOString().split('T')[0];
@@ -96,7 +88,7 @@ export default function Discounts() {
 
     const handleAddDiscount = async (discount) => {
         try {
-            const response = await axios.post("/Discount", discount);
+            const response = await AddDiscount(discount);
             if (response.status === 201) {
                 alert("Thêm mã giảm giá thành công");
                 const currentDate = new Date();
@@ -128,7 +120,7 @@ export default function Discounts() {
 
     const handleEditDiscount = async (discount) => {
         try {
-            const response = await axios.put("Discount", discount);
+            const response = await UpdateDiscount(discount);
             if (response.status === 204) {
                 alert("Sửa mã giảm giá thành công");
                 const currentDate = new Date();
@@ -167,16 +159,6 @@ export default function Discounts() {
         } catch (e) {
             console.error(e.message);
             alert("Sửa mã giảm giá thất bại");
-        }
-    }
-
-    const fetchLastDiscountId = async () => {
-        try {
-            const response = await axios.get("/Discount/GetLastId");
-            return response.data;
-        } catch (e) {
-            console.error(e.message);
-            return 0;
         }
     }
 

@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useMemo} from "react";
-import axios from "../../api/axios";
 import defaultAvatar from "../../assets/images/defaultAvatar/defaultAvatar.jpeg"
+import {getCustomerByEmail} from "../../services/Customer/Customer";
 
 const tinh_tp = require("../../Models/Address/tinh-tp.json");
 const quan_huyen = require("../../Models/Address/quan-huyen.json");
@@ -162,7 +162,7 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
             return;
         }
         try {
-            const res = await axios.get(`/Customer/${e.target.value}`);
+            const res = await getCustomerByEmail(e.target.value);
             if (res.status === 200) {
                 setIsCustomerExist(true);
             }
@@ -189,20 +189,19 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
 
     const handleValidField = (e) => {
         const {id, value} = e.target;
-        console.log(id, value);
 
-        setIsValid({
-            ...isValid,
+        setIsValid((prev) => ({
+            ...prev,
             [id]: value !== "",
-        })
+        }));
 
         const fields = ["email", "password", "name", "address", "phone"];
-        fields.forEach(field => {
+        fields.forEach((field) => {
             if (id === field && isValid[`new${field.charAt(0).toUpperCase() + field.slice(1)}`]) {
-                setIsValid({
-                    ...isValid,
+                setIsValid((prev) => ({
+                    ...prev,
                     [`new${field.charAt(0).toUpperCase() + field.slice(1)}`]: false,
-                })
+                }));
             }
         });
     };

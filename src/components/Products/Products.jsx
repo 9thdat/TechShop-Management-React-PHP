@@ -1,7 +1,7 @@
 import React, {useEffect, useState, useRef} from "react";
-import axios from "../../api/axios";
 import ProductDetail from "./ProductDetail";
 import ConfirmDelete from "./ConfirmDelete";
+import {fetchLastProductId, fetchProduct, fetchProducts} from "../../services/Product/Product";
 
 export default function Products() {
     const [products, setProducts] = useState([]); // List of products
@@ -142,26 +142,6 @@ export default function Products() {
         }
     }
 
-    const fetchProduct = async (productId) => {
-        try {
-            const response = await axios.get(`/Product/${productId}`);
-            return response.data;
-        } catch (error) {
-            console.log("Failed to fetch product: ", error.message);
-            return {};
-        }
-    };
-
-    const fetchProducts = async () => {
-        try {
-            const response = await axios.get("/Product/GetProductAndQuantity");
-            return response.data;
-        } catch (error) {
-            console.log("Failed to fetch product list: ", error.message);
-            return [];
-        }
-    };
-
     // Product
     const EditProduct = async (e) => {
         const product = products.find((product) => product.id === parseInt(e.target.value));
@@ -182,7 +162,7 @@ export default function Products() {
         const product = products.find((product) => product.id === product.id);
         try {
             // Update productQuantity
-            const response = await axios.put(`Product/DeleteProduct/${product.id}`);
+            const response = await DeleteProduct(product.id);
             if (response.status === 204) {
                 alert("Xóa sản phẩm thành công!");
                 setVisibleDelete(false);
@@ -242,16 +222,6 @@ export default function Products() {
         };
         setProduct(product);
         setVisibleProductDetail(true);
-    }
-
-    const fetchLastProductId = async () => {
-        try {
-            const response = await axios.get("/Product/GetLastId");
-            return response.data;
-        } catch (error) {
-            console.log("Failed to fetch last product id: ", error.message);
-            return "";
-        }
     }
 
     return (

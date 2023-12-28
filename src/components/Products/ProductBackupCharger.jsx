@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
-import axios from "../../api/axios";
 import ConfirmDeleteProductParameter from "./ConfirmDeleteProductParameter";
+import {DeleteProductBackupCharger} from "../../services/Product/ProductBackupCharger";
 
 export default function ProductBackupCharger({visible, onClose, data, action, onSave, onReload}) {
     const [productBackupCharger, setProductBackupCharger] = useState({});
@@ -31,7 +31,7 @@ export default function ProductBackupCharger({visible, onClose, data, action, on
 
     const handleOnDelete = async () => {
         try {
-            const res = await axios.delete(`/ParameterBackupCharger/${productBackupCharger.id}`);
+            const res = await DeleteProductBackupCharger(productBackupCharger.id);
             if (res.status === 204) {
                 alert("Xóa thông số sạc dự phòng thành công!");
                 onReload();
@@ -55,8 +55,7 @@ export default function ProductBackupCharger({visible, onClose, data, action, on
     if (!visible) return null;
     return (
         <div
-            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm"
-        >
+            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm max-h-screen overflow-y-auto">
             <div className="bg-white p-3 rounded-md">
                 <div className="flex justify-between md:text-2xl font-semibold">
                     <div className="">Chi tiết thông số pin dự phòng</div>

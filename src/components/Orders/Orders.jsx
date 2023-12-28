@@ -1,7 +1,8 @@
 import React, {useState, useEffect, useRef} from "react";
-import axios from "../../api/axios";
 import StaffDetail from "../Staffs/StaffDetail";
 import OrderDetails from "./OrderDetails";
+import {AddOrder, fetchOrders, UpdateOrder} from "../../services/Order/Order";
+import {AddOrderDetail, CancelOrderDetail} from "../../services/Order/OrderDetail";
 
 export default function Orders() {
     const [orders, setOrders] = useState([]);
@@ -29,16 +30,6 @@ export default function Orders() {
         });
     }, []);
 
-
-    const fetchOrders = async () => {
-        try {
-            const res = await axios.get("/Order");
-            return res.data;
-        } catch (err) {
-            console.log(err);
-            return [];
-        }
-    }
 
     const handleOnSearch = () => {
         const searchValue = search.current.searchValue;
@@ -97,7 +88,7 @@ export default function Orders() {
         }
 
         try {
-            const orderResponse = await axios.post("/Order", orderData);
+            const orderResponse = await AddOrder(orderData);
 
             if (orderResponse.status >= 200 && orderResponse.status < 300) {
                 const orderId = orderResponse.data;
@@ -107,7 +98,7 @@ export default function Orders() {
                         orderId: orderData.id,
                     }
                     try {
-                        const response = await axios.post("/OrderDetail", order);
+                        const response = await AddOrderDetail(order);
 
                         if (response.status >= 200 && response.status < 300) {
                             return null; // Success
@@ -142,11 +133,11 @@ export default function Orders() {
 
     const handleEditOrder = async (orderData) => {
         try {
-            const orderResponse = await axios.put(`/Order/ChangeStatus/${orderData.id}`, orderData);
+            const orderResponse = await UpdateOrder(orderData);
 
             if (orderResponse.status >= 200 && orderResponse.status < 300) {
                 if (orderData.status === "Cancelled") {
-                    const orderDetailsResponse = await axios.put(`/OrderDetail/CancelOrder/${orderData.id}`);
+                    const orderDetailsResponse = await CancelOrderDetail(orderData);
 
                     if (orderDetailsResponse.status >= 200 && orderDetailsResponse.status < 300) {
                         setVisibleOrderDetail(false);

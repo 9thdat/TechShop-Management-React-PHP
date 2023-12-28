@@ -41,8 +41,8 @@ export default function ReviewDetail({visible, onClose, data, onSave}) {
 
     return (
         <div
-            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm text-xs overflow-auto"
-        >
+            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm max-h-screen overflow-y-auto">
+
             <div className="bg-white p-3 rounded-md">
                 <div className="flex justify-between md:text-2xl font-semibold">
                     <div className="">Thông tin đánh giá</div>

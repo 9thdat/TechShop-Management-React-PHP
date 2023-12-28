@@ -13,6 +13,7 @@ import Home from "./components/Home/Home";
 import React, {useEffect, useState} from "react";
 import Discounts from "./components/Discounts/Discounts";
 import axios from "./api/axios"
+import {ValidateToken} from "./services/User/User";
 
 function App() {
     const [isLogin, setIsLogin] = useState(false);
@@ -30,9 +31,7 @@ function App() {
                 try {
                     const token = sessionStorage.getItem("token") || "";
                     if (token) {
-                        const response = await axios.post("/User/ValidateToken", {
-                            token: token,
-                        });
+                        const response = await ValidateToken(token);
 
                         if (response.status === 401) {
                             return [];

@@ -4,6 +4,7 @@ import AuthContext from "../../contexts/AuthProvider";
 import axios from "../../api/axios";
 
 import techShopLogo from "../../assets/images/logo/techShopLogo.svg";
+import {Login} from "../../services/User/User";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
@@ -15,12 +16,7 @@ export default function LoginPage() {
         e.preventDefault();
 
         try {
-            const response = await axios.post("/User/Login", JSON.stringify({email, password}),
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                    }
-                })
+            const response = await Login(email, password);
 
             if (response.status === 200) {
                 if (response.data.status === "inactive") {

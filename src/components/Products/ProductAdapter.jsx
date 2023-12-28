@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 import ConfirmDeleteProductParameter from "./ConfirmDeleteProductParameter";
-import axios from "../../api/axios";
+import {DeleteProductAdapter} from "../../services/Product/ProductAdapter";
 
 export default function ProductAdapter({visible, onClose, onSave, data, action, onReload}) {
     const [productAdapter, setProductAdapter] = useState({});
@@ -31,7 +31,7 @@ export default function ProductAdapter({visible, onClose, onSave, data, action, 
 
     const handleOnDelete = async () => {
         try {
-            const res = await axios.delete(`/ParameterAdapter/${productAdapter.id}`);
+            const res = await DeleteProductAdapter(productAdapter.id);
             if (res.status === 204) {
                 alert("Xóa thông số cục sạc thành công!");
                 onReload();
@@ -56,8 +56,7 @@ export default function ProductAdapter({visible, onClose, onSave, data, action, 
 
     return (
         <div
-            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm"
-        >
+            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm max-h-screen overflow-y-auto">
             <div className="bg-white p-4 rounded">
                 <div className="flex justify-between md:text-2xl font-semibold">
                     <div className="">Chi tiết thông số cục sạc</div>

@@ -1,29 +1,20 @@
 import React, {useEffect, useState} from 'react';
-import axios from "../../api/axios";
 import defaultAvatar from "../../assets/images/defaultAvatar/defaultAvatar.jpeg";
 
 import {IoMdNotificationsOutline} from 'react-icons/io';
+import {fetchUser} from "../../services/User/User";
 
 export default function Navbar() {
     const [user, setUser] = useState({});
     const [showNotifications, setShowNotifications] = useState(false);
 
     useEffect(() => {
-        fetchUser().then((res) => {
+        const email = localStorage.getItem("userEmail");
+        fetchUser(email).then((res) => {
             setUser(res);
         });
     }, []);
 
-
-    const fetchUser = async () => {
-        const email = localStorage.getItem("userEmail");
-        try {
-            const res = await axios.get(`/User/${email}`);
-            return res.data;
-        } catch (err) {
-            console.log(err);
-        }
-    }
 
     return (
         <div className="navbar grid grid-cols-6 h-full w-full z-0">

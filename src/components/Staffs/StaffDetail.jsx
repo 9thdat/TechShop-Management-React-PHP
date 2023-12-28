@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
-import axios from "../../api/axios";
 import defaultAvatar from "../../assets/images/defaultAvatar/defaultAvatar.jpeg"
 import StaffPassword from "./StaffPassword";
+import {ChangePassword, ValidateStaff} from "../../services/User/User";
 
 const tinh_tp = require("../../Models/Address/tinh-tp.json");
 const quan_huyen = require("../../Models/Address/quan-huyen.json");
@@ -154,7 +154,7 @@ export default function StaffDetail({visible, onClose, staffData, action, handle
             return;
         }
         try {
-            const res = await axios.get(`User/Staffs/Valid/email=${e.target.value}`);
+            const res = await ValidateStaff(value);
             if (res.status === 200) {
                 setIsNewEmail(true);
             }
@@ -188,7 +188,7 @@ export default function StaffDetail({visible, onClose, staffData, action, handle
 
     const handleChangePassword = async (newPassword) => {
         try {
-            const response = await axios.put(`User/ChangePassword/${staff.email}`, newPassword);
+            const response = await ChangePassword(staff.email, newPassword);
             if (response.status === 204) {
                 alert("Đổi mật khẩu thành công");
                 setVisibleStaffPassword(false);
@@ -209,29 +209,29 @@ export default function StaffDetail({visible, onClose, staffData, action, handle
     const handleValidField = (e) => {
         const {id, value} = e.target;
 
-        setIsValid({
-            ...isValid,
+        setIsValid((prevIsValid) => ({
+            ...prevIsValid,
             [id]: value !== "",
-        })
+        }));
 
         const fields = ["email", "password", "name", "address", "phone"];
-        fields.forEach(field => {
+        fields.forEach((field) => {
             if (id === field && isValid[`new${field.charAt(0).toUpperCase() + field.slice(1)}`]) {
-                setIsValid({
-                    ...isValid,
+                setIsValid((prevIsValid) => ({
+                    ...prevIsValid,
                     [`new${field.charAt(0).toUpperCase() + field.slice(1)}`]: false,
-                })
+                }));
             }
         });
     };
+
 
     if (!visible) return null;
 
 
     return (
         <div
-            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm  text-xs overflow-auto"
-        >
+            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm max-h-screen overflow-y-auto">
             <div className="bg-white p-3 rounded-md">
                 <div className="flex justify-between md:text-2xl font-semibold">
                     <div className="">Thông tin nhân viên</div>

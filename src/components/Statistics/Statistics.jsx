@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from "react";
 import {format} from 'date-fns';
 import {vi} from 'date-fns/locale';
-import axios from "../../api/axios";
 import {parseISO} from 'date-fns';
 import LineChart from "../Charts/LineChart";
 import PieChart from "../Charts/PieChart";
 import {Line} from "react-chartjs-2";
+import {fetchProductSold, fetchProductsSold, fetchRevenue, fetchRevenueByProduct} from "../../services/Order/Order";
 
 export default function Statistics() {
     const [chartData, setChartData] = useState({
@@ -48,21 +48,25 @@ export default function Statistics() {
 
     const handleAnalyze = async () => {
         const chartTypeText = chartType === "MonthRevenue" ? "Doanh thu" : "Số lượng sản phẩm bán ra";
+        const startMonth = fromDate.getMonth() + 1;
+        const startYear = fromDate.getFullYear();
+        const endMonth = toDate.getMonth() + 1;
+        const endYear = toDate.getFullYear();
         setChartTitle("BIỂU ĐỒ " + chartTypeText.toUpperCase() + " TỪ NGÀY " + format(new Date(fromDate), 'dd/MM/yyyy') + " ĐẾN NGÀY " + format(new Date(toDate), 'dd/MM/yyyy'));
         if (chartType === "MonthRevenue") {
             if (productId === "") {
-                const revenueData = await fetchRevenue();
+                const revenueData = await fetchRevenue(startMonth, startYear, endMonth, endYear);
                 setRevenue(revenueData);
             } else {
-                const revenueData = await fetchRevenueByProduct(productId);
+                const revenueData = await fetchRevenueByProduct(startMonth, startYear, endMonth, endYear, productId);
                 setRevenue(revenueData);
             }
         } else {
             if (productId === "") {
-                const productsSoldData = await fetchProductsSold();
+                const productsSoldData = await fetchProductsSold(startMonth, startYear, endMonth, endYear);
                 setProductsSold(productsSoldData);
             } else {
-                const productsSoldData = await fetchProductSold(productId);
+                const productsSoldData = await fetchProductSold(startMonth, startYear, endMonth, endYear, productId);
                 setProductsSold(productsSoldData);
             }
         }
@@ -103,62 +107,6 @@ export default function Statistics() {
             })
         }
     }, [productsSold]);
-
-    const fetchRevenue = async () => {
-        const startMonth = fromDate.getMonth() + 1;
-        const startYear = fromDate.getFullYear();
-        const endMonth = toDate.getMonth() + 1;
-        const endYear = toDate.getFullYear();
-        try {
-            const res = await axios.get(`/Order/GetMonthlyRevenue?startMonth=${startMonth}&startYear=${startYear}&endMonth=${endMonth}&endYear=${endYear}`);
-            return res.data;
-        } catch (err) {
-            console.log(err);
-            return [];
-        }
-    }
-
-    const fetchRevenueByProduct = async (productId) => {
-        const startMonth = fromDate.getMonth() + 1;
-        const startYear = fromDate.getFullYear();
-        const endMonth = toDate.getMonth() + 1;
-        const endYear = toDate.getFullYear();
-        try {
-            const res = await axios.get(`/Order/GetMonthlyRevenueByProduct?startMonth=${startMonth}&startYear=${startYear}&endMonth=${endMonth}&endYear=${endYear}&productId=${productId}`);
-            return res.data;
-        } catch (err) {
-            console.log(err);
-            return [];
-        }
-    }
-
-    const fetchProductsSold = async () => {
-        const startMonth = fromDate.getMonth() + 1;
-        const startYear = fromDate.getFullYear();
-        const endMonth = toDate.getMonth() + 1;
-        const endYear = toDate.getFullYear();
-        try {
-            const res = await axios.get(`/Order/GetMonthlyProductsSold?startMonth=${startMonth}&startYear=${startYear}&endMonth=${endMonth}&endYear=${endYear}`);
-            return res.data;
-        } catch (err) {
-            console.log(err);
-            return [];
-        }
-    }
-
-    const fetchProductSold = async (productId) => {
-        const startMonth = fromDate.getMonth() + 1;
-        const startYear = fromDate.getFullYear();
-        const endMonth = toDate.getMonth() + 1;
-        const endYear = toDate.getFullYear();
-        try {
-            const res = await axios.get(`/Order/GetMonthlyProductsSold?startMonth=${startMonth}&startYear=${startYear}&endMonth=${endMonth}&endYear=${endYear}&productId=${productId}`);
-            return res.data;
-        } catch (err) {
-            console.log(err);
-            return [];
-        }
-    }
 
     return (
         <div className="">

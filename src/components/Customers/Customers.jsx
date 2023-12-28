@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useRef} from "react";
-import axios from "../../api/axios";
 import CustomerDetail from "./CustomerDetail";
 import CustomerStatus from "./CustomerStatus";
+import {changeCustomerStatus, fetchCustomers, AddCustomer} from "../../services/Customer/Customer";
 
 export default function Customers() {
     const [customers, setCustomers] = useState([]); // List of customers
@@ -40,16 +40,6 @@ export default function Customers() {
         };
     }, []);  // Empty dependency array means this effect runs once after the initial render
 
-    const fetchCustomers = async () => {
-        try {
-            const response = await axios.get("/Customer");
-            return response.data;
-        } catch (error) {
-            console.log("Failed to fetch customer list: ", error.message);
-            return [];
-        }
-    }
-
     const handleOpenAddCustomer = () => {
         setAction("add");
         // Sử dụng hàm callback để đảm bảo cập nhật đồng bộ
@@ -60,21 +50,6 @@ export default function Customers() {
         setVisibleCustomerDetail(true);
     }
 
-    const handleAddCustomer = async (newCustomer) => {
-        try {
-            const res = await axios.post("/Customer", newCustomer);
-
-            if (res.status === 201) {
-                alert("Thêm khách hàng thành công!");
-                handleCloseCustomerDetail("add");
-
-                const data = await fetchCustomers();
-                setCustomers(data);
-            }
-        } catch (error) {
-            console.log("Thêm khách hàng thất bại: ", error.message);
-        }
-    }
 
     const handleDetailCustomer = (customerData) => {
         setCustomer(customerData);
@@ -124,7 +99,7 @@ export default function Customers() {
         };
     }
 
-    const handleOnChangeStatus = () => {
+    const handleOnChangeStatus = async () => {
         const customerData = {
             ...customer,
             status: customer.status === "active" ? "inactive" : "active"
@@ -132,22 +107,27 @@ export default function Customers() {
 
         setCustomer(customerData);
 
-        changeCustomerStatus();
+        const response = changeCustomerStatus(customer.email);
+        if (response.status === 204) {
+            alert("Đổi tình trạng thành công!");
+            const data = await fetchCustomers();
+            setCustomers(data);
+        }
+        setVisibleCustomerStatus(false);
 
         setVisibleCustomerStatus(false);
     }
 
-    const changeCustomerStatus = async () => {
-        try {
-            const response = await axios.put(`Customer/ChangeStatus/Email=${customer.email}`);
-            if (response.status === 204) {
-                alert("Đổi tình trạng thành công!");
-                const data = await fetchCustomers();
-                setCustomers(data);
-            }
-            setVisibleCustomerStatus(false);
-        } catch (error) {
-            alert("Đổi tình trạng thất bại!");
+    const handleAddCustomer = async (customerData) => {
+        const response = await AddCustomer(customerData);
+        if (response.status === 201) {
+            alert("Thêm khách hàng thành công!");
+            handleCloseCustomerDetail("add");
+
+            const data = await fetchCustomers();
+            setCustomers(data);
+        } else {
+            alert("Thêm khách hàng thất bại!");
         }
     }
 

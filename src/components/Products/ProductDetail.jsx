@@ -1,5 +1,4 @@
 import React, {useState, useEffect} from "react";
-import axios from "../../api/axios";
 import productAdapter from "./ProductAdapter";
 import productBackupCharger from "./ProductBackupCharger";
 import ProductPhone from "./ProductPhone";
@@ -8,6 +7,23 @@ import productCable from "./ProductCable";
 import ProductCable from "./ProductCable";
 import ProductBackupCharger from "./ProductBackupCharger";
 import ProductAdapter from "./ProductAdapter";
+import {AddProduct, UpdateProduct} from "../../services/Product/Product";
+import {
+    AddProductQuantity,
+    DeleteProductQuantity,
+    fetchProductQuantity,
+    UpdateProductQuantity
+} from "../../services/Product/ProductQuantity";
+import {AddProductCable, fetchProductCable, UpdateProductCable} from "../../services/Product/ProductCable";
+import {AddProductPhone, fetchProductPhone, UpdateProductPhone} from "../../services/Product/ProductPhone";
+import {
+    AddProductBackupCharger,
+    fetchProductBackupCharger,
+    UpdateProductBackupCharger
+} from "../../services/Product/ProductBackupCharger";
+import {AddProductAdapter, fetchProductAdapter, UpdateProductAdapter} from "../../services/Product/ProductAdapter";
+import {AddImageDetail, DeleteImageDetail, UpdateImageDetail} from "../../services/ImageDetail/ImageDetail";
+import {fetchCategory} from "../../services/Category/Category";
 
 export default function ProductDetail({action, visible, onClose, product, onReload}) {
     const [productData, setProductData] = useState(product); // Data of product
@@ -115,66 +131,6 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
         }
     }, [product]);
 
-    const fetchCategory = async () => {
-        try {
-            const categoryResponse = await axios.get("/Category");
-            return categoryResponse.data.length > 0 ? categoryResponse.data : [];
-        } catch (error) {
-            console.log("Failed to fetch category list: ", error.message);
-            return [];
-        }
-    };
-
-    const fetchProductQuantity = async (productId) => {
-        try {
-            const productQuantityResponse = await axios.get(`/ProductQuantity/ProductId=${productId}`);
-            return productQuantityResponse.data.length > 0 ? productQuantityResponse.data : [];
-        } catch (error) {
-            console.log("Failed to fetch product quantity list: ", error.message);
-            return [];
-        }
-    };
-
-    const fetchProductPhone = async (productId) => {
-        try {
-            const productPhoneResponse = await axios.get(`/ParameterPhone/ProductId=${productId}`);
-            return productPhoneResponse.data.length > 0 ? productPhoneResponse.data[0] : {};
-        } catch (error) {
-            console.log("Failed to fetch product phone list: ", error.message);
-            return {};
-        }
-    };
-
-    const fetchProductAdapter = async (productId) => {
-        try {
-            const productAdapterResponse = await axios.get(`/ParameterAdapter/ProductId=${productId}`);
-            return productAdapterResponse.data.length > 0 ? productAdapterResponse.data[0] : {};
-        } catch (error) {
-            console.log("Failed to fetch product adapter list: ", error.message);
-            return {};
-        }
-    };
-
-    const fetchProductBackupCharger = async (productId) => {
-        try {
-            const productBackupChargerResponse = await axios.get(`/ParameterBackupCharger/ProductId=${productId}`);
-            return productBackupChargerResponse.data.length > 0 ? productBackupChargerResponse.data[0] : {};
-        } catch (error) {
-            console.log("Failed to fetch product backup charger list: ", error.message);
-            return {};
-        }
-    };
-
-    const fetchProductCable = async (productId) => {
-        try {
-            const productCableResponse = await axios.get(`/ParameterCable/ProductId=${productId}`);
-            return productCableResponse.data.length > 0 ? productCableResponse.data[0] : {};
-        } catch (error) {
-            console.log("Failed to fetch product cable list: ", error.message);
-            return {};
-        }
-    };
-
     const handleOnChange = (e) => {
         const {id, value} = e.target;
         setProductData(
@@ -226,13 +182,13 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
         if (actionType === "add") {
             let falseUpdate = [];
             try {
-                const productUpdateResponse = await axios.post(`Product`, productData);
+                const productUpdateResponse = await AddProduct(productData);
                 if (productUpdateResponse.status === 204) {
                     if (productQuantity.length > 0) {
                         await Promise.all(
                             productQuantity.map(async (item) => {
                                 try {
-                                    const quantityCreateResponse = await axios.post(`ProductQuantity`, {
+                                    const quantityCreateResponse = await AddProductQuantity({
                                         productId: productData.id,
                                         color: item.color,
                                         quantity: item.quantity,
@@ -250,10 +206,11 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
 
                     if (Object.keys(productCable).length > 0) {
                         try {
-                            const productCableResponse = await axios.post(`ParameterCable`, {
+                            const productCableResponse = await AddProductCable({
                                 ...productCable,
                                 productId: productData.id,
                             });
+
                             if (productCableResponse.status !== 204) {
                                 falseUpdate.push(productCable);
                             }
@@ -265,11 +222,11 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
 
                     if (Object.keys(productPhone).length > 0) {
                         try {
-                            const productPhoneResponse = await axios.post(`ParameterPhone`, {
+                            const productPhoneResponse = await AddProductPhone({
                                 ...productPhone,
                                 productId: productData.id,
-
                             });
+
                             if (productPhoneResponse.status !== 204) {
                                 falseUpdate.push(productPhone);
                             }
@@ -281,10 +238,11 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
 
                     if (Object.keys(productBackupCharger).length > 0) {
                         try {
-                            const productBackupChargerResponse = await axios.post(`ParameterBackupCharger`, {
+                            const productBackupChargerResponse = await AddProductBackupCharger({
                                 ...productBackupCharger,
                                 productId: productData.id,
                             });
+
                             if (productBackupChargerResponse.status !== 204) {
                                 falseUpdate.push(productBackupCharger);
                             }
@@ -296,10 +254,11 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
 
                     if (Object.keys(productAdapter).length > 0) {
                         try {
-                            const productAdapterResponse = await axios.post(`ParameterAdapter`, {
+                            const productAdapterResponse = await AddProductAdapter({
                                 ...productAdapter,
                                 productId: productData.id,
                             });
+
                             if (productAdapterResponse.status !== 204) {
                                 falseUpdate.push(productAdapter);
                             }
@@ -314,7 +273,7 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                             productImage.map(async (item) => {
                                 try {
                                     delete item.id;
-                                    const productImageResponse = await axios.post(`ImageDetail`, item);
+                                    const productImageResponse = await AddImageDetail(item);
                                     if (productImageResponse.status !== 204) {
                                         falseUpdate.push(item);
                                     }
@@ -351,7 +310,7 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                 if (productData.image === null) {
                     productData.image = "";
                 }
-                const productUpdateResponse = await axios.put(`Product/${productData.id}`, productData);
+                const productUpdateResponse = await UpdateProduct(productData);
                 if (productUpdateResponse.status === 204) {
                     if (productQuantity.length > 0) {
                         await Promise.all(
@@ -359,7 +318,7 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                                 if (item.id) {
                                     if (item.isDeleted === true) {
                                         try {
-                                            const quantityDeleteResponse = await axios.delete(`ProductQuantity/${item.id}`);
+                                            const quantityDeleteResponse = await DeleteProductQuantity(item.id);
                                             if (quantityDeleteResponse.status !== 200) {
                                                 falseUpdate.push(item);
                                             }
@@ -369,7 +328,7 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                                         }
                                     } else {
                                         try {
-                                            const quantityUpdateResponse = await axios.put(`ProductQuantity/${item.id}`, item);
+                                            const quantityUpdateResponse = await UpdateProductQuantity(item);
                                             if (quantityUpdateResponse.status !== 200) {
                                                 falseUpdate.push(item);
                                             }
@@ -380,12 +339,13 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                                     }
                                 } else {
                                     try {
-                                        const quantityCreateResponse = await axios.post(`ProductQuantity`, {
+                                        const quantityCreateResponse = await UpdateProductQuantity({
                                             productId: productData.id,
                                             color: item.color,
                                             quantity: item.quantity,
                                             sold: 0,
                                         });
+
                                         if (quantityCreateResponse.status !== 201) {
                                             falseUpdate.push(item);
                                         }
@@ -402,7 +362,7 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                     if (Object.keys(productCable).length > 0) {
                         if (productCable.id) {
                             try {
-                                const productCableResponse = await axios.put(`ParameterCable/${productCable.id}`, productCable);
+                                const productCableResponse = await UpdateProductCable(productCable);
                                 if (productCableResponse.status !== 204) {
                                     falseUpdate.push(productCable);
                                 }
@@ -412,10 +372,11 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                             }
                         } else {
                             try {
-                                const productCableResponse = await axios.post(`ParameterCable`, {
+                                const productCableResponse = await AddProductCable({
                                     ...productCable,
                                     productId: productData.id,
                                 });
+
                                 if (productCableResponse.status !== 204) {
                                     falseUpdate.push(productCable);
                                 }
@@ -429,7 +390,7 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                     if (Object.keys(productPhone).length > 0) {
                         if (productPhone.id) {
                             try {
-                                const productPhoneResponse = await axios.put(`ParameterPhone/${productPhone.id}`, productPhone);
+                                const productPhoneResponse = await UpdateProductPhone(productPhone);
                                 if (productPhoneResponse.status !== 204) {
                                     falseUpdate.push(productPhone);
                                 }
@@ -439,10 +400,11 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                             }
                         } else {
                             try {
-                                const productPhoneResponse = await axios.post(`ParameterPhone`, {
+                                const productPhoneResponse = await AddProductPhone({
                                     ...productPhone,
                                     productId: productData.id,
                                 });
+
                                 if (productPhoneResponse.status !== 204) {
                                     falseUpdate.push(productPhone);
                                 }
@@ -456,7 +418,7 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                     if (Object.keys(productBackupCharger).length > 0) {
                         if (productBackupCharger.id) {
                             try {
-                                const productBackupChargerResponse = await axios.put(`ParameterBackupCharger/${productBackupCharger.id}`, productBackupCharger);
+                                const productBackupChargerResponse = await UpdateProductBackupCharger(productBackupCharger);
                                 if (productBackupChargerResponse.status !== 204) {
                                     falseUpdate.push(productBackupCharger);
                                 }
@@ -466,10 +428,11 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                             }
                         } else {
                             try {
-                                const productBackupChargerResponse = await axios.post(`ParameterBackupCharger`, {
+                                const productBackupChargerResponse = await AddProductBackupCharger({
                                     ...productBackupCharger,
                                     productId: productData.id,
                                 });
+
                                 if (productBackupChargerResponse.status !== 204) {
                                     falseUpdate.push(productBackupCharger);
                                 }
@@ -483,7 +446,8 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                     if (Object.keys(productAdapter).length > 0) {
                         if (productAdapter.id) {
                             try {
-                                const productAdapterResponse = await axios.put(`ParameterAdapter/${productAdapter.id}`, productAdapter);
+                                const productAdapterResponse = await UpdateProductAdapter(productAdapter);
+
                                 if (productAdapterResponse.status !== 204) {
                                     falseUpdate.push(productAdapter);
                                 }
@@ -493,10 +457,11 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                             }
                         } else {
                             try {
-                                const productAdapterResponse = await axios.post(`ParameterAdapter`, {
+                                const productAdapterResponse = await AddProductAdapter({
                                     ...productAdapter,
                                     productId: productData.id,
                                 });
+
                                 if (productAdapterResponse.status !== 204) {
                                     falseUpdate.push(productAdapter);
                                 }
@@ -512,7 +477,7 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                             if (item.id) {
                                 if (item.isDeleted === true) {
                                     try {
-                                        const productImageResponse = await axios.delete(`ImageDetail/${item.id}`);
+                                        const productImageResponse = await DeleteImageDetail(item.id);
                                         if (productImageResponse.status !== 200) {
                                             falseUpdate.push(item);
                                         }
@@ -522,7 +487,7 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                                     }
                                 } else {
                                     try {
-                                        const productImageResponse = await axios.put(`ImageDetail/${item.id}`, item);
+                                        const productImageResponse = await UpdateImageDetail(item);
                                         if (productImageResponse.status !== 204) {
                                             falseUpdate.push(item);
                                         }
@@ -534,7 +499,7 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                             } else {
                                 try {
                                     delete item.id;
-                                    const productImageResponse = await axios.post(`ImageDetail`, item);
+                                    const productImageResponse = await AddImageDetail(item);
                                     if (productImageResponse.status !== 204) {
                                         falseUpdate.push(item);
                                     }
@@ -705,7 +670,7 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
 
     return (
         <div
-            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm"
+            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm max-h-screen overflow-y-auto"
         >
             <div className="bg-white p-3 rounded-md">
                 <div className="flex justify-between md:text-2xl font-semibold">

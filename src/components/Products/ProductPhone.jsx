@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
-import axios from "../../api/axios";
 import ConfirmDeleteProductParameter from "./ConfirmDeleteProductParameter";
+import {DeleteProductPhone} from "../../services/Product/ProductPhone";
 
 export default function ProductPhone({visible, onClose, data, action, onSave, onReload}) {
     const [productPhoneData, setProductPhoneData] = useState({
@@ -57,7 +57,7 @@ export default function ProductPhone({visible, onClose, data, action, onSave, on
 
     const handleOnDelete = async () => {
         try {
-            const res = await axios.delete(`/ParameterPhone/${productPhoneData.id}`);
+            const res = await DeleteProductPhone(productPhoneData.id);
             if (res.status === 204) {
                 alert("Xóa thông số điện thoại thành công!");
                 onReload();
@@ -80,8 +80,7 @@ export default function ProductPhone({visible, onClose, data, action, onSave, on
 
     return (
         <div
-            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm text-xl"
-        >
+            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm max-h-screen overflow-y-auto">
             <div className="bg-white p-3 rounded-md">
                 <div className="flex justify-between md:text-2xl font-semibold">
                     <div className="">Thông số điện thoại</div>

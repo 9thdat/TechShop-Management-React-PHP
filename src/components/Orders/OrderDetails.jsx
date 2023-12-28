@@ -1,9 +1,11 @@
 import React, {useEffect, useState, useCallback} from "react";
-import axios from "../../api/axios";
 import tinh_tp from "../../Models/Address/tinh-tp.json";
 import quan_huyen from "../../Models/Address/quan-huyen.json";
 import xa_phuong from "../../Models/Address/xa-phuong.json";
 import OrderProductDetail from "./OrderProductDetail";
+import {fetchOrderDetail, getLastId} from "../../services/Order/OrderDetail";
+import {fetchCustomer} from "../../services/Customer/Customer";
+import {fetchDiscountByCode, fetchDiscountCodeById} from "../../services/Discount/Discount";
 
 export default function OrderDetails({visible, orderData, handleAddOrder, handleEditOrder, onClose, action}) {
     const [order, setOrder] = useState(() => {
@@ -125,15 +127,6 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
             console.log("setOrder");
         }
     }, [orderData, action]);
-
-    const getLastId = async () => {
-        try {
-            const response = await axios.get("/Order/GetLastId");
-            return response.data;
-        } catch (e) {
-            console.log(e);
-        }
-    }
 
     useEffect(() => {
         fetchShippingFee();
@@ -383,7 +376,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
             }));
             if (isValid === false) return;
             try {
-                const response = await fetchCustomerData(order.customerEmail);
+                const response = await fetchCustomer(order.customerEmail);
                 if (response.status === 200) {
                     const newCity = cities.find((tinh) => tinh.name === response.data.city);
                     const newDistrict = districts.find((quan) => quan.parent_code === newCity?.code);
@@ -419,15 +412,6 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
         }
     )
 
-    const fetchCustomerData = async (email) => {
-        try {
-            const response = await axios.get(`/Customer/${email}`);
-            return response;
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
     const handleOpenDetailProducts = async () => {
         if (orderProductChanged === false && action === "edit") {
             await fetchOrderDetail(orderData.id).then((res) => {
@@ -440,16 +424,6 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
 
         setVisibleOrderProductDetail(true);
     }
-
-    const fetchOrderDetail = async (orderId) => {
-        try {
-            const response = await axios.get(`/OrderDetail/OrderId=${orderId}`);
-            return response.data;
-        } catch (err) {
-            console.error(err);
-            return [];
-        }
-    };
 
     const handleCloseOrderProductDetail = () => {
         setVisibleOrderProductDetail(false);
@@ -469,14 +443,23 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
     }
 
     const handleDiscount = async (e) => {
-        const discount = await fetchDiscountIdByCode(e.target.value);
-        if (discount.status === "expired") {
-            alert("Mã giảm giá đã hết hạn");
+        const discount = await fetchDiscountByCode(e.target.value);
+        if (discount.status === 404) {
+            alert("Mã giảm giá không tồn tại");
             setOrder((prevOrder) => ({
                 ...prevOrder,
                 discountCode: "",
             }));
             return;
+        } else {
+            if (discount.data.status === "expired") {
+                alert("Mã giảm giá đã hết hạn");
+                setOrder((prevOrder) => ({
+                    ...prevOrder,
+                    discountCode: "",
+                }));
+                return;
+            }
         }
 
         if (order.totalPrice >= discount.minApply) {
@@ -492,28 +475,6 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                     totalPrice: newTotalPrice,
                 }));
             }
-        }
-    }
-
-    const fetchDiscountIdByCode = async (code) => {
-        if (code === "") return "";
-        try {
-            const response = await axios.get(`/Discount/Code=${code}`);
-            return response.data;
-        } catch (e) {
-            console.log(e);
-            return "";
-        }
-    }
-
-    const fetchDiscountCodeById = async (id) => {
-        if (id === null) return "";
-        try {
-            const response = await axios.get(`/Discount/${id}`);
-            return response.data;
-        } catch (e) {
-            console.log(e);
-            return "";
         }
     }
 
@@ -543,8 +504,8 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
     if (!visible) return null;
     return (
         <div
-            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm"
-        >
+            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm max-h-screen overflow-y-auto">
+
             <div className="bg-white p-3 rounded-md">
                 <div className="flex justify-between md:text-2xl font-semibold">
                     <div className="">Thông tin đơn hàng</div>

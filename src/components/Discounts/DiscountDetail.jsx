@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import axios from "../../api/axios";
+import {fetchDiscountByCode} from "../../services/Discount/Discount";
 
 export default function DiscountDetail({
                                            visible,
@@ -10,6 +10,7 @@ export default function DiscountDetail({
                                            action
                                        }) {
     const [discount, setDiscount] = useState(discountData);
+    const [codeExist, setCodeExist] = useState(false);
 
     const [isValid, setIsValid] = useState({
         code: false,
@@ -29,6 +30,7 @@ export default function DiscountDetail({
     });
 
     useEffect(() => {
+        setCodeExist(false);
         setDiscount(discountData);
         if (action === "edit") {
             setIsValid({
@@ -67,7 +69,7 @@ export default function DiscountDetail({
         }
     }, [discountData]);
 
-    const handleOnChange = (e) => {
+    const handleOnChange = async (e) => {
         const {id, value} = e.target;
         setDiscount({
             ...discount,
@@ -77,8 +79,8 @@ export default function DiscountDetail({
 
     const handleOnSave = (e) => {
         e.preventDefault();
-        if (!isValid.code || !isValid.value || !isValid.minApply || !isValid.maxSpeed || !isValid.quantity) {
-            alert("Vui lòng nhập đầy đủ thông tin");
+        if (!isValid.code || !isValid.value || !isValid.minApply || !isValid.maxSpeed || !isValid.quantity || !isValid.startDate || !isValid.endDate || codeExist) {
+            alert("Vui lòng nhập đúng thông tin");
             return;
         }
         if (action === "add") {
@@ -88,25 +90,26 @@ export default function DiscountDetail({
         }
     };
 
-    const handleValidField = (e) => {
-        const {id, value} = e.target;
+    const handleValidField = async (e) => {
+        const id = e.target.id;
+        const value = e.target.value;
 
-        setIsValid({
-            ...isValid,
-            [id]: value !== "",
-        });
+        setIsValid(prevState => ({
+            ...prevState,
+            [id]: value !== "" && value !== null && value !== undefined,
+        }));
 
-        const fields = ["code", "value", "minApply", "maxSpeed", "quantity"];
-
+        const fields = ["value", "minApply", "maxSpeed", "quantity"];
         fields.forEach(field => {
             if (id === field && isValid[`new${field.charAt(0).toUpperCase() + field.slice(1)}`]) {
-                setIsValid({
-                    ...isValid,
+                setIsValid(prevState => ({
+                    ...prevState,
                     [`new${field.charAt(0).toUpperCase() + field.slice(1)}`]: false,
-                })
+                }));
             }
         });
     }
+
 
     const handleValidDate = (e) => {
         const {id, value} = e.target;
@@ -123,6 +126,23 @@ export default function DiscountDetail({
                 newEndDate: false,
                 endDate: value > discount.startDate,
             });
+        }
+    }
+
+    const handleValidCode = async (e) => {
+        const {id, value} = e.target;
+
+        setIsValid({
+            ...isValid,
+            newCode: false,
+            code: value !== "",
+        });
+
+        const res = await fetchDiscountByCode(discount.code);
+        if (res.status === 200) {
+            setCodeExist(true);
+        } else {
+            setCodeExist(false);
         }
     }
 
@@ -156,15 +176,19 @@ export default function DiscountDetail({
                         </label>
                         <input
                             type="text"
-                            className={`border border-black rounded-md text-center block disabled:bg-gray-300 ${(isValid.newCode) ? "" : (isValid.code) ? "" : "border-red-500"}`}
+                            className={`border border-black rounded-md w-full text-center block disabled:bg-gray-300 ${(isValid.newCode) ? "" : (isValid.code) ? ((codeExist) ? "border-red-500" : "") : "border-red-500"}`}
                             id="code"
                             onChange={(e) => handleOnChange(e)}
-                            onBlur={(e) => handleValidField(e)}
+                            onBlur={(e) => handleValidCode(e)}
                             value={discount.code}
                         />
                         {
                             !isValid.code && !isValid.newCode &&
                             <h5 className="text-red-300 text-xs">"Mã không hợp lệ"</h5>
+                        }
+                        {
+                            codeExist &&
+                            <h5 className="text-red-300 text-xs">"Mã đã tồn tại"</h5>
                         }
                     </div>
                     <div className="">

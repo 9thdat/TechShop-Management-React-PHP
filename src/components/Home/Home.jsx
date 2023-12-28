@@ -1,7 +1,12 @@
 import React, {useState, useEffect} from "react";
-import axios from "../../api/axios";
 import LineChart from "../Charts/LineChart";
 import defaultAvatar from "../../assets/images/defaultAvatar/defaultAvatar.jpeg";
+import {
+    fetchOrdersProcessing, fetchOrdersTodayCompleted,
+    fetchRevenueEachDayThisMonth,
+    fetchRevenueMonth, fetchRevenueToday,
+    fetchTop5Customers
+} from "../../services/Order/Order";
 
 export default function Home() {
     const [ordersProcessing, setOrdersProcessing] = useState(0);
@@ -85,66 +90,6 @@ export default function Home() {
             setTopCustomer(res);
         });
     }, []);
-
-    const fetchOrdersProcessing = async () => {
-        try {
-            const res = await axios.get("/Order/Processing");
-            return res.data;
-        } catch (err) {
-            console.log(err);
-            return 0;
-        }
-    }
-
-    const fetchOrdersTodayCompleted = async () => {
-        try {
-            const res = await axios.get("/Order/TodayCompleted");
-            return res.data;
-        } catch (err) {
-            console.log(err);
-            return 0;
-        }
-    }
-
-    const fetchRevenueToday = async () => {
-        try {
-            const res = await axios.get("/Order/RevenueToday");
-            return res.data;
-        } catch (err) {
-            console.log(err);
-            return 0;
-        }
-    }
-
-    const fetchRevenueMonth = async () => {
-        try {
-            const res = await axios.get("/Order/RevenueThisMonth");
-            return res.data;
-        } catch (err) {
-            console.log(err);
-            return 0;
-        }
-    }
-
-    const fetchRevenueEachDayThisMonth = async () => {
-        try {
-            const res = await axios.get("/Order/RevenueEachDayThisMonth");
-            return res.data;
-        } catch (err) {
-            console.log(err);
-            return [];
-        }
-    }
-
-    const fetchTop5Customers = async () => {
-        try {
-            const res = await axios.get("/Customer/Top5Customers");
-            return res.data;
-        } catch (err) {
-            console.log(err);
-            return [];
-        }
-    }
 
     return (
         <div className={"home md:grid md:grid-cols-4 grid-rows-6 w-full h-[90vh] overflow-auto"}>

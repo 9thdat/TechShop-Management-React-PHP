@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef} from "react";
 import ConfirmDeleteProductParameter from "./ConfirmDeleteProductParameter";
-import axios from "../../api/axios";
+import {DeleteProductCable} from "../../services/Product/ProductCable";
 
 export default function ProductCable({visible, onClose, data, action, onSave, onReload}) {
     const [productCable, setProductCable] = useState({});
@@ -31,7 +31,7 @@ export default function ProductCable({visible, onClose, data, action, onSave, on
 
     const handleOnDelete = async () => {
         try {
-            const res = await axios.delete(`/ParameterCable/${productCable.id}`);
+            const res = await DeleteProductCable(productCable.id);
             if (res.status === 204) {
                 alert("Xóa thông số cáp thành công!");
                 onReload();
@@ -54,7 +54,8 @@ export default function ProductCable({visible, onClose, data, action, onSave, on
 
     if (!visible) return null;
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm text-xl">
+        <div
+            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm max-h-screen overflow-y-auto">
             <div className="bg-white p-3 rounded-md">
                 <div className="flex justify-between md:text-2xl font-semibold">
                     <div className="">Chi tiết thông số cáp</div>

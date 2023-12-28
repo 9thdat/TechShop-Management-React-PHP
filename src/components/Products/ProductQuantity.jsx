@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
-import axios from "../../api/axios";
 import ProductImage from "./ProductImage";
+import {fetchProductImage} from "../../services/ImageDetail/ImageDetail";
 
 export default function ProductQuantity({visible, onClose, data, action, onSave}) {
     const [productQuantityData, setProductQuantityData] = useState([]);
@@ -113,18 +113,6 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
         setVisibleProductImage(false);
     };
 
-    const fetchProductImage = async (productId) => {
-        if (productId === "") {
-            return [];
-        }
-        try {
-            const response = await axios.get(`/ImageDetail/ProductId=${productId}`);
-            return response.data;
-        } catch (err) {
-            console.error(err);
-            return [];
-        }
-    };
 
     const handleOnDeleteProductQuantity = (e, index) => {
         setProductQuantityData((prevData) =>
@@ -180,8 +168,8 @@ export default function ProductQuantity({visible, onClose, data, action, onSave}
 
     return (
         <div
-            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm text-xl"
-        >
+            className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center backdrop-blur-sm max-h-screen overflow-y-auto">
+
             <div className="bg-white p-3 rounded-md">
                 <div className="flex justify-between md:text-2xl font-semibold">
                     <div className="">Chi tiết số lượng sản phẩm</div>

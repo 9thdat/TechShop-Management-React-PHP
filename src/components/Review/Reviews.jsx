@@ -1,8 +1,8 @@
 import React, {useEffect, useState, useRef} from "react";
-import axios from "../../api/axios";
 import CustomerDetail from "../Customers/CustomerDetail";
 import CustomerStatus from "../Customers/CustomerStatus";
 import ReviewDetail from "./ReviewDetail";
+import {fetchReviews, UpdateReview} from "../../services/Review/Review";
 
 export default function Reviews() {
     const [reviews, setReviews] = useState([]);
@@ -26,16 +26,6 @@ export default function Reviews() {
         sortValue: "productId",
         statusValue: "all",
     });
-
-    const fetchReviews = async () => {
-        try {
-            const response = await axios.get("/Review");
-            return response.data;
-        } catch (err) {
-            console.log(err);
-            return [];
-        }
-    }
 
     const handleOpenReviewDetail = (review) => {
         setReview(review);
@@ -98,16 +88,6 @@ export default function Reviews() {
         );
 
         setReviews(searchResult);
-    }
-
-    const UpdateReview = async (review) => {
-        try {
-            const response = await axios.put(`/Review/Id=${review.id}&Content=${review.adminReply}`);
-            return response;
-        } catch (err) {
-            console.log(err);
-            return err;
-        }
     }
 
     return (
