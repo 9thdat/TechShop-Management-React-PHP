@@ -50,7 +50,10 @@ export const ValidateStaff = async (email) => {
 
 export const Login = async (email, password) => {
     try {
-        const res = await axios.post(`/User/Login/${email}`, password);
+        const res = await axios.post(`/User/Login`, {
+            email: email,
+            password: password,
+        });
         return res;
     } catch (e) {
         console.log(e);
