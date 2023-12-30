@@ -2,8 +2,8 @@ import axios from '../../api/axios';
 
 export const fetchOrders = async () => {
     try {
-        const res = await axios.get("/Order");
-        return res.data;
+        const res = await axios.get("/Order/GetAllOrders.php");
+        return res.data.data;
     } catch (err) {
         console.log(err);
         return [];
@@ -12,7 +12,7 @@ export const fetchOrders = async () => {
 
 export const AddOrder = async (orderData) => {
     try {
-        const res = await axios.post("/Order", orderData);
+        const res = await axios.post("/Order/AddOrder.php", orderData);
         return res;
     } catch (e) {
         console.log(e);
@@ -22,7 +22,7 @@ export const AddOrder = async (orderData) => {
 
 export const UpdateOrder = async (orderData) => {
     try {
-        const res = await axios.put(`/Order/ChangeStatus/${orderData.id}`, orderData);
+        const res = await axios.put(`/Order/ChangeStatus.php`, orderData);
         return res;
     } catch (e) {
         console.log(e);
@@ -32,8 +32,8 @@ export const UpdateOrder = async (orderData) => {
 
 export const fetchOrdersProcessing = async () => {
     try {
-        const res = await axios.get("/Order/Processing");
-        return res.data;
+        const res = await axios.get("/Order/GetProcessingOrdersCount.php");
+        return res.data.data;
     } catch (err) {
         console.log(err);
         return 0;
@@ -42,8 +42,8 @@ export const fetchOrdersProcessing = async () => {
 
 export const fetchOrdersTodayCompleted = async () => {
     try {
-        const res = await axios.get("/Order/TodayCompleted");
-        return res.data;
+        const res = await axios.get("/Order/GetTodayCompleted.php");
+        return res.data.data;
     } catch (err) {
         console.log(err);
         return 0;
@@ -52,8 +52,8 @@ export const fetchOrdersTodayCompleted = async () => {
 
 export const fetchRevenueToday = async () => {
     try {
-        const res = await axios.get("/Order/RevenueToday");
-        return res.data;
+        const res = await axios.get("/Order/GetRevenueToday.php");
+        return res.data.data;
     } catch (err) {
         console.log(err);
         return 0;
@@ -63,8 +63,8 @@ export const fetchRevenueToday = async () => {
 
 export const fetchRevenueMonth = async () => {
     try {
-        const res = await axios.get("/Order/RevenueThisMonth");
-        return res.data;
+        const res = await axios.get("/Order/GetRevenueThisMonth.php");
+        return res.data.data;
     } catch (err) {
         console.log(err);
         return 0;
@@ -73,8 +73,8 @@ export const fetchRevenueMonth = async () => {
 
 export const fetchRevenueEachDayThisMonth = async () => {
     try {
-        const res = await axios.get("/Order/RevenueEachDayThisMonth");
-        return res.data;
+        const res = await axios.get("/Order/GetRevenueEachDayThisMonth.php");
+        return res.data.data;
     } catch (err) {
         console.log(err);
         return [];
@@ -83,8 +83,8 @@ export const fetchRevenueEachDayThisMonth = async () => {
 
 export const fetchTop5Customers = async () => {
     try {
-        const res = await axios.get("/Customer/Top5Customers");
-        return res.data;
+        const res = await axios.get("/Customer/GetTop5Customers.php");
+        return res.data.data;
     } catch (err) {
         console.log(err);
         return [];
@@ -93,8 +93,8 @@ export const fetchTop5Customers = async () => {
 
 export const fetchRevenue = async (startMonth, startYear, endMonth, endYear) => {
     try {
-        const res = await axios.get(`/Order/GetMonthlyRevenue?startMonth=${startMonth}&startYear=${startYear}&endMonth=${endMonth}&endYear=${endYear}`);
-        return res.data;
+        const res = await axios.get(`/Order/GetMonthlyRevenue.php?startMonth=${startMonth}&startYear=${startYear}&endMonth=${endMonth}&endYear=${endYear}`);
+        return res.data.data;
     } catch (err) {
         console.log(err);
         return [];
@@ -103,7 +103,7 @@ export const fetchRevenue = async (startMonth, startYear, endMonth, endYear) => 
 
 export const fetchRevenueByProduct = async (startMonth, startYear, endMonth, endYear, productId) => {
     try {
-        const res = await axios.get(`/Order/GetMonthlyRevenueByProduct?startMonth=${startMonth}&startYear=${startYear}&endMonth=${endMonth}&endYear=${endYear}&productId=${productId}`);
+        const res = await axios.get(`/Order/GetMonthlyRevenueByProduct.php?startMonth=${startMonth}&startYear=${startYear}&endMonth=${endMonth}&endYear=${endYear}&productId=${productId}`);
         return res.data;
     } catch (err) {
         console.log(err);
@@ -113,7 +113,7 @@ export const fetchRevenueByProduct = async (startMonth, startYear, endMonth, end
 
 export const fetchProductsSold = async (startMonth, startYear, endMonth, endYear) => {
     try {
-        const res = await axios.get(`/Order/GetMonthlyProductsSold?startMonth=${startMonth}&startYear=${startYear}&endMonth=${endMonth}&endYear=${endYear}`);
+        const res = await axios.get(`/Order/GetMonthlyProductsSold.php?startMonth=${startMonth}&startYear=${startYear}&endMonth=${endMonth}&endYear=${endYear}`);
         return res.data;
     } catch (err) {
         console.log(err);
@@ -124,10 +124,20 @@ export const fetchProductsSold = async (startMonth, startYear, endMonth, endYear
 
 export const fetchProductSold = async (startMonth, startYear, endMonth, endYear, productId) => {
     try {
-        const res = await axios.get(`/Order/GetMonthlyProductsSold?startMonth=${startMonth}&startYear=${startYear}&endMonth=${endMonth}&endYear=${endYear}&productId=${productId}`);
+        const res = await axios.get(`/Order/GetMonthlyProductsSold.php?startMonth=${startMonth}&startYear=${startYear}&endMonth=${endMonth}&endYear=${endYear}&productId=${productId}`);
         return res.data;
     } catch (err) {
         console.log(err);
         return [];
+    }
+}
+
+
+export const getLastId = async () => {
+    try {
+        const response = await axios.get("/Order/GetLastId");
+        return response.data;
+    } catch (e) {
+        console.log(e);
     }
 }

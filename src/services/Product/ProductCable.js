@@ -3,7 +3,7 @@ import axios from '../../api/axios';
 
 export const fetchProductCable = async (productId) => {
     try {
-        const productCableResponse = await axios.get(`/ParameterCable/ProductId=${productId}`);
+        const productCableResponse = await axios.get(`/ParameterCable/GetParameterCable.php?ProductId=${productId}`);
         return productCableResponse.data.length > 0 ? productCableResponse.data[0] : {};
     } catch (error) {
         console.log("Failed to fetch product cable list: ", error.message);
@@ -13,7 +13,7 @@ export const fetchProductCable = async (productId) => {
 
 export const AddProductCable = async (data) => {
     try {
-        const res = await axios.post('/ParameterCable', data);
+        const res = await axios.post('/ParameterCable/AddParameterCable.php', data);
         return res;
     } catch (e) {
         console.log(e);
@@ -23,7 +23,7 @@ export const AddProductCable = async (data) => {
 
 export const UpdateProductCable = async (data) => {
     try {
-        const res = await axios.put(`/ParameterCable/${data.id}`, data);
+        const res = await axios.put(`/ParameterCable/UpdateParameterCable.php`, data);
         return res;
     } catch (e) {
         console.log(e);
@@ -33,7 +33,7 @@ export const UpdateProductCable = async (data) => {
 
 export const DeleteProductCable = async (id) => {
     try {
-        const res = await axios.delete(`/ParameterCable/${id}`);
+        const res = await axios.delete(`/ParameterCable/DeleteParameterCable.php?id=${id}`);
         return res;
     } catch (e) {
         console.log(e);

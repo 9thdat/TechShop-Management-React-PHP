@@ -2,7 +2,7 @@ import axios from '../../api/axios';
 
 export const fetchProduct = async (productId) => {
     try {
-        const response = await axios.get(`/Product/${productId}`);
+        const response = await axios.get(`/Product/GetProduct.php?id=${productId}`);
         return response.data;
     } catch (err) {
         console.error(err);
@@ -12,7 +12,7 @@ export const fetchProduct = async (productId) => {
 
 export const fetchProducts = async () => {
     try {
-        const response = await axios.get("/Product/GetProductAndQuantity");
+        const response = await axios.get("/Product/GetProductAndQuantity.php");
         return response.data;
     } catch (error) {
         console.log("Failed to fetch product list: ", error.message);
@@ -22,7 +22,7 @@ export const fetchProducts = async () => {
 
 export const fetchLastProductId = async () => {
     try {
-        const response = await axios.get("/Product/GetLastId");
+        const response = await axios.get("/Product/GetLastId.php");
         return response.data;
     } catch (error) {
         console.log("Failed to fetch last product id: ", error.message);
@@ -32,7 +32,7 @@ export const fetchLastProductId = async () => {
 
 export const AddProduct = async (productData) => {
     try {
-        const res = await axios.post(`Product`, productData);
+        const res = await axios.post(`/Product/AddProduct.php`, productData);
         return res;
     } catch (e) {
         console.log(e);
@@ -42,7 +42,7 @@ export const AddProduct = async (productData) => {
 
 export const UpdateProduct = async (productData) => {
     try {
-        const res = await axios.put(`Product/${productData.id}`, productData);
+        const res = await axios.put(`/Product/UpdateProduct.php`, productData);
         return res;
     } catch (e) {
         console.log(e);
@@ -52,7 +52,7 @@ export const UpdateProduct = async (productData) => {
 
 export const DeleteProduct = async (id) => {
     try {
-        const res = await axios.put(`Product/DeleteProduct/${id}`);
+        const res = await axios.put(`/Product/DeleteProduct.php?id=${id}`);
         return res;
     } catch (e) {
         console.log(e);

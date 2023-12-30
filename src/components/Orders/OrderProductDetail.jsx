@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useMemo, useRef, useCallback} from "react";
 import {fetchProductQuantity, fetchTotalProductQuantity} from "../../services/Product/ProductQuantity";
 import {fetchProduct} from "../../services/Product/Product";
-import {getLastId} from "../../services/Order/OrderDetail";
+import {getLastId} from "../../services/Order/Order";
 
 export default function OrderProductDetail({visible, onClose, order, action, onSave, orderDetail}) {
     const [orderProducts, setOrderProducts] = useState([]);

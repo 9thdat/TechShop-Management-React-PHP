@@ -2,7 +2,7 @@ import axios from '../../api/axios';
 
 export const fetchUser = async (email) => {
     try {
-        const res = await axios.get(`/User/${email}`);
+        const res = await axios.get(`/User/IsEmailStaffExist.php?email=${email}`);
         return res.data;
     } catch (err) {
         console.log(err);
@@ -11,7 +11,7 @@ export const fetchUser = async (email) => {
 
 export const fetchStaffs = async () => {
     try {
-        const res = await axios.get("/User/Staffs");
+        const res = await axios.get("/User/GetStaffs.php");
         return res.data;
     } catch (err) {
         console.log(err);
@@ -20,7 +20,7 @@ export const fetchStaffs = async () => {
 
 export const AddStaff = async (staff) => {
     try {
-        const res = await axios.post("/User/Staff", staff);
+        const res = await axios.post("/User/CreateStaff.php", staff);
         return res;
     } catch (e) {
         console.log(e);
@@ -30,7 +30,7 @@ export const AddStaff = async (staff) => {
 
 export const UpdateStaff = async (staff) => {
     try {
-        const res = await axios.put("/User/Staff", staff);
+        const res = await axios.put("/User/UpdateStaff.php", staff);
         return res;
     } catch (e) {
         console.log(e);
@@ -50,7 +50,7 @@ export const ValidateStaff = async (email) => {
 
 export const Login = async (email, password) => {
     try {
-        const res = await axios.post(`/User/Login`, {
+        const res = await axios.post(`/User/Login.php`, {
             email: email,
             password: password,
         });
@@ -63,7 +63,7 @@ export const Login = async (email, password) => {
 
 export const ValidateToken = async (token) => {
     try {
-        const res = await axios.post("/User/ValidateToken", {
+        const res = await axios.post("/User/ValidateToken.php", {
             token: token,
         });
         return res;
@@ -75,7 +75,9 @@ export const ValidateToken = async (token) => {
 
 export const ChangePassword = async (email, password) => {
     try {
-        const res = await axios.put(`/User/ChangePassword/${email}`, password);
+        const res = await axios.put(`/User/ChangePassword.php?email=${email}`, {
+            password: password,
+        });
         return res;
     } catch (e) {
         console.log(e);

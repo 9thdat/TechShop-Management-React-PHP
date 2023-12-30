@@ -2,7 +2,7 @@ import axios from '../../api/axios';
 
 export const fetchCustomers = async () => {
     try {
-        const response = await axios.get("/Customer");
+        const response = await axios.get("/Customer/GetAllCustomers.php");
         return response.data;
     } catch (error) {
         console.log("Failed to fetch customer list: ", error.message);
@@ -12,7 +12,7 @@ export const fetchCustomers = async () => {
 
 export const fetchCustomer = async (email) => {
     try {
-        const response = await axios.get(`/Customer/${email}`);
+        const response = await axios.get(`/Customer/GetCustomerByEmail.php?email=${email}`);
         return response;
     } catch (e) {
         console.log(e);
@@ -21,7 +21,7 @@ export const fetchCustomer = async (email) => {
 
 export const AddCustomer = async (newCustomer) => {
     try {
-        const res = await axios.post("/Customer", newCustomer);
+        const res = await axios.post("/Customer/CreateCustomer.php", newCustomer);
         return res;
     } catch (error) {
         console.log("Thêm khách hàng thất bại: ", error.message);
@@ -30,19 +30,10 @@ export const AddCustomer = async (newCustomer) => {
 
 export const changeCustomerStatus = async (email) => {
     try {
-        const response = await axios.put(`Customer/ChangeStatus/Email=${email}`);
+        const response = await axios.put(`/Customer/ChangeStatus.php?Email=${email}`);
         return response;
     } catch (error) {
         alert("Đổi tình trạng thất bại!");
-    }
-}
-
-export const getCustomerByEmail = async (email) => {
-    try {
-        const res = await axios.get(`/Customer/${email}`);
-        return res;
-    } catch (error) {
-        console.log("Lỗi tìm khách hàng theo email: ", error.message);
     }
 }
 

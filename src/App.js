@@ -50,7 +50,7 @@ function App() {
                 setIsLogin(true);
                 sessionStorage.setItem("userEmail", isValid[0].value);
                 sessionStorage.setItem("role", isValid[1].value);
-                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+                axios.defaults.headers.common['Authorization'] = token;
             } else {
                 setIsLogin(false);
             }

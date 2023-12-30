@@ -2,7 +2,7 @@ import axios from '../../api/axios'
 
 export const fetchDiscounts = async () => {
     try {
-        const response = await axios.get("/Discount");
+        const response = await axios.get("/Discount/GetAllDiscounts.php");
         return response;
     } catch (e) {
         console.error(e.message);
@@ -14,7 +14,7 @@ export const fetchDiscounts = async () => {
 
 export const AddDiscount = async (discount) => {
     try {
-        const response = await axios.post("/Discount", discount);
+        const response = await axios.post("/Discount/CreateDiscount.php", discount);
         return response;
     } catch (e) {
         console.log(e);
@@ -26,7 +26,7 @@ export const AddDiscount = async (discount) => {
 
 export const UpdateDiscount = async (discount) => {
     try {
-        const response = await axios.put("Discount", discount);
+        const response = await axios.put("Discount/UpdateDiscount.php", discount);
         return response;
     } catch (e) {
         console.log(e);
@@ -38,7 +38,7 @@ export const UpdateDiscount = async (discount) => {
 
 export const fetchLastDiscountId = async () => {
     try {
-        const response = await axios.get("/Discount/GetLastId");
+        const response = await axios.get("/Discount/GetLastId.php");
         return response;
     } catch (e) {
         console.error(e.message);
@@ -50,7 +50,7 @@ export const fetchLastDiscountId = async () => {
 export const fetchDiscountCodeById = async (id) => {
     if (id === null) return "";
     try {
-        const response = await axios.get(`/Discount/${id}`);
+        const response = await axios.get(`/Discount/GetDiscountById.php?id=${id}`);
         return response.data;
     } catch (e) {
         console.log(e);
@@ -61,7 +61,7 @@ export const fetchDiscountCodeById = async (id) => {
 export const fetchDiscountByCode = async (code) => {
     if (!code) return;
     try {
-        const response = await axios.get(`/Discount/Code=${code}`);
+        const response = await axios.get(`/Discount/GetDiscountByCode.php?Code=${code}`);
         return response;
     } catch (e) {
         console.error(e.message);

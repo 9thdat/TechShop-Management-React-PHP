@@ -9,7 +9,6 @@ import {Login} from "../../services/User/User";
 export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const {setAuth} = useContext(AuthContext);
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
@@ -23,7 +22,6 @@ export default function LoginPage() {
                     alert("Tài khoản đã ngừng hoạt động");
                     return;
                 } else {
-                    setAuth({email, password});
                     sessionStorage.setItem("token", response.data.token);
                     sessionStorage.setItem("role", response.data.role);
                     sessionStorage.setItem("menu", "home");

@@ -2,7 +2,7 @@ import axios from '../../api/axios';
 
 export const fetchOrderDetail = async (orderId) => {
     try {
-        const response = await axios.get(`/OrderDetail/OrderId=${orderId}`);
+        const response = await axios.get(`/OrderDetail/GetOrderDetail.php?orderId=${orderId}`);
         return response.data;
     } catch (err) {
         console.error(err);
@@ -12,7 +12,7 @@ export const fetchOrderDetail = async (orderId) => {
 
 export const AddOrderDetail = async (order) => {
     try {
-        const res = await axios.post("/OrderDetail", order);
+        const res = await axios.post("/OrderDetail/AddOrderDetail.php", order);
         return res;
     } catch (e) {
         console.log(e);
@@ -22,19 +22,10 @@ export const AddOrderDetail = async (order) => {
 
 export const CancelOrderDetail = async (orderData) => {
     try {
-        const res = await axios.put(`/OrderDetail/CancelOrder/${orderData.id}`);
+        const res = await axios.put(`/OrderDetail/CancelOrderDetail.php?orderId=${orderData.id}`);
         return res;
     } catch (e) {
         console.log(e);
         return (e.res);
-    }
-}
-
-export const getLastId = async () => {
-    try {
-        const response = await axios.get("/Order/GetLastId");
-        return response.data;
-    } catch (e) {
-        console.log(e);
     }
 }

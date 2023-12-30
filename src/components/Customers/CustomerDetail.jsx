@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useMemo} from "react";
 import defaultAvatar from "../../assets/images/defaultAvatar/defaultAvatar.jpeg"
-import {getCustomerByEmail} from "../../services/Customer/Customer";
+import {fetchCustomer} from "../../services/Customer/Customer";
 
 const tinh_tp = require("../../Models/Address/tinh-tp.json");
 const quan_huyen = require("../../Models/Address/quan-huyen.json");
@@ -162,7 +162,7 @@ export default function CustomerDetail({visible, onClose, customerData, action, 
             return;
         }
         try {
-            const res = await getCustomerByEmail(e.target.value);
+            const res = await fetchCustomer(e.target.value);
             if (res.status === 200) {
                 setIsCustomerExist(true);
             }

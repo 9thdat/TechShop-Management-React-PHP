@@ -5,7 +5,7 @@ export const fetchProductQuantity = async (productId) => {
         return [];
     }
     try {
-        const response = await axios.get(`/ProductQuantity/ProductId=${productId}`);
+        const response = await axios.get(`/ProductQuantity/GetProductQuantity.php?productId=${productId}`);
         return response.data;
     } catch (err) {
         console.error(err);
@@ -19,7 +19,7 @@ export const fetchTotalProductQuantity = async (productId, color) => {
     }
 
     try {
-        const response = await axios.get(`/ProductQuantity/TotalQuantity/ProductId=${productId}&ProductColor=${color}`);
+        const response = await axios.get(`/ProductQuantity/GetTotalQuantity.php?productId=${productId}&color=${color}`);
         return response.data;
     } catch (err) {
         console.error(err);
@@ -29,7 +29,7 @@ export const fetchTotalProductQuantity = async (productId, color) => {
 
 export const AddProductQuantity = async (productQuantityData) => {
     try {
-        const res = await axios.post(`ProductQuantity`, productQuantityData);
+        const res = await axios.post(`ProductQuantity/AddProductQuantity.php`, productQuantityData);
         return res;
     } catch (e) {
         console.log(e);
@@ -39,7 +39,7 @@ export const AddProductQuantity = async (productQuantityData) => {
 
 export const UpdateProductQuantity = async (productQuantityData) => {
     try {
-        const res = await axios.put(`ProductQuantity/${productQuantityData.id}`, productQuantityData);
+        const res = await axios.put(`ProductQuantity/UpdateProductQuantity.php`, productQuantityData);
         return res;
     } catch (e) {
         console.log(e);
@@ -49,7 +49,7 @@ export const UpdateProductQuantity = async (productQuantityData) => {
 
 export const DeleteProductQuantity = async (id) => {
     try {
-        const res = await axios.delete(`/ProductQuantity/${id}`);
+        const res = await axios.delete(`/ProductQuantity/DeleteProductQuantity.php?id=${id}`);
         return res;
     } catch (e) {
         console.log(e);

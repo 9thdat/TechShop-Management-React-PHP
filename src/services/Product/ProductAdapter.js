@@ -2,7 +2,7 @@ import axios from '../../api/axios';
 
 export const fetchProductAdapter = async (productId) => {
     try {
-        const productAdapterResponse = await axios.get(`/ParameterAdapter/ProductId=${productId}`);
+        const productAdapterResponse = await axios.get(`/ParameterAdapter/GetParameterAdapter.php?ProductId=${productId}`);
         return productAdapterResponse.data.length > 0 ? productAdapterResponse.data[0] : {};
     } catch (error) {
         console.log("Failed to fetch product adapter list: ", error.message);
@@ -12,7 +12,7 @@ export const fetchProductAdapter = async (productId) => {
 
 export const AddProductAdapter = async (data) => {
     try {
-        const response = await axios.post('/ParameterAdapter', data);
+        const response = await axios.post('/ParameterAdapter/AddParameterAdapter.php', data);
         return response;
     } catch (error) {
         console.log(error);
@@ -22,7 +22,7 @@ export const AddProductAdapter = async (data) => {
 
 export const UpdateProductAdapter = async (data) => {
     try {
-        const response = await axios.put(`/ParameterAdapter/${data.id}`, data);
+        const response = await axios.put(`/ParameterAdapter/UpdateParameterAdapter.php`, data);
         return response;
     } catch (error) {
         console.log(error);
@@ -32,7 +32,7 @@ export const UpdateProductAdapter = async (data) => {
 
 export const DeleteProductAdapter = async (id) => {
     try {
-        const response = await axios.delete(`/ParameterAdapter/${id}`);
+        const response = await axios.delete(`/ParameterAdapter/DeleteParameterAdapter.php?id=${id}`);
         return response;
     } catch (error) {
         console.log(error);

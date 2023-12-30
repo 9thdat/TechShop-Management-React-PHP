@@ -2,7 +2,7 @@ import axios from '../../api/axios';
 
 export const fetchProductPhone = async (productId) => {
     try {
-        const productPhoneResponse = await axios.get(`/ParameterPhone/ProductId=${productId}`);
+        const productPhoneResponse = await axios.get(`/ParameterPhone/GetParameterPhone.php?ProductId=${productId}`);
         return productPhoneResponse.data.length > 0 ? productPhoneResponse.data[0] : {};
     } catch (error) {
         console.log("Failed to fetch product phone list: ", error.message);
@@ -12,7 +12,7 @@ export const fetchProductPhone = async (productId) => {
 
 export const AddProductPhone = async (data) => {
     try {
-        const res = await axios.post('/ParameterPhone', data);
+        const res = await axios.post('/ParameterPhone/AddParameterPhone.php', data);
         return res;
     } catch (e) {
         console.log(e);
@@ -22,7 +22,7 @@ export const AddProductPhone = async (data) => {
 
 export const UpdateProductPhone = async (data) => {
     try {
-        const res = await axios.put(`/ParameterPhone/${data.id}`, data);
+        const res = await axios.put(`/ParameterPhone/UpdateParameterPhone.php`, data);
         return res;
     } catch (e) {
         console.log(e);
@@ -32,7 +32,7 @@ export const UpdateProductPhone = async (data) => {
 
 export const DeleteProductPhone = async (id) => {
     try {
-        const res = await axios.delete(`/ParameterPhone/${id}`);
+        const res = await axios.delete(`/ParameterPhone/DeleteParameterPhone.php?id=${id}`);
         return res;
     } catch (e) {
         console.log(e);
