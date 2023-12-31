@@ -135,8 +135,8 @@ export const fetchProductSold = async (startMonth, startYear, endMonth, endYear,
 
 export const getLastId = async () => {
     try {
-        const response = await axios.get("/Order/GetLastId");
-        return response.data;
+        const response = await axios.get("/Order/GetLastId.php");
+        return response.data.data;
     } catch (e) {
         console.log(e);
     }

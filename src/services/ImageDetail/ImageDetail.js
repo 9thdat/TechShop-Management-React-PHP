@@ -6,7 +6,7 @@ export const fetchProductImage = async (productId) => {
     }
     try {
         const response = await axios.get(`/ImageDetail/GetImageDetail.php?ProductId=${productId}`);
-        return response.data;
+        return response.data.data;
     } catch (err) {
         console.error(err);
         return [];
@@ -16,7 +16,7 @@ export const fetchProductImage = async (productId) => {
 export const AddImageDetail = async (imageDetailData) => {
     try {
         const res = await axios.post(`/ImageDetail/AddImageDetail.php`, imageDetailData);
-        return res;
+        return res.data;
     } catch (e) {
         console.log(e);
         return (e.res);
@@ -26,7 +26,7 @@ export const AddImageDetail = async (imageDetailData) => {
 export const UpdateImageDetail = async (imageDetailData) => {
     try {
         const res = await axios.put(`/ImageDetail/UpdateImageDetail.php?id=${imageDetailData.id}`, imageDetailData);
-        return res;
+        return res.data;
     } catch (e) {
         console.log(e);
         return (e.res);
@@ -36,7 +36,7 @@ export const UpdateImageDetail = async (imageDetailData) => {
 export const DeleteImageDetail = async (id) => {
     try {
         const res = await axios.delete(`/ImageDetail/DeleteImageDetail.php?id=${id}`);
-        return res;
+        return res.data;
     } catch (e) {
         console.log(e);
         return (e.res);

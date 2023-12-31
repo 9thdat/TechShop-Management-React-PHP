@@ -3,7 +3,7 @@ import axios from '../../api/axios'
 export const fetchDiscounts = async () => {
     try {
         const response = await axios.get("/Discount/GetAllDiscounts.php");
-        return response;
+        return response.data.data || [];
     } catch (e) {
         console.error(e.message);
         return {
@@ -15,7 +15,7 @@ export const fetchDiscounts = async () => {
 export const AddDiscount = async (discount) => {
     try {
         const response = await axios.post("/Discount/CreateDiscount.php", discount);
-        return response;
+        return response.data;
     } catch (e) {
         console.log(e);
         return {
@@ -39,7 +39,7 @@ export const UpdateDiscount = async (discount) => {
 export const fetchLastDiscountId = async () => {
     try {
         const response = await axios.get("/Discount/GetLastId.php");
-        return response;
+        return response.data.data;
     } catch (e) {
         console.error(e.message);
         return {
@@ -62,7 +62,7 @@ export const fetchDiscountByCode = async (code) => {
     if (!code) return;
     try {
         const response = await axios.get(`/Discount/GetDiscountByCode.php?Code=${code}`);
-        return response;
+        return response.data;
     } catch (e) {
         console.error(e.message);
         return e.response;

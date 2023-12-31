@@ -144,7 +144,7 @@ export default function Products() {
 
     // Product
     const EditProduct = async (e) => {
-        const product = products.find((product) => product.id === parseInt(e.target.value));
+        const product = products.find((product) => product.id === e.target.value);
         setProduct(product);
         setActionType("edit");
 
@@ -157,7 +157,7 @@ export default function Products() {
         try {
             // Update productQuantity
             const response = await DeleteProduct(product.id);
-            if (response.status === 204) {
+            if (response.status === 200) {
                 alert("Xóa sản phẩm thành công!");
                 setVisibleDelete(false);
                 const newProduct = products.map((product) => {
@@ -191,6 +191,12 @@ export default function Products() {
         }
     }
 
+    const handleOpenDeleteProduct = (e) => {
+        const product = products.find((product) => product.id === parseInt(e.target.value));
+        setProduct(product);
+        setVisibleDelete(true);
+    }
+
     const handleOnAbortDelete = () => {
         setVisibleDelete(false);
     }
@@ -202,7 +208,8 @@ export default function Products() {
 
     const AddProduct = async (e) => {
         setActionType("add");
-        const id = await fetchLastProductId() + 1;
+        const res = await fetchLastProductId();
+        const id = Number(res.data) + 1;
         const product = {
             id: id,
             name: "",
@@ -337,7 +344,7 @@ export default function Products() {
                                     <button
                                         className="px-2 py-1 text-white bg-red-500 rounded-md"
                                         value={product.id}
-                                        onClick={(e) => DeleteProduct(e)}>Xóa
+                                        onClick={(e) => handleOpenDeleteProduct(e)}>Xóa
                                     </button>
                                 </td>
                             </tr>

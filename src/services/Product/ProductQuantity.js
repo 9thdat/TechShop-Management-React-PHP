@@ -6,7 +6,7 @@ export const fetchProductQuantity = async (productId) => {
     }
     try {
         const response = await axios.get(`/ProductQuantity/GetProductQuantity.php?productId=${productId}`);
-        return response.data;
+        return response.data.data;
     } catch (err) {
         console.error(err);
         return [];
@@ -20,7 +20,7 @@ export const fetchTotalProductQuantity = async (productId, color) => {
 
     try {
         const response = await axios.get(`/ProductQuantity/GetTotalQuantity.php?productId=${productId}&color=${color}`);
-        return response.data;
+        return response.data.data;
     } catch (err) {
         console.error(err);
         return 0;
@@ -30,7 +30,7 @@ export const fetchTotalProductQuantity = async (productId, color) => {
 export const AddProductQuantity = async (productQuantityData) => {
     try {
         const res = await axios.post(`ProductQuantity/AddProductQuantity.php`, productQuantityData);
-        return res;
+        return res.data;
     } catch (e) {
         console.log(e);
         return (e.res);
@@ -40,7 +40,7 @@ export const AddProductQuantity = async (productQuantityData) => {
 export const UpdateProductQuantity = async (productQuantityData) => {
     try {
         const res = await axios.put(`ProductQuantity/UpdateProductQuantity.php`, productQuantityData);
-        return res;
+        return res.data;
     } catch (e) {
         console.log(e);
         return (e.res);
@@ -50,7 +50,7 @@ export const UpdateProductQuantity = async (productQuantityData) => {
 export const DeleteProductQuantity = async (id) => {
     try {
         const res = await axios.delete(`/ProductQuantity/DeleteProductQuantity.php?id=${id}`);
-        return res;
+        return res.data;
     } catch (e) {
         console.log(e);
         return e.response;

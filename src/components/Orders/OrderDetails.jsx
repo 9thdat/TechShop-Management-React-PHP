@@ -55,17 +55,12 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
 
     useEffect(() => {
         if (action === "add") {
-            const getLastOrderId = async () => {
-                await getLastId().then((res) => {
-                        setOrder((prevOrder) => ({
-                            ...prevOrder,
-                            id: res + 1,
-                        }));
-                    }
-                );
-            }
-
-            getLastOrderId();
+            getLastId().then((res) => {
+                setOrder((prevOrder) => ({
+                    ...prevOrder,
+                    id: Number(res) + 1,
+                }));
+            });
 
             setIsValid({
                 email: false,

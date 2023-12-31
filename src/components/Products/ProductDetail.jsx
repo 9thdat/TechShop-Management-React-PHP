@@ -94,11 +94,11 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
 
                 setIsValid({
                     ...isValid,
-                    name: false,
-                    price: false,
-                    preDiscount: false,
-                    discountPercent: false,
-                    brand: false,
+                    name: true,
+                    price: true,
+                    preDiscount: true,
+                    discountPercent: true,
+                    brand: true,
                     newName: true,
                     newPrice: true,
                     newPreDiscount: true,
@@ -117,11 +117,11 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
 
             setIsValid({
                 ...isValid,
-                name: true,
-                price: true,
-                preDiscount: true,
-                discountPercent: true,
-                brand: true,
+                name: false,
+                price: false,
+                preDiscount: false,
+                discountPercent: false,
+                brand: false,
                 newName: true,
                 newPrice: true,
                 newPreDiscount: true,
@@ -329,7 +329,7 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                                     } else {
                                         try {
                                             const quantityUpdateResponse = await UpdateProductQuantity(item);
-                                            if (quantityUpdateResponse.status !== 200) {
+                                            if (quantityUpdateResponse.status !== 204) {
                                                 falseUpdate.push(item);
                                             }
                                         } catch (quantityUpdateError) {
@@ -346,7 +346,7 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                                             sold: 0,
                                         });
 
-                                        if (quantityCreateResponse.status !== 201) {
+                                        if (quantityCreateResponse.status !== 204) {
                                             falseUpdate.push(item);
                                         }
                                     } catch (quantityCreateError) {
@@ -721,7 +721,7 @@ export default function ProductDetail({action, visible, onClose, product, onRelo
                         <label className="" htmlFor="PreDiscount">Giá trước khi giảm giá(*)</label>
                         <input type="text"
                                className={`border border-black rounded-md text-center block md:w-full disabled:bg-gray-300 ${(isValid.newPreDiscount) ? "" : (isValid.preDiscount) ? "" : "border-red-500"}`}
-                               id="PreDiscount"
+                               id="preDiscount"
                                onChange={(e) => handleOnChange(e)}
                                onBlur={(e) => handleValidField(e)}
                                value={productData.preDiscount}/>

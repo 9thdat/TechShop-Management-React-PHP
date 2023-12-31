@@ -5,7 +5,19 @@ import {AddDiscount, fetchDiscounts, fetchLastDiscountId, UpdateDiscount} from "
 
 export default function Discounts() {
     const [discounts, setDiscounts] = useState([]);
-    const [discount, setDiscount] = useState({});
+    const [discount, setDiscount] = useState({
+        id: "",
+        code: "",
+        type: "",
+        value: "",
+        quantity: "",
+        startDate: "",
+        endDate: "",
+        status: "",
+        minApply: "0",
+        maxSpeed: "-1",
+        description: "",
+    });
 
     const [action, setAction] = useState("");
     const [visibleDiscountDetail, setVisibleDiscountDetail] = useState(false);
@@ -24,8 +36,8 @@ export default function Discounts() {
 
     useEffect(() => {
         fetchDiscounts().then((response) => {
-            setOriginalDiscounts(response.data);
-            setDiscounts(response.data);
+            setOriginalDiscounts(response);
+            setDiscounts(response);
         });
     }, []);
 
@@ -64,13 +76,13 @@ export default function Discounts() {
     const handleOpenAddDiscount = async () => {
         setAction("add");
         const response = await fetchLastDiscountId();
-        const lastId = response.data;
+        const lastId = response.id;
         let tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
         let isoTomorrow = tomorrow.toISOString().split('T')[0];
         setDiscount({
             ...discount,
-            id: lastId + 1,
+            id: Number(lastId) + 1,
             startDate: new Date().toISOString().split('T')[0],
             endDate: isoTomorrow,
             status: "active",

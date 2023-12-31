@@ -3,7 +3,7 @@ import axios from '../../api/axios';
 export const fetchOrderDetail = async (orderId) => {
     try {
         const response = await axios.get(`/OrderDetail/GetOrderDetail.php?orderId=${orderId}`);
-        return response.data;
+        return response.data.data;
     } catch (err) {
         console.error(err);
         return [];

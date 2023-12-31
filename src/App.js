@@ -46,10 +46,10 @@ function App() {
             };
 
             const isValid = await checkToken();
-            if (isValid.length > 0) {
+            if (Object.keys(isValid.data).length > 0) {
                 setIsLogin(true);
-                sessionStorage.setItem("userEmail", isValid[0].value);
-                sessionStorage.setItem("role", isValid[1].value);
+                sessionStorage.setItem("userEmail", isValid.data.data.email);
+                sessionStorage.setItem("role", isValid.data.data.role);
                 axios.defaults.headers.common['Authorization'] = token;
             } else {
                 setIsLogin(false);
