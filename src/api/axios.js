@@ -1,5 +1,5 @@
 import axios from "axios";
 
 export default axios.create({
-    baseURL: "http://localhost/techshop/api",
+    baseURL: "https://noizi.000webhostapp.com/api",
 });
