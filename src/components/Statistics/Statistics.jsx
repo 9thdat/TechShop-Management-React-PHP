@@ -59,15 +59,25 @@ export default function Statistics() {
                 setRevenue(revenueData);
             } else {
                 const revenueData = await fetchRevenueByProduct(startMonth, startYear, endMonth, endYear, productId);
-                setRevenue(revenueData);
+                if (revenueData.length === 0) {
+                    alert("Không tìm thấy dữ liệu cho sản phẩm có mã " + productId);
+                }
+                else {
+                    setRevenue(revenueData.data);
+                }
             }
         } else {
             if (productId === "") {
                 const productsSoldData = await fetchProductsSold(startMonth, startYear, endMonth, endYear);
-                setProductsSold(productsSoldData);
+                setProductsSold(productsSoldData.data);
             } else {
                 const productsSoldData = await fetchProductSold(startMonth, startYear, endMonth, endYear, productId);
-                setProductsSold(productsSoldData);
+                if (productsSoldData.length === 0) {
+                    alert("Không tìm thấy dữ liệu cho sản phẩm có mã " + productId);
+                }
+                else {
+                    setProductsSold(productsSoldData.data);
+                }
             }
         }
     }

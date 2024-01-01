@@ -112,7 +112,7 @@ export default function Discounts() {
 
                 // Kiểm tra nếu ngày hết hạn của discount đã qua
                 const isExpired = discount.endDate <= isoDate;
-                if (discount.status !== "inactive") {
+                if (discount.status !== "disable") {
                     if (isExpired) {
                         discount.status = "expired";
                     } else {
@@ -144,7 +144,7 @@ export default function Discounts() {
 
                 // Kiểm tra nếu ngày hết hạn của discount đã qua
                 const isExpired = discount.endDate <= isoDate;
-                if (discount.status !== "inactive") {
+                if (discount.status !== "disable") {
                     if (isExpired) {
                         discount.status = "expired";
                     } else {
@@ -304,7 +304,7 @@ export default function Discounts() {
                                         scope="row"
                                         className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap"
                                     >
-                                        {discount.status === "active" ? "Đang hoạt động" : (discount.status === "inactive" ? "Ngừng hoạt động" : "Đã hết hạn")}
+                                        {discount.status === "active" ? "Đang hoạt động" : (discount.status === "disable" ? "Ngừng hoạt động" : "Đã hết hạn")}
                                     </td>
                                     <td
                                         scope="row"

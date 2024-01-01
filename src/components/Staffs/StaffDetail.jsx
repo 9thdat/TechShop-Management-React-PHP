@@ -8,7 +8,23 @@ const quan_huyen = require("../../Models/Address/quan-huyen.json");
 const xa_phuong = require("../../Models/Address/xa-phuong.json");
 
 export default function StaffDetail({visible, onClose, staffData, action, handleAddStaff, handleEditStaff}) {
-    const [staff, setStaff] = useState(staffData);
+    const [staff, setStaff] = useState({
+        email: "",
+        name: "",
+        password: "",
+        phone: "",
+        image: "",
+        birthday: new Date().toISOString().split('T')[0],
+        gender: "Nam",
+        status: "active",
+        ward: "Phường Tân Định",
+        district: "Quận 1",
+        city: "Thành phố Hồ Chí Minh",
+        address: "",
+        role: "staff",
+        cityCode: 79,
+        districtCode: 760,
+    });
 
     const [cities, setCities] = useState(tinh_tp);
     const [districts, setDistricts] = useState(quan_huyen);
@@ -384,7 +400,7 @@ export default function StaffDetail({visible, onClose, staffData, action, handle
                         <select
                             name={"city"}
                             id={"city"}
-                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300 w-full`}
                             onChange={(e) => handleOnChange(e)}
                             defaultValue={"staffCity"}
                         >
@@ -412,7 +428,7 @@ export default function StaffDetail({visible, onClose, staffData, action, handle
                         <select
                             name={"district"}
                             id={"district"}
-                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300 w-full`}
                             onChange={(e) => handleOnChange(e)}
                             defaultValue={"staffDistrict"}
                         >
@@ -442,7 +458,7 @@ export default function StaffDetail({visible, onClose, staffData, action, handle
                         <select
                             name={"ward"}
                             id={"ward"}
-                            className={`border border-black rounded-md text-center block disabled:bg-gray-300`}
+                            className={`border border-black rounded-md text-center block disabled:bg-gray-300 w-full`}
                             onChange={(e) => handleOnChange(e)}
                             defaultValue={"staffWard"}
                         >

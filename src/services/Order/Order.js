@@ -124,7 +124,7 @@ export const fetchProductsSold = async (startMonth, startYear, endMonth, endYear
 
 export const fetchProductSold = async (startMonth, startYear, endMonth, endYear, productId) => {
     try {
-        const res = await axios.get(`/Order/GetMonthlyProductsSold.php?startMonth=${startMonth}&startYear=${startYear}&endMonth=${endMonth}&endYear=${endYear}&productId=${productId}`);
+        const res = await axios.get(`/Order/GetMonthlyProductSold.php?startMonth=${startMonth}&startYear=${startYear}&endMonth=${endMonth}&endYear=${endYear}&productId=${productId}`);
         return res.data;
     } catch (err) {
         console.log(err);

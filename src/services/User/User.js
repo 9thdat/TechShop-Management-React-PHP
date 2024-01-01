@@ -12,7 +12,7 @@ export const fetchUser = async (email) => {
 export const fetchStaffs = async () => {
     try {
         const res = await axios.get("/User/GetStaffs.php");
-        return res.data;
+        return res.data.data;
     } catch (err) {
         console.log(err);
     }
@@ -21,7 +21,7 @@ export const fetchStaffs = async () => {
 export const AddStaff = async (staff) => {
     try {
         const res = await axios.post("/User/CreateStaff.php", staff);
-        return res;
+        return res.data;
     } catch (e) {
         console.log(e);
         return (e.res);
@@ -31,7 +31,7 @@ export const AddStaff = async (staff) => {
 export const UpdateStaff = async (staff) => {
     try {
         const res = await axios.put("/User/UpdateStaff.php", staff);
-        return res;
+        return res.data;
     } catch (e) {
         console.log(e);
         return (e.res);
