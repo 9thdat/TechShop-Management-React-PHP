@@ -269,12 +269,12 @@ export default function DiscountDetail({
                             value={discount.status}
                         >
                             <option value={"active"}>Hoạt động</option>
-                            <option value={"disable"}>Không hoạt động</option>
-                            <option value={"expired"}>Hết hạn</option>
+                            <option value={"disabled"}>Không hoạt động</option>
+                            <option disabled={true} hidden={true} value={"expired"}>Hết hạn</option>
                         </select>
                     </div>
                     <div className="">
-                        <label className="" htmlFor="minApply">
+                    <label className="" htmlFor="minApply">
                             Giá trị tối thiểu áp dụng(*)
                         </label>
                         <input

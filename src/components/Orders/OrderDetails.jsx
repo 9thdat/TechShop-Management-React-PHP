@@ -120,7 +120,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
         }
 
         return () => {
-            console.log("setOrder");
+            console.log("");
         }
     }, [orderData, action]);
 
@@ -128,7 +128,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
         fetchShippingFee();
 
         return () => {
-            console.log("fetchShippingFee");
+            console.log("");
         }
     }, [order.ward, order.city, order.district, order.deliveryType]);
 
@@ -416,7 +416,6 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
         } else {
             setOrderDetail(orderProducts);
         }
-        console.log(orderDetail);
 
         setVisibleOrderProductDetail(true);
     }
@@ -773,7 +772,7 @@ export default function OrderDetails({visible, orderData, handleAddOrder, handle
                             className={`border border-black rounded-md text-center block w-full disabled:bg-gray-300`}
                             onChange={(e) => handleOnChange(e)}
                             value={order.status}
-                            disabled={(orderData.status === "Done") || (orderData.status === "Cancelled")}
+                            disabled={(orderData.status === "Done") || (orderData.status === "Cancelled") || action === "add"}
                         >
                             <option value={"Processing"}>Đang xử lý</option>
                             <option value={"Delivering"}>Đang giao</option>
