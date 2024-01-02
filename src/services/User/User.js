@@ -2,7 +2,7 @@ import axios from '../../api/axios';
 
 export const fetchUser = async (email) => {
     try {
-        const res = await axios.get(`/User/IsEmailStaffExist.php?email=${email}`);
+        const res = await axios.get(`/User/GetStaff.php?email=${email}`);
         return res.data;
     } catch (err) {
         console.log(err);
@@ -40,8 +40,8 @@ export const UpdateStaff = async (staff) => {
 
 export const ValidateStaff = async (email) => {
     try {
-        const res = await axios.get(`User/Staffs/Valid/email=${email}`);
-        return res;
+        const res = await axios.get(`/User/IsEmailStaffExist.php?email=${email}`);
+        return res.data;
     } catch (e) {
         console.log(e);
         return (e.res);

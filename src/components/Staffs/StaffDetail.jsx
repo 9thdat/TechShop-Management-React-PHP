@@ -169,15 +169,13 @@ export default function StaffDetail({visible, onClose, staffData, action, handle
         if (!isValid) {
             return;
         }
-        try {
             const res = await ValidateStaff(value);
             if (res.status === 200) {
                 setIsNewEmail(true);
             }
-        } catch (e) {
-            console.log(e);
-            setIsNewEmail(false);
-        }
+            else {
+                setIsNewEmail(false);
+            }
     }
 
     const handleOnSave = (e) => {
