@@ -29,27 +29,9 @@ export default function LoginPage() {
                     window.location.href = "/home";
                 }
             }
-            else if(response.status === 404){
-                alert("Người dùng không tồn tại");
-            }
-            else if(response.status === 401){
-                alert("Sai mật khẩu");
-            }
-            else{
-                alert("Lỗi không xác định");
-            }
 
         } catch (err) {
             console.log(err);
-            if (err.response === undefined) {
-                alert("Lỗi kết nối đến server");
-            } else if (err.response.status === 404) {
-                alert("Người dùng không tồn tại");
-            } else if (err.response.status === 401) {
-                alert("Sai mật khẩu");
-            } else {
-                alert("Lỗi không xác định");
-            }
         }
     };
 
