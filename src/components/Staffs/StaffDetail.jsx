@@ -203,7 +203,7 @@ export default function StaffDetail({visible, onClose, staffData, action, handle
     const handleChangePassword = async (newPassword) => {
         try {
             const response = await ChangePassword(staff.email, newPassword);
-            if (response.status === 204) {
+            if (response.status === 200) {
                 alert("Đổi mật khẩu thành công");
                 setVisibleStaffPassword(false);
             }

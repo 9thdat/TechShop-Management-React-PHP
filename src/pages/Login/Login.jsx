@@ -16,7 +16,6 @@ export default function LoginPage() {
 
         try {
             const response = await Login(email, password);
-
             if (response.status === 200) {
                 if (response.data.status === "inactive") {
                     alert("Tài khoản đã ngừng hoạt động");
@@ -26,9 +25,18 @@ export default function LoginPage() {
                     sessionStorage.setItem("role", response.data.role);
                     sessionStorage.setItem("menu", "home");
                     sessionStorage.setItem("userEmail", email);
-                    axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+                    axios.defaults.headers.common['Authorization'] = response.data.token;
                     window.location.href = "/home";
                 }
+            }
+            else if(response.status === 404){
+                alert("Người dùng không tồn tại");
+            }
+            else if(response.status === 401){
+                alert("Sai mật khẩu");
+            }
+            else{
+                alert("Lỗi không xác định");
             }
 
         } catch (err) {

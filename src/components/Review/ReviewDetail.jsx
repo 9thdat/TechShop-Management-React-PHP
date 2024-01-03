@@ -94,8 +94,8 @@ export default function ReviewDetail({visible, onClose, data, onSave}) {
                     </div>
                     <div className="col-span-2">
                         <label className="" htmlFor="content">Nội dung</label>
-                        <input type="text"
-                               className={`border border-black rounded-md text-center block disabled:bg-gray-300 w-full`}
+                        <textarea
+                               className={`border border-black rounded-md text-center block disabled:bg-gray-300 w-full overflow-auto`}
                                id="content"
                                onChange={(e) => handleOnChange(e)}
                                value={review.content}
@@ -104,12 +104,32 @@ export default function ReviewDetail({visible, onClose, data, onSave}) {
                     </div>
                     <div className="col-span-2">
                         <label className="" htmlFor="adminReply">Admin phản hồi</label>
-                        <input type="text"
-                               className={`border border-black rounded-md text-center block disabled:bg-gray-300 w-full`}
+                        <textarea 
+                               className={`border border-black rounded-md text-center block disabled:bg-gray-300 w-full overflow-auto`}
                                id="adminReply"
                                onChange={(e) => handleOnChange(e)}
                                value={review.adminReply}
                                disabled={adminReply}
+                        />
+                    </div>
+                    <div className="">
+                        <label className="" htmlFor="createdAt">Ngày tạo</label>
+                        <input type="text"
+                               className={`border border-black rounded-md text-center block disabled:bg-gray-300 w-full`}
+                               id="createdAt"
+                               onChange={(e) => handleOnChange(e)}
+                               value={review.createdAt}
+                               disabled={true}
+                        />
+                    </div>
+                    <div className="">
+                        <label className="" htmlFor="updatedAt">Ngày chỉnh sửa</label>
+                        <input type="text"
+                               className={`border border-black rounded-md text-center block disabled:bg-gray-300 w-full`}
+                               id="updatedAt"
+                               onChange={(e) => handleOnChange(e)}
+                               value={review.updatedAt}
+                               disabled={true}
                         />
                     </div>
                     <div className="flex justify-end col-span-2">

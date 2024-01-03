@@ -318,7 +318,7 @@ export default function Products() {
                                     scope="row"
                                     className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap"
                                 >
-                                    {product.price}
+                                    {Number(product.price).toLocaleString('vi-VI')}
                                 </td>
                                 <td className="px-6 py-4 ">
                                     {product.category}

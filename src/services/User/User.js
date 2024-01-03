@@ -78,7 +78,7 @@ export const ChangePassword = async (email, password) => {
         const res = await axios.put(`/User/ChangePassword.php?email=${email}`, {
             password: password,
         });
-        return res;
+        return res.data;
     } catch (e) {
         console.log(e);
         return (e.res);

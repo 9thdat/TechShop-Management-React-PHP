@@ -124,13 +124,13 @@ export default function Home() {
                         className="bg-blue-300 border rounded-xl py-2 md:text-base lg:mb-2 lg:col-start-3 lg:col-end-4 lg:flex lg:flex-col lg:items-center lg:justify-center w-full lg:text-xl"
                     >
                         <span className="">DOANH THU HÔM NAY</span>
-                        <div className="inline-block pl-1 md:block">{revenueToday}</div>
+                        <div className="inline-block pl-1 md:block">{Number(revenueToday).toLocaleString('vi-VI')}</div>
                     </div>
                     <div
                         className="bg-yellow-200 border rounded-xl py-2 md:text-base lg:mb-2 lg:col-start-4 lg:col-end-5 lg:flex lg:flex-col lg:items-center lg:justify-center w-full lg:text-xl"
                     >
                         <span className="">DOANH THU THÁNG NÀY</span>
-                        <div className="inline-block pl-1 md:block">{revenueMonth}</div>
+                        <div className="inline-block pl-1 md:block">{Number(revenueMonth).toLocaleString('vi-VI')}</div>
                     </div>
                 </div>
             </div>
@@ -182,7 +182,7 @@ export default function Home() {
                                 </td>
                                 <td className="text-center">{item.name}</td>
                                 <td className="text-center">{item.phone}</td>
-                                <td className="hidden xl:block text-center">{item.revenue}</td>
+                                <td className="hidden xl:block text-center">{item.revenue.toLocaleString('vi-VI')}</td>
                             </tr>
                         ))}
                         </tbody>
