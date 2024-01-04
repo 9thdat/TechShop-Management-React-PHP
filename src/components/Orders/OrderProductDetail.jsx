@@ -317,7 +317,7 @@ setOrderProducts((prevData) =>
                             disabled={currentOrderProduct === 0 || action === "edit"}
                         >
                             {
-                                (action === "add" && currentOrderProduct !== 0) ?
+                                (action === "add" && currentOrderProduct !== 0 && orderProduct.color === "") ?
                                     <option value={""}></option>
                                     :
                                     <option value={orderProduct.color}>{orderProduct.color}</option>
