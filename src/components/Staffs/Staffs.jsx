@@ -94,7 +94,7 @@ export default function Staffs() {
         staff.password = "password"
         try {
             const response = await UpdateStaff(staff);
-            if (response.status === 204) {
+            if (response.status === 200) {
                 alert("Cập nhật nhân viên thành công");
                 setVisibleStaffDetail(false);
                 setStaff({});
